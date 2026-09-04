@@ -25,6 +25,51 @@ TrendGo is a personalized social event discovery platform that helps users disco
 - REST APIs
 - AI APIs
 
+## Backend Setup
+
+The backend foundation lives in `server/` and runs as a separate Express service from the Vite frontend. It currently provides a MongoDB connection, CORS configuration, centralized errors, request validation, request IDs, and `GET /api/health`.
+
+### Requirements
+
+- Node.js 20 or newer
+- MongoDB running locally or a MongoDB connection string
+
+### Environment
+
+Copy `.env.example` to `.env` and set the values for your environment:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+The backend reads `MONGODB_URI`, `PORT`, `CLIENT_ORIGIN`, and `NODE_ENV` from `.env`. Do not commit `.env` or place credentials in frontend `VITE_*` variables.
+
+### Run the services
+
+Install dependencies, then run the frontend and backend together:
+
+```powershell
+npm install
+npm run dev:all
+```
+
+The frontend runs at `http://localhost:8080` and the API runs at `http://localhost:5000`.
+
+To run them separately:
+
+```powershell
+npm run dev
+npm run server:dev
+```
+
+Verify the backend with:
+
+```powershell
+Invoke-RestMethod http://localhost:5000/api/health
+```
+
+Authentication, users, events, recommendations, friendships, notifications, and application API endpoints are intentionally not implemented yet.
+
 ## Vision
 
 TrendGo goes beyond traditional event listings by combining personalized recommendations with social discovery, helping people find experiences that match their interests and people they want to experience them with.
