@@ -24,6 +24,10 @@ export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: parsePort(process.env.PORT ?? "5000"),
   mongoUri: required("MONGODB_URI"),
+  jwtSecret: required("JWT_SECRET"),
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
+  authCookieName: process.env.AUTH_COOKIE_NAME ?? "trendgo_token",
+  authCookieMaxAgeMs: 7 * 24 * 60 * 60 * 1000,
   clientOrigins: required("CLIENT_ORIGIN")
     .split(",")
     .map((origin) => origin.trim())

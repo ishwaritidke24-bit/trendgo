@@ -46,23 +46,23 @@ These primitives are not backend-specific. They can remain in place while produc
 
 ## Authentication-Related UI
 
-There is currently no authentication implementation.
+Authentication is now implemented as the first backend integration slice. The API uses bcrypt password hashing, JWTs stored in an HTTP-only cookie, and a frontend auth provider that restores the session through `/api/auth/me` after refresh.
 
 - `Navbar` supports an optional `user` and `onSignIn` callback and can render a `Get Started` button when signed out.
-- `AppShell` always passes hardcoded `CURRENT_USER`, so current product pages appear authenticated.
-- There are no login, signup, logout, password reset, onboarding submission, session provider, auth guard, access-token handling, or user-loading states.
+- `AppShell` now uses the authenticated API user and redirects unauthenticated visitors to `/signin` while preserving the intended path.
+- `/signin` and `/signup` provide the current auth forms; logout clears the HTTP-only cookie.
+- Password reset and onboarding submission are not implemented yet.
 - `profile.tsx` is a local profile display, not account management.
 
-### Required future authentication flow
+### Implemented authentication flow
 
 1. Public landing page offers sign in and sign up.
-2. Client submits credentials to backend auth endpoints.
-3. Backend hashes passwords and creates a secure session, preferably an HTTP-only, secure, same-site cookie.
-4. Frontend loads `/api/auth/me` on startup and exposes the user through an auth provider or query.
-5. Protected routes redirect unauthenticated users to `/login`.
-6. Logout invalidates the server session and clears cached user-specific queries.
-7. Profile and onboarding forms update the authenticated user through validated mutations.
-8. Password reset should use short-lived, single-use tokens if it is included in the first auth release.
+2. Client submits credentials to `/api/auth/signup` or `/api/auth/signin`.
+3. Backend hashes passwords and issues a JWT in an HTTP-only, same-site cookie.
+4. Frontend loads `/api/auth/me` on startup and restores the user through `AuthProvider`.
+5. `AppShell` redirects unauthenticated visitors to `/signin`.
+6. Logout calls `/api/auth/signout` and clears the cookie.
+7. Password reset and onboarding profile mutations remain future work.
 
 Use HTTP-only cookies instead of storing long-lived tokens in `localStorage`.
 

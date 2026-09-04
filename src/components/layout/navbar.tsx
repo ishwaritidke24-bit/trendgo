@@ -26,6 +26,7 @@ export interface NavbarProps {
   location?: string;
   notificationCount?: number;
   onSignIn?: () => void;
+  onSignOut?: () => void;
 }
 
 function useScrolled(threshold = 12) {
@@ -44,9 +45,11 @@ export function Navbar({
   location = "Bengaluru",
   notificationCount = 0,
   onSignIn,
+  onSignOut,
 }: NavbarProps) {
   const scrolled = useScrolled();
   const [open, setOpen] = React.useState(false);
+  const handleSignIn = onSignIn ?? (() => window.location.assign("/signup"));
 
   React.useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -121,9 +124,10 @@ export function Navbar({
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </Link>
+              <Button variant="ghost" size="sm" onClick={onSignOut}>Sign out</Button>
             </>
           ) : (
-            <Button className="hidden sm:inline-flex" onClick={onSignIn}>
+            <Button className="hidden sm:inline-flex" onClick={handleSignIn}>
               Get Started
             </Button>
           )}
@@ -169,7 +173,7 @@ export function Navbar({
                 <Bell />
               </IconButton>
             ) : (
-              <Button size="sm" onClick={onSignIn}>
+              <Button size="sm" onClick={handleSignIn}>
                 Get Started
               </Button>
             )}

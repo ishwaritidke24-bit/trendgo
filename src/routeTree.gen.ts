@@ -15,6 +15,8 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as EventEventIdRouteImport } from './routes/event/$eventId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +49,16 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventEventIdRoute = EventEventIdRouteImport.update({
   id: '/event/$eventId',
   path: '/event/$eventId',
@@ -60,6 +72,8 @@ export interface FileRoutesByFullPath {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
   '/event/$eventId': typeof EventEventIdRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +83,8 @@ export interface FileRoutesByTo {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
   '/event/$eventId': typeof EventEventIdRoute
 }
 export interface FileRoutesById {
@@ -79,6 +95,8 @@ export interface FileRoutesById {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
   '/event/$eventId': typeof EventEventIdRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +108,8 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/profile'
+    | '/signin'
+    | '/signup'
     | '/event/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +119,8 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/profile'
+    | '/signin'
+    | '/signup'
     | '/event/$eventId'
   id:
     | '__root__'
@@ -108,6 +130,8 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/profile'
+    | '/signin'
+    | '/signup'
     | '/event/$eventId'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +142,8 @@ export interface RootRouteChildren {
   FriendsRoute: typeof FriendsRoute
   HomeRoute: typeof HomeRoute
   ProfileRoute: typeof ProfileRoute
+  SigninRoute: typeof SigninRoute
+  SignupRoute: typeof SignupRoute
   EventEventIdRoute: typeof EventEventIdRoute
 }
 
@@ -165,6 +191,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/event/$eventId': {
       id: '/event/$eventId'
       path: '/event/$eventId'
@@ -182,6 +222,8 @@ const rootRouteChildren: RootRouteChildren = {
   FriendsRoute: FriendsRoute,
   HomeRoute: HomeRoute,
   ProfileRoute: ProfileRoute,
+  SigninRoute: SigninRoute,
+  SignupRoute: SignupRoute,
   EventEventIdRoute: EventEventIdRoute,
 }
 export const routeTree = rootRouteImport

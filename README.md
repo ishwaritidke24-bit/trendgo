@@ -27,7 +27,7 @@ TrendGo is a personalized social event discovery platform that helps users disco
 
 ## Backend Setup
 
-The backend foundation lives in `server/` and runs as a separate Express service from the Vite frontend. It currently provides a MongoDB connection, CORS configuration, centralized errors, request validation, request IDs, and `GET /api/health`.
+The backend foundation lives in `server/` and runs as a separate Express service from the Vite frontend. It provides a MongoDB connection, CORS configuration, centralized errors, request validation, request IDs, `GET /api/health`, and JWT authentication using HTTP-only cookies.
 
 ### Requirements
 
@@ -68,7 +68,7 @@ Verify the backend with:
 Invoke-RestMethod http://localhost:5000/api/health
 ```
 
-Authentication, users, events, recommendations, friendships, notifications, and application API endpoints are intentionally not implemented yet.
+User profile, events, recommendations, friendships, notifications, and other application API endpoints are not implemented yet.
 
 ## Vision
 

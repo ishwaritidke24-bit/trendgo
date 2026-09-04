@@ -9,7 +9,8 @@ export function notFoundHandler(req, res) {
 }
 
 export function errorHandler(error, req, res, next) {
-  const statusCode = error.statusCode ?? 500;
+  const statusCode = error.code === 11000 ? 409 : (error.statusCode ?? 500);
+  const code = error.code === 11000 ? "EMAIL_IN_USE" : (error.code ?? "INTERNAL_SERVER_ERROR");
   const isServerError = statusCode >= 500;
 
   if (isServerError) {
@@ -19,7 +20,7 @@ export function errorHandler(error, req, res, next) {
   res.status(statusCode).json({
     success: false,
     error: {
-      code: error.code ?? "INTERNAL_SERVER_ERROR",
+      code,
       message: isServerError ? "Internal server error" : error.message,
       ...(error.details ? { details: error.details } : {}),
     },
