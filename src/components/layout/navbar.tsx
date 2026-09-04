@@ -10,10 +10,10 @@ import { IconButton } from "@/components/ui/icon-button";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { label: "Discover", to: "/" },
-  { label: "Explore", to: "/" },
-  { label: "Trending", to: "/" },
-  { label: "Friends", to: "/" },
+  { label: "Discover", to: "/home" },
+  { label: "Explore", to: "/explore" },
+  { label: "Trending", to: "/explore" },
+  { label: "Friends", to: "/friends" },
 ] as const;
 
 export interface NavbarUser {
@@ -115,12 +115,12 @@ export function Navbar({
                   </span>
                 ) : null}
               </div>
-              <button type="button" aria-label="Open profile" className="cursor-pointer">
+              <Link to="/profile" aria-label="Open profile" className="cursor-pointer">
                 <Avatar ring="accent">
                   {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : null}
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
-              </button>
+              </Link>
             </>
           ) : (
             <Button className="hidden sm:inline-flex" onClick={onSignIn}>
