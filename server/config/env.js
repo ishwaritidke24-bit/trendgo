@@ -1,4 +1,9 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const required = (name, fallback) => {
   const value = process.env[name] ?? fallback;
@@ -23,7 +28,7 @@ const parsePort = (value) => {
 export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: parsePort(process.env.PORT ?? "5000"),
-  mongoUri: required("MONGODB_URI"),
+  mongoUri: process.env.MONGODB_URI ?? "",
   jwtSecret: required("JWT_SECRET"),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
   authCookieName: process.env.AUTH_COOKIE_NAME ?? "trendgo_token",
