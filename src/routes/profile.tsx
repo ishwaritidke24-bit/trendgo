@@ -22,6 +22,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { CATEGORIES } from "@/data/mock";
 import { useAuth } from "@/lib/auth-context";
 
+import { BecomeOrganizerDialog } from "@/components/organizer/become-organizer-dialog";
+
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
 
 function ProfilePage() {
@@ -29,6 +31,7 @@ function ProfilePage() {
   const [savingInterests, setSavingInterests] = React.useState(false);
   const [updateError, setUpdateError] = React.useState<string | null>(null);
   const [editOpen, setEditOpen] = React.useState(false);
+  const [becomeOrganizerOpen, setBecomeOrganizerOpen] = React.useState(false);
   const [draft, setDraft] = React.useState({ name: "", location: "", interests: "" });
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [saveSuccess, setSaveSuccess] = React.useState(false);
@@ -128,13 +131,19 @@ function ProfilePage() {
                 <Edit3 /> Edit profile
               </Button>
               {saveSuccess ? <p className="text-sm text-success">Profile saved</p> : null}
-              <Button variant="ghost" asChild>
-                <Link to="/organizer">
-                  {user.roles.includes("organizer") && user.organizerStatus === "active"
-                    ? "Organizer mode"
-                    : "Become an Organizer"}
-                </Link>
-              </Button>
+              {user.roles.includes("organizer") && user.organizerStatus === "active" ? (
+                <Button variant="ghost" asChild>
+                  <Link to="/organizer">Organizer mode</Link>
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => setBecomeOrganizerOpen(true)}
+                  className="border-primary/40 bg-primary/10 text-primary-glow hover:bg-primary/20"
+                >
+                  <Sparkles className="size-4 text-primary-glow" /> Become an Organizer
+                </Button>
+              )}
             </div>
             <div className="relative mt-8 grid grid-cols-3 border-t border-border pt-6">
               <Stat
@@ -276,6 +285,10 @@ function ProfilePage() {
           </form>
         </DialogContent>
       </Dialog>
+      <BecomeOrganizerDialog
+        open={becomeOrganizerOpen}
+        onOpenChange={setBecomeOrganizerOpen}
+      />
       <Section spacing="sm">
         <Container>
           <div className="flex items-end justify-between">

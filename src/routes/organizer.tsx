@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarPlus, Users, Heart, BarChart3 } from "lucide-react";
+import { CalendarPlus, Users, Heart, BarChart3, Clock } from "lucide-react";
 
 import { OrganizerShell } from "@/components/organizer/organizer-shell";
 import { Container, Section } from "@/components/layout/container";
@@ -23,7 +23,8 @@ function OrganizerDashboard() {
       .finally(() => setLoading(false));
   }, []);
   const published = events.filter((event) => event.status === "published");
-  const upcoming = published.filter((event) => event.status === "published");
+  const upcoming = published.filter((event) => new Date(event.date) >= new Date());
+  const past = published.filter((event) => new Date(event.date) < new Date());
   const attendees = events.reduce((total, event) => total + event.attendeeCount, 0);
   const interested = events.reduce((total, event) => total + event.interestedCount, 0);
   return (
@@ -70,6 +71,7 @@ function OrganizerDashboard() {
               <div className="mt-8 grid gap-3 sm:grid-cols-4">
                 <Metric icon={<CalendarPlus />} label="Total events" value={events.length} />
                 <Metric icon={<CalendarPlus />} label="Upcoming events" value={upcoming.length} />
+                <Metric icon={<Clock />} label="Past events" value={past.length} />
                 <Metric icon={<Heart />} label="Interested users" value={interested} />
                 <Metric icon={<Users />} label="Total attendees" value={attendees} />
               </div>

@@ -20,6 +20,8 @@ const LINKS = [
   ["Organizer Profile", "/organizer/profile"],
 ] as const;
 
+import { BecomeOrganizerForm } from "./become-organizer-dialog";
+
 export function OrganizerShell({ children }: { children: React.ReactNode }) {
   const { user, loading, error, signOut } = useAuth();
   const navigate = useNavigate();
@@ -28,13 +30,13 @@ export function OrganizerShell({ children }: { children: React.ReactNode }) {
   const [unread, setUnread] = React.useState(0);
 
   React.useEffect(() => {
-    if (
-      !loading &&
-      (!user || !user.roles.includes("organizer") || user.organizerStatus !== "active")
-    ) {
-      void navigate({ to: "/profile" });
+    if (!loading && !user) {
+      void navigate({
+        to: "/signin",
+        search: { redirect: `${location.pathname}${location.search}` },
+      });
     }
-  }, [loading, user, navigate]);
+  }, [loading, user, navigate, location.pathname, location.search]);
 
   React.useEffect(() => {
     if (user)
@@ -43,18 +45,64 @@ export function OrganizerShell({ children }: { children: React.ReactNode }) {
         .catch(() => setUnread(0));
   }, [user]);
 
-  if (loading || !user)
+  if (loading)
     return (
       <div className="bg-aurora grid min-h-screen place-items-center text-sm text-muted-foreground">
         Checking organizer access...
       </div>
     );
+
+  if (!user) {
+    return null;
+  }
+
   if (error)
     return (
       <div className="bg-aurora grid min-h-screen place-items-center text-sm text-destructive">
         {error.message}
       </div>
     );
+
+  if (!user.roles.includes("organizer") || user.organizerStatus !== "active") {
+    return (
+      <div className="bg-aurora min-h-screen">
+        <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+          <Container className="flex h-16 items-center justify-between gap-4">
+            <Link to="/home" className="font-display text-lg font-semibold text-foreground">
+              TrendGo <span className="text-primary-glow">Host</span>
+            </Link>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/home">
+                <ChevronLeft className="size-4" /> Explorer Mode
+              </Link>
+            </Button>
+          </Container>
+        </header>
+
+        <main className="py-12">
+          <Container className="max-w-xl">
+            <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card/70 p-6 sm:p-9 shadow-2xl backdrop-blur-xl">
+              <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+              <div className="relative">
+                <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
+                  TrendGo Host
+                </p>
+                <h1 className="font-display mt-2 text-3xl font-semibold sm:text-4xl">
+                  Become a TrendGo Organizer
+                </h1>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Start hosting experiences, manage guest lists, and connect with attendees across your city.
+                </p>
+                <div className="mt-8 border-t border-border pt-6">
+                  <BecomeOrganizerForm showCancel={false} />
+                </div>
+              </div>
+            </div>
+          </Container>
+        </main>
+      </div>
+    );
+  }
 
   const initials = user.name
     .split(" ")

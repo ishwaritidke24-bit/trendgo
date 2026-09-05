@@ -10,11 +10,12 @@ export async function connectDatabase() {
 
   try {
     await mongoose.connect(env.mongoUri, {
+      dbName: "trendgo",
       serverSelectionTimeoutMS: 5000,
     });
-    console.log("MongoDB connected");
+    console.log(`MongoDB connected (database: ${mongoose.connection.name})`);
   } catch (err) {
-    console.error("MongoDB connection failed. Please ensure your MongoDB URI is correct and the server is running.");
+    console.error("MongoDB connection failed:", err.message);
     process.exit(1);
   }
 }
