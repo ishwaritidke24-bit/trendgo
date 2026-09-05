@@ -15,6 +15,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as OrganizerRouteImport } from './routes/organizer'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -50,6 +51,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrganizerRoute = OrganizerRouteImport.update({
+  id: '/organizer',
+  path: '/organizer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
+  '/organizer': typeof OrganizerRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
+  '/organizer': typeof OrganizerRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
+  '/organizer': typeof OrganizerRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/notifications'
+    | '/organizer'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/notifications'
+    | '/organizer'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/notifications'
+    | '/organizer'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   FriendsRoute: typeof FriendsRoute
   HomeRoute: typeof HomeRoute
   NotificationsRoute: typeof NotificationsRoute
+  OrganizerRoute: typeof OrganizerRoute
   ProfileRoute: typeof ProfileRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/organizer': {
+      id: '/organizer'
+      path: '/organizer'
+      fullPath: '/organizer'
+      preLoaderRoute: typeof OrganizerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   FriendsRoute: FriendsRoute,
   HomeRoute: HomeRoute,
   NotificationsRoute: NotificationsRoute,
+  OrganizerRoute: OrganizerRoute,
   ProfileRoute: ProfileRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,

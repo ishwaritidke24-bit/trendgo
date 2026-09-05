@@ -9,6 +9,9 @@ export interface AuthUser {
   savedEventIds: string[];
   interestedEventIds: string[];
   attendedEventIds: string[];
+  roles: ("explorer" | "organizer")[];
+  organizerStatus: "not_started" | "active";
+  organizerProfileId: string | null;
   createdAt: string;
   updatedAt: string;
 }

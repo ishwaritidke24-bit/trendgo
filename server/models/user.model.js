@@ -10,6 +10,13 @@ const userSchema = new mongoose.Schema(
     savedEventIds: { type: [String], default: [] },
     interestedEventIds: { type: [String], default: [] },
     attendedEventIds: { type: [String], default: [] },
+    roles: { type: [String], enum: ["explorer", "organizer"], default: ["explorer"] },
+    organizerStatus: { type: String, enum: ["not_started", "active"], default: "not_started" },
+    organizerProfileId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "OrganizerProfile",
+      default: null,
+    },
   },
   { timestamps: true },
 );

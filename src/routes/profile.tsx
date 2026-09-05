@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   CalendarCheck,
   Edit3,
@@ -128,6 +128,13 @@ function ProfilePage() {
                 <Edit3 /> Edit profile
               </Button>
               {saveSuccess ? <p className="text-sm text-success">Profile saved</p> : null}
+              <Button variant="ghost" asChild>
+                <Link to="/organizer">
+                  {user.roles.includes("organizer") && user.organizerStatus === "active"
+                    ? "Organizer mode"
+                    : "Become an Organizer"}
+                </Link>
+              </Button>
             </div>
             <div className="relative mt-8 grid grid-cols-3 border-t border-border pt-6">
               <Stat

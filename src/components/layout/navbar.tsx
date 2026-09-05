@@ -28,6 +28,7 @@ export interface NavbarProps {
   onSignIn?: () => void;
   onSignOut?: () => void;
   onNotifications?: () => void;
+  organizerEnabled?: boolean;
 }
 
 function useScrolled(threshold = 12) {
@@ -48,6 +49,7 @@ export function Navbar({
   onSignIn,
   onSignOut,
   onNotifications,
+  organizerEnabled = false,
 }: NavbarProps) {
   const scrolled = useScrolled();
   const navigate = useNavigate();
@@ -96,6 +98,16 @@ export function Navbar({
                 </Link>
               </li>
             ))}
+            {organizerEnabled ? (
+              <li>
+                <Link
+                  to="/organizer"
+                  className="rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-surface hover:text-foreground"
+                >
+                  Organizer
+                </Link>
+              </li>
+            ) : null}
           </ul>
         </nav>
 
@@ -167,6 +179,15 @@ export function Navbar({
               {link.label}
             </Link>
           ))}
+          {organizerEnabled ? (
+            <Link
+              to="/organizer"
+              onClick={() => setOpen(false)}
+              className="rounded-xl px-3 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+            >
+              Organizer mode
+            </Link>
+          ) : null}
           {user ? (
             <Link
               to="/profile"

@@ -55,6 +55,7 @@ export function AppShell({
         user={{ name: user.name }}
         location={user.location || "Bengaluru"}
         notificationCount={notificationCount}
+        organizerEnabled={user.roles.includes("organizer") && user.organizerStatus === "active"}
         onNotifications={() => void navigate({ to: "/notifications" })}
         onSignOut={() => void signOut().then(() => navigate({ to: "/" }))}
       />
