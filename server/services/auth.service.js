@@ -31,14 +31,7 @@ export function getAuthCookieClearOptions() {
   return options;
 }
 
-export async function signup({
-  name,
-  email,
-  password,
-  location = "",
-  interests = [],
-  avatar = "",
-}) {
+export async function signup({ name, email, password, location = "", interests = [] }) {
   const normalizedEmail = normalizeEmail(email);
   const existingUser = await User.findOne({ email: normalizedEmail }).lean();
   if (existingUser)
@@ -51,7 +44,6 @@ export async function signup({
     passwordHash,
     location,
     interests,
-    avatar,
   });
   return { user: toPublicUser(user), token: issueToken(user._id) };
 }
@@ -77,7 +69,6 @@ export async function updateCurrentUser(userId, input) {
   if (input.name !== undefined) updates.name = input.name.trim();
   if (input.location !== undefined) updates.location = input.location.trim();
   if (input.interests !== undefined) updates.interests = input.interests;
-  if (input.avatar !== undefined) updates.avatar = input.avatar.trim();
 
   const user = await User.findByIdAndUpdate(userId, updates, {
     returnDocument: "after",

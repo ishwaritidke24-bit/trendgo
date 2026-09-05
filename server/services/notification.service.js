@@ -7,6 +7,8 @@ function toPublicNotification(notification) {
     title: notification.title,
     message: notification.message,
     eventId: notification.eventId,
+    invitationId: notification.invitationId?.toString() ?? null,
+    senderId: notification.senderId?.toString() ?? null,
     read: Boolean(notification.readAt),
     createdAt: notification.createdAt,
   };

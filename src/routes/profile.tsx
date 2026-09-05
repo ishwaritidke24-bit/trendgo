@@ -14,7 +14,7 @@ import {
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -29,14 +29,13 @@ function ProfilePage() {
   const [savingInterests, setSavingInterests] = React.useState(false);
   const [updateError, setUpdateError] = React.useState<string | null>(null);
   const [editOpen, setEditOpen] = React.useState(false);
-  const [draft, setDraft] = React.useState({ name: "", location: "", avatar: "", interests: "" });
+  const [draft, setDraft] = React.useState({ name: "", location: "", interests: "" });
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [saveSuccess, setSaveSuccess] = React.useState(false);
   const openEditor = () => {
     setDraft({
       name: user?.name ?? "",
       location: user?.location ?? "",
-      avatar: user?.avatar ?? "",
       interests: user?.interests.join(", ") ?? "",
     });
     setUpdateError(null);
@@ -51,7 +50,6 @@ function ProfilePage() {
       await updateProfile({
         name: draft.name,
         location: draft.location,
-        avatar: draft.avatar,
         interests: draft.interests
           .split(",")
           .map((value) => value.trim())
@@ -105,7 +103,6 @@ function ProfilePage() {
             <div className="absolute top-0 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
             <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
               <Avatar size="xl" ring="accent">
-                {user.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
@@ -244,15 +241,6 @@ function ProfilePage() {
               <input
                 value={draft.location}
                 onChange={(event) => setDraft({ ...draft, location: event.target.value })}
-                className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
-              />
-            </label>
-            <label className="text-sm">
-              Avatar URL
-              <input
-                type="url"
-                value={draft.avatar}
-                onChange={(event) => setDraft({ ...draft, avatar: event.target.value })}
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>

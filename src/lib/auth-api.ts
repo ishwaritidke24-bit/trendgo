@@ -6,7 +6,6 @@ export interface AuthUser {
   email: string;
   location: string;
   interests: string[];
-  avatar: string;
   savedEventIds: string[];
   interestedEventIds: string[];
   attendedEventIds: string[];
@@ -21,6 +20,26 @@ export interface NotificationItem {
   message: string;
   eventId: string;
   read: boolean;
+  createdAt: string;
+  invitationId?: string | null;
+}
+
+export interface FriendItem {
+  id: string;
+  name: string;
+  initials: string;
+  avatar: string;
+  online: boolean;
+}
+
+export interface EventInvitation {
+  id: string;
+  eventId: string;
+  event: { id: string; title: string; date: string; time: string; area: string } | null;
+  sender: { _id: string; name: string };
+  recipient: { _id: string; name: string };
+  message: string;
+  status: "pending" | "accepted" | "declined";
   createdAt: string;
 }
 
@@ -83,7 +102,7 @@ export async function signOut() {
 }
 
 export async function updateCurrentUser(
-  input: Partial<Pick<AuthUser, "name" | "location" | "interests" | "avatar">>,
+  input: Partial<Pick<AuthUser, "name" | "location" | "interests">>,
 ) {
   const payload = await authRequest<AuthResponse>("/auth/me", {
     method: "PUT",
@@ -116,17 +135,38 @@ export async function updateEventPreference(
 }
 
 export async function inviteToEvent(eventId: string, friendId?: string) {
-  return apiRequest(`/events/${eventId}/invitations`, {
+  return apiRequest(`/events/${eventId}/invite`, {
     method: "POST",
-    body: JSON.stringify({ friendId }),
+    body: JSON.stringify({ recipientIds: friendId ? [friendId] : [], message: "" }),
   });
 }
 
-export async function inviteFriend(friendId: string) {
-  return apiRequest<{ success: boolean; invitationId: string }>("/friends/invitations", {
-    method: "POST",
-    body: JSON.stringify({ friendId }),
-  });
+export async function getFriends() {
+  return apiRequest<{ success: boolean; friends: FriendItem[] }>("/friends");
+}
+
+export async function inviteFriends(eventId: string, recipientIds: string[], message: string) {
+  return apiRequest<{ success: boolean; invitations: EventInvitation[] }>(
+    `/events/${eventId}/invite`,
+    {
+      method: "POST",
+      body: JSON.stringify({ recipientIds, message }),
+    },
+  );
+}
+
+export async function getInvitations() {
+  return apiRequest<{ success: boolean; invitations: EventInvitation[] }>("/invitations");
+}
+
+export async function updateInvitation(invitationId: string, status: "accepted" | "declined") {
+  return apiRequest<{ success: boolean; invitation: EventInvitation }>(
+    `/invitations/${invitationId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    },
+  );
 }
 
 export async function getNotifications() {

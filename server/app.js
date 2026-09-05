@@ -11,6 +11,7 @@ import { eventRouter } from "./routes/event.routes.js";
 import { eventsRouter } from "./routes/events.routes.js";
 import { notificationRouter } from "./routes/notification.routes.js";
 import { friendRouter } from "./routes/friend.routes.js";
+import { invitationRouter } from "./routes/invitation.routes.js";
 
 export function createApp() {
   const app = express();
@@ -43,6 +44,7 @@ export function createApp() {
   app.use("/api/events", eventRouter);
   app.use("/api/notifications", notificationRouter);
   app.use("/api/friends", friendRouter);
+  app.use("/api/invitations", invitationRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
 

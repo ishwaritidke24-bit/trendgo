@@ -4,7 +4,7 @@ import { Bell, ChevronDown, MapPin, Menu, X } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,6 @@ const NAV_LINKS = [
 
 export interface NavbarUser {
   name: string;
-  avatarUrl?: string;
 }
 
 export interface NavbarProps {
@@ -125,7 +124,6 @@ export function Navbar({
               </div>
               <Link to="/profile" aria-label="Open profile" className="cursor-pointer">
                 <Avatar ring="accent">
-                  {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : null}
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </Link>

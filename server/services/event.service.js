@@ -30,13 +30,3 @@ export async function updateEventPreference(userId, eventId, preference, enabled
     attendedEventIds: user.attendedEventIds ?? [],
   };
 }
-
-export async function inviteToEvent(userId, eventId, friendId) {
-  return createNotification({
-    userId,
-    type: "invite",
-    title: "Invite ready",
-    message: `Your invite for ${friendId} is ready to send.`,
-    eventId,
-  });
-}

@@ -40,7 +40,7 @@ export function signinValidator({ body }) {
 
 export function updateProfileValidator({ body }) {
   const errors = [];
-  const allowedFields = ["name", "location", "interests", "avatar"];
+  const allowedFields = ["name", "location", "interests"];
 
   if (!allowedFields.some((field) => field in body)) {
     errors.push({ field: "profile", message: "At least one profile field is required" });
@@ -64,9 +64,5 @@ export function updateProfileValidator({ body }) {
   ) {
     errors.push({ field: "interests", message: "Interests must be a list of text values" });
   }
-  if (body.avatar !== undefined && (typeof body.avatar !== "string" || body.avatar.length > 500)) {
-    errors.push({ field: "avatar", message: "Avatar must be a valid text value" });
-  }
-
   return { valid: errors.length === 0, errors };
 }

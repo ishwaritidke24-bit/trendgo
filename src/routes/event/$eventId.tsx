@@ -19,11 +19,12 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
 import { EventCard } from "@/components/events/event-card";
 import { FriendAvatars } from "@/components/events/friend-avatars";
+import { InviteFriendsDialog } from "@/components/events/invite-friends-dialog";
 import { MatchBadge } from "@/components/events/match-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { inviteToEvent, updateEventPreference } from "@/lib/auth-api";
+import { updateEventPreference } from "@/lib/auth-api";
 import { useAuth } from "@/lib/auth-context";
 import { getEvent as getEventRequest } from "@/lib/events-api";
 import { EVENTS, friendById, type EventItem } from "@/data/mock";
@@ -41,6 +42,7 @@ function EventDetailPage() {
   );
   const [saved, setSaved] = React.useState(() => user?.savedEventIds.includes(eventId) ?? false);
   const [actionError, setActionError] = React.useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = React.useState(false);
 
   React.useEffect(() => {
     let active = true;
@@ -111,14 +113,6 @@ function EventDetailPage() {
     }
   }
 
-  async function inviteFriend() {
-    try {
-      await inviteToEvent(event.id);
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Unable to create an invite");
-    }
-  }
-
   return (
     <AppShell>
       <Section spacing="sm" className="pt-8">
@@ -186,7 +180,7 @@ function EventDetailPage() {
                   <Button variant="outline" onClick={() => void shareEvent()}>
                     <Share2 /> Share
                   </Button>
-                  <Button variant="ghost" onClick={() => void inviteFriend()}>
+                  <Button variant="ghost" onClick={() => setInviteOpen(true)}>
                     <Send /> Invite friends
                   </Button>
                 </div>
@@ -216,6 +210,7 @@ function EventDetailPage() {
           </div>
         </Container>
       </Section>
+      <InviteFriendsDialog eventId={event.id} open={inviteOpen} onOpenChange={setInviteOpen} />
 
       <Section spacing="sm">
         <Container>

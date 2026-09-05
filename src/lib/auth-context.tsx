@@ -17,7 +17,7 @@ interface AuthContextValue {
   signUp: (input: { name: string; email: string; password: string }) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (
-    input: Partial<Pick<AuthUser, "name" | "location" | "interests" | "avatar">>,
+    input: Partial<Pick<AuthUser, "name" | "location" | "interests">>,
   ) => Promise<void>;
   refreshUser: () => Promise<void>;
 }

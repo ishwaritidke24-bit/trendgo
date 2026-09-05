@@ -8,10 +8,12 @@ import {
   Heart,
   MapPin,
   Navigation,
+  Send,
   Sparkles,
 } from "lucide-react";
 
 import { FriendAvatars } from "@/components/events/friend-avatars";
+import { InviteFriendsDialog } from "@/components/events/invite-friends-dialog";
 import { MatchBadge } from "@/components/events/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,6 +37,7 @@ export function EventCard({ event, size = "default", showWhy = true, className }
   const [saved, setSaved] = React.useState(() => user?.savedEventIds.includes(event.id) ?? false);
   const [saving, setSaving] = React.useState(false);
   const [actionError, setActionError] = React.useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = React.useState(false);
   const [whyOpen, setWhyOpen] = React.useState(false);
 
   const compact = size === "compact";
@@ -189,6 +192,14 @@ export function EventCard({ event, size = "default", showWhy = true, className }
             <Bookmark className={cn(saved && "fill-primary-glow text-primary-glow")} />
             {saved ? "Saved" : "Save"}
           </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setInviteOpen(true)}
+            aria-label="Invite friends"
+          >
+            <Send />
+          </Button>
         </div>
         {actionError ? (
           <p role="alert" className="mt-2 text-xs text-destructive">
@@ -196,6 +207,7 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           </p>
         ) : null}
       </div>
+      <InviteFriendsDialog eventId={event.id} open={inviteOpen} onOpenChange={setInviteOpen} />
     </article>
   );
 }

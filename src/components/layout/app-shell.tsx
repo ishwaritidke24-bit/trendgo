@@ -52,7 +52,7 @@ export function AppShell({
   return (
     <div className={cn("bg-aurora min-h-screen", className)}>
       <Navbar
-        user={{ name: user.name, avatarUrl: user.avatar }}
+        user={{ name: user.name }}
         location={user.location || "Bengaluru"}
         notificationCount={notificationCount}
         onNotifications={() => void navigate({ to: "/notifications" })}

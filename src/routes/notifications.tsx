@@ -8,8 +8,11 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   getNotifications,
+  getInvitations,
   markAllNotificationsRead,
   markNotificationRead,
+  updateInvitation,
+  type EventInvitation,
   type NotificationItem,
 } from "@/lib/auth-api";
 
@@ -20,11 +23,13 @@ function NotificationsPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [saving, setSaving] = React.useState(false);
+  const [invitations, setInvitations] = React.useState<EventInvitation[]>([]);
 
   const load = React.useCallback(async () => {
     try {
-      const result = await getNotifications();
+      const [result, invitationResult] = await Promise.all([getNotifications(), getInvitations()]);
       setNotifications(result.notifications);
+      setInvitations(invitationResult.invitations);
       setError(null);
     } catch (requestError) {
       setError(
@@ -55,6 +60,13 @@ function NotificationsPage() {
     } finally {
       setSaving(false);
     }
+  }
+
+  async function respondToInvitation(invitationId: string, status: "accepted" | "declined") {
+    const result = await updateInvitation(invitationId, status);
+    setInvitations((current) =>
+      current.map((item) => (item.id === invitationId ? result.invitation : item)),
+    );
   }
 
   return (
@@ -95,6 +107,48 @@ function NotificationsPage() {
               title="No notifications"
               description="New activity will appear here."
             />
+          ) : null}
+          {invitations.length ? (
+            <div className="mt-8">
+              <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
+                Invitations
+              </p>
+              <div className="mt-3 flex flex-col gap-3">
+                {invitations.map((invitation) => (
+                  <div
+                    key={invitation.id}
+                    className="rounded-2xl border border-border bg-card/60 p-4"
+                  >
+                    <p className="font-medium">{invitation.sender.name} invited you</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {invitation.event?.title ?? "An event"}
+                      {invitation.message ? ` · ${invitation.message}` : ""}
+                    </p>
+                    {invitation.status === "pending" ? (
+                      <div className="mt-3 flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => void respondToInvitation(invitation.id, "accepted")}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void respondToInvitation(invitation.id, "declined")}
+                        >
+                          Decline
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="mt-3 text-xs text-muted-foreground capitalize">
+                        {invitation.status}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : null}
           <div className="mt-8 flex flex-col gap-3">
             {notifications.map((notification) => (

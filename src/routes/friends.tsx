@@ -1,4 +1,3 @@
-import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CalendarDays, Heart, UserPlus, Users } from "lucide-react";
 
@@ -9,12 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ACTIVITY, EVENTS, FRIENDS, eventById, friendById } from "@/data/mock";
-import { inviteFriend } from "@/lib/auth-api";
 
 export const Route = createFileRoute("/friends")({ component: FriendsPage });
 
 function FriendsPage() {
-  const [inviteState, setInviteState] = React.useState<string | null>(null);
   const socialEvents = ACTIVITY.map((item) => ({
     item,
     friend: friendById(item.friendId),
@@ -96,21 +93,6 @@ function FriendsPage() {
                       <p className="truncate text-sm font-medium">{friend.name}</p>
                       <p className="text-xs text-muted-foreground">{friend.mutual} mutuals</p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      aria-label={`Invite ${friend.name}`}
-                      onClick={() =>
-                        void inviteFriend(friend.id)
-                          .then(() => setInviteState(friend.id))
-                          .catch(() => setInviteState(null))
-                      }
-                    >
-                      <UserPlus />
-                    </Button>
-                    {inviteState === friend.id ? (
-                      <span className="text-xs text-success">Sent</span>
-                    ) : null}
                   </div>
                 ))}
               </div>
