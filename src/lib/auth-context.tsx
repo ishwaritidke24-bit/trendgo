@@ -2,6 +2,7 @@ import * as React from "react";
 
 import {
   getCurrentUser,
+  updateCurrentUserInterests as requestUpdateCurrentUserInterests,
   signIn as requestSignIn,
   signOut as requestSignOut,
   signUp as requestSignUp,
@@ -13,12 +14,13 @@ interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
   error: Error | null;
-  signIn: (input: { email: string; password: string }) => Promise<void>;
-  signUp: (input: { name: string; email: string; password: string }) => Promise<void>;
+  signIn: (input: { email: string; password: string }) => Promise<AuthUser>;
+  signUp: (input: { name: string; email: string; password: string }) => Promise<AuthUser>;
   signOut: () => Promise<void>;
   updateProfile: (
-    input: Partial<Pick<AuthUser, "name" | "location" | "interests" | "discoveryLocations">>,
+    input: Partial<Pick<AuthUser, "name" | "email" | "location" | "avatar" | "interests" | "discoveryLocations">>,
   ) => Promise<void>;
+  updateInterests: (interests: string[]) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -54,18 +56,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     error,
     signIn: async (input: { email: string; password: string }) => {
-      setUser(await requestSignIn(input));
+      const authenticatedUser = await requestSignIn(input);
+      setUser(authenticatedUser);
       setError(null);
+      return authenticatedUser;
     },
     signUp: async (input: { name: string; email: string; password: string }) => {
-      setUser(await requestSignUp(input));
+      const authenticatedUser = await requestSignUp(input);
+      setUser(authenticatedUser);
       setError(null);
+      return authenticatedUser;
     },
     signOut: async () => {
       await requestSignOut();
       setUser(null);
     },
     updateProfile: async (input) => setUser(await requestUpdateCurrentUser(input)),
+    updateInterests: async (interests) =>
+      setUser(await requestUpdateCurrentUserInterests(interests)),
     refreshUser: async () => setUser(await getCurrentUser()),
   } satisfies AuthContextValue;
 

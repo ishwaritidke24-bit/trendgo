@@ -7,6 +7,8 @@ export interface AuthUser {
   location: string;
   discoveryLocations: string[];
   interests: string[];
+  avatar: string;
+  onboardingCompleted: boolean;
   savedEventIds: string[];
   interestedEventIds: string[];
   attendedEventIds: string[];
@@ -78,7 +80,7 @@ async function authRequest<T extends AuthResponse>(
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${getApiBaseUrl()}/auth/me`, { credentials: "include" });
+  const response = await fetch(`${getApiBaseUrl()}/users/me`, { credentials: "include" });
   if (response.status === 401) return null;
   if (!response.ok) throw new Error("Unable to verify your session");
   const payload = (await response.json()) as AuthResponse;
@@ -106,9 +108,9 @@ export async function signOut() {
 }
 
 export async function updateCurrentUser(
-  input: Partial<Pick<AuthUser, "name" | "location" | "interests" | "discoveryLocations">>,
+  input: Partial<Pick<AuthUser, "name" | "email" | "location" | "avatar" | "interests" | "discoveryLocations">>,
 ) {
-  const payload = await authRequest<AuthResponse>("/auth/me", {
+  const payload = await authRequest<AuthResponse>("/users/me", {
     method: "PUT",
     body: JSON.stringify(input),
   });
@@ -117,6 +119,19 @@ export async function updateCurrentUser(
 
 export async function updateLocations(discoveryLocations: string[]) {
   return updateCurrentUser({ discoveryLocations });
+}
+
+export async function updateCurrentUserInterests(interests: string[]) {
+  const payload = await authRequest<AuthResponse>("/users/me/interests", {
+    method: "PUT",
+    body: JSON.stringify({ interests }),
+  });
+  return payload.user;
+}
+
+export async function getInterestCategories() {
+  const payload = await apiRequest<{ success: boolean; interests: string[] }>("/interests");
+  return payload.interests;
 }
 
 async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {

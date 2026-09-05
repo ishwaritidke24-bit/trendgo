@@ -15,6 +15,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OrganizerRouteImport } from './routes/organizer'
 import { Route as OrganizerAttendeesRouteImport } from './routes/organizer-attendees'
 import { Route as OrganizerCreateRouteImport } from './routes/organizer-create'
@@ -55,6 +56,11 @@ const HomeRoute = HomeRouteImport.update({
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrganizerRoute = OrganizerRouteImport.update({
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
+  '/onboarding': typeof OnboardingRoute
   '/organizer': typeof OrganizerRoute
   '/organizer-attendees': typeof OrganizerAttendeesRoute
   '/organizer-create': typeof OrganizerCreateRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
+  '/onboarding': typeof OnboardingRoute
   '/organizer': typeof OrganizerRoute
   '/organizer-attendees': typeof OrganizerAttendeesRoute
   '/organizer-create': typeof OrganizerCreateRoute
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
+  '/onboarding': typeof OnboardingRoute
   '/organizer': typeof OrganizerRoute
   '/organizer-attendees': typeof OrganizerAttendeesRoute
   '/organizer-create': typeof OrganizerCreateRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/notifications'
+    | '/onboarding'
     | '/organizer'
     | '/organizer-attendees'
     | '/organizer-create'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/notifications'
+    | '/onboarding'
     | '/organizer'
     | '/organizer-attendees'
     | '/organizer-create'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/friends'
     | '/home'
     | '/notifications'
+    | '/onboarding'
     | '/organizer'
     | '/organizer-attendees'
     | '/organizer-create'
@@ -238,6 +250,7 @@ export interface RootRouteChildren {
   FriendsRoute: typeof FriendsRoute
   HomeRoute: typeof HomeRoute
   NotificationsRoute: typeof NotificationsRoute
+  OnboardingRoute: typeof OnboardingRoute
   OrganizerRoute: typeof OrganizerRoute
   OrganizerAttendeesRoute: typeof OrganizerAttendeesRoute
   OrganizerCreateRoute: typeof OrganizerCreateRoute
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/organizer': {
@@ -382,6 +402,7 @@ const rootRouteChildren: RootRouteChildren = {
   FriendsRoute: FriendsRoute,
   HomeRoute: HomeRoute,
   NotificationsRoute: NotificationsRoute,
+  OnboardingRoute: OnboardingRoute,
   OrganizerRoute: OrganizerRoute,
   OrganizerAttendeesRoute: OrganizerAttendeesRoute,
   OrganizerCreateRoute: OrganizerCreateRoute,

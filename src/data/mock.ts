@@ -2,14 +2,19 @@
 
 export const CATEGORIES = [
   "Music",
+  "Techno",
+  "Indie",
   "Comedy",
   "Sports",
   "Food",
   "Art",
+  "Theatre",
   "Workshops",
   "Communities",
   "Nightlife",
   "Outdoor",
+  "Startups",
+  "Photography",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];

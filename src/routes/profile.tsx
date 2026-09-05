@@ -14,8 +14,7 @@ import {
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
-import { LocationSelector } from "@/components/layout/location-selector";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -28,19 +27,20 @@ import { BecomeOrganizerDialog } from "@/components/organizer/become-organizer-d
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
 
 function ProfilePage() {
-  const { user, loading, error, updateProfile } = useAuth();
+  const { user, loading, error, updateInterests, updateProfile } = useAuth();
   const [savingInterests, setSavingInterests] = React.useState(false);
   const [updateError, setUpdateError] = React.useState<string | null>(null);
   const [editOpen, setEditOpen] = React.useState(false);
   const [becomeOrganizerOpen, setBecomeOrganizerOpen] = React.useState(false);
-  const [draft, setDraft] = React.useState({ name: "", location: "", interests: "" });
+  const [draft, setDraft] = React.useState({ name: "", location: "", avatar: "", interests: [] as string[] });
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [saveSuccess, setSaveSuccess] = React.useState(false);
   const openEditor = () => {
     setDraft({
       name: user?.name ?? "",
       location: user?.location ?? "",
-      interests: user?.interests.join(", ") ?? "",
+      avatar: user?.avatar ?? "",
+      interests: user?.interests ?? [],
     });
     setUpdateError(null);
     setSaveSuccess(false);
@@ -54,11 +54,9 @@ function ProfilePage() {
       await updateProfile({
         name: draft.name,
         location: draft.location,
-        interests: draft.interests
-          .split(",")
-          .map((value) => value.trim())
-          .filter(Boolean),
+        avatar: draft.avatar,
       });
+      await updateInterests(draft.interests);
       setEditOpen(false);
       setSaveSuccess(true);
     } catch (saveError) {
@@ -89,7 +87,7 @@ function ProfilePage() {
     setSavingInterests(true);
     setUpdateError(null);
     try {
-      await updateProfile({ interests });
+      await updateInterests(interests);
     } catch (updateFailure) {
       setUpdateError(
         updateFailure instanceof Error ? updateFailure.message : "Unable to update interests",
@@ -107,6 +105,7 @@ function ProfilePage() {
             <div className="absolute top-0 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
             <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
               <Avatar size="xl" ring="accent">
+                {user.avatar ? <AvatarImage src={user.avatar} alt={`${user.name}'s avatar`} /> : null}
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
@@ -289,13 +288,44 @@ function ProfilePage() {
               />
             </label>
             <label className="text-sm">
-              Interests
+              Avatar URL
               <input
-                value={draft.interests}
-                onChange={(event) => setDraft({ ...draft, interests: event.target.value })}
+                type="url"
+                value={draft.avatar}
+                onChange={(event) => setDraft({ ...draft, avatar: event.target.value })}
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
+            <fieldset>
+              <legend className="text-sm">Interests</legend>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {CATEGORIES.map((category) => {
+                  const selected = draft.interests.includes(category);
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() =>
+                        setDraft({
+                          ...draft,
+                          interests: selected
+                            ? draft.interests.filter((interest) => interest !== category)
+                            : [...draft.interests, category],
+                        })
+                      }
+                      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                        selected
+                          ? "border-primary/35 bg-primary/10 text-primary-glow"
+                          : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
             {updateError ? (
               <p role="alert" className="text-sm text-destructive">
                 {updateError}

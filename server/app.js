@@ -13,6 +13,8 @@ import { notificationRouter } from "./routes/notification.routes.js";
 import { friendRouter } from "./routes/friend.routes.js";
 import { invitationRouter } from "./routes/invitation.routes.js";
 import { organizerRouter } from "./routes/organizer.routes.js";
+import { interestsRouter } from "./routes/interests.routes.js";
+import { userRouter } from "./routes/user.routes.js";
 
 export function createApp() {
   const app = express();
@@ -38,7 +40,9 @@ export function createApp() {
     res.json({ success: true, service: "trendgo-api" });
   });
   app.use("/api/health", healthRouter);
+  app.use("/api/interests", interestsRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/users", userRouter);
   app.use("/api/events", eventsRouter);
   app.use("/api/events", eventRouter);
   app.use("/api/notifications", notificationRouter);

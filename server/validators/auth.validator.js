@@ -1,4 +1,7 @@
+import { areValidInterests } from "../data/interests.js";
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const isRequestBody = (body) => body && typeof body === "object" && !Array.isArray(body);
 
 function collectErrors({ name, email, password }) {
   const errors = [];
@@ -40,8 +43,18 @@ export function signinValidator({ body }) {
 
 export function updateProfileValidator({ body }) {
   const errors = [];
-  const allowedFields = ["name", "location", "interests", "discoveryLocations"];
+  const allowedFields = ["name", "email", "location", "avatar", "interests", "discoveryLocations"];
 
+  if (!isRequestBody(body)) {
+    return {
+      valid: false,
+      errors: [{ field: "profile", message: "Profile updates must be an object" }],
+    };
+  }
+  const unsupportedFields = Object.keys(body).filter((field) => !allowedFields.includes(field));
+  if (unsupportedFields.length) {
+    errors.push({ field: "profile", message: "Profile contains unsupported fields" });
+  }
   if (!allowedFields.some((field) => field in body)) {
     errors.push({ field: "profile", message: "At least one profile field is required" });
   }
@@ -52,17 +65,19 @@ export function updateProfileValidator({ body }) {
     errors.push({ field: "name", message: "Name must be between 2 and 80 characters" });
   }
   if (
+    body.email !== undefined &&
+    (typeof body.email !== "string" || !emailPattern.test(body.email.trim()))
+  ) {
+    errors.push({ field: "email", message: "Enter a valid email address" });
+  }
+  if (
     body.location !== undefined &&
     (typeof body.location !== "string" || body.location.length > 120)
   ) {
     errors.push({ field: "location", message: "Location must be 120 characters or fewer" });
   }
-  if (
-    body.interests !== undefined &&
-    (!Array.isArray(body.interests) ||
-      body.interests.some((interest) => typeof interest !== "string"))
-  ) {
-    errors.push({ field: "interests", message: "Interests must be a list of text values" });
+  if (body.avatar !== undefined && (typeof body.avatar !== "string" || body.avatar.length > 2048)) {
+    errors.push({ field: "avatar", message: "Avatar must be a URL of 2,048 characters or fewer" });
   }
   if (
     body.discoveryLocations !== undefined &&
@@ -72,5 +87,29 @@ export function updateProfileValidator({ body }) {
   ) {
     errors.push({ field: "discoveryLocations", message: "Up to 3 valid location names required" });
   }
+  return { valid: errors.length === 0, errors };
+}
+
+export function updateInterestsValidator({ body }) {
+  const errors = [];
+
+  if (!isRequestBody(body)) {
+    return {
+      valid: false,
+      errors: [{ field: "interests", message: "Interests must be provided as an object field" }],
+    };
+  }
+  if (Object.keys(body).some((field) => field !== "interests")) {
+    errors.push({ field: "interests", message: "Only interests can be updated here" });
+  }
+  if (!("interests" in body)) {
+    errors.push({ field: "interests", message: "Interests are required" });
+  } else if (!areValidInterests(body.interests)) {
+    errors.push({
+      field: "interests",
+      message: "Interests must be unique values from the TrendGo interest categories",
+    });
+  }
+
   return { valid: errors.length === 0, errors };
 }

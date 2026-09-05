@@ -21,9 +21,15 @@ export function AuthForm({ mode, redirect }: { mode: "signin" | "signup"; redire
     setError("");
     setSubmitting(true);
     try {
-      if (isSignup) await signUp({ name, email, password });
-      else await signIn({ email, password });
-      await navigate({ to: redirect === "/signin" || redirect === "/signup" ? "/home" : (redirect as "/home") });
+      const user = isSignup
+        ? await signUp({ name, email, password })
+        : await signIn({ email, password });
+      const destination = user.onboardingCompleted
+        ? redirect === "/signin" || redirect === "/signup"
+          ? "/home"
+          : redirect
+        : "/onboarding";
+      await navigate({ to: destination as "/home" | "/onboarding" });
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Unable to authenticate. Please try again.");
     } finally {

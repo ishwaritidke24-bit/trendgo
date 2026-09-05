@@ -31,7 +31,7 @@ export function getAuthCookieClearOptions() {
   return options;
 }
 
-export async function signup({ name, email, password, location = "", interests = [] }) {
+export async function signup({ name, email, password }) {
   const normalizedEmail = normalizeEmail(email);
   const existingUser = await User.findOne({ email: normalizedEmail }).lean();
   if (existingUser)
@@ -42,8 +42,6 @@ export async function signup({ name, email, password, location = "", interests =
     name: name.trim(),
     email: normalizedEmail,
     passwordHash,
-    location,
-    interests,
   });
   return { user: toPublicUser(user), token: issueToken(user._id) };
 }
@@ -67,6 +65,7 @@ export async function updateCurrentUser(userId, input) {
   const updates = {};
 
   if (input.name !== undefined) updates.name = input.name.trim();
+  if (input.email !== undefined) updates.email = normalizeEmail(input.email);
   if (input.location !== undefined) updates.location = input.location.trim();
   if (input.interests !== undefined) updates.interests = input.interests;
   if (input.discoveryLocations !== undefined) {
@@ -76,11 +75,22 @@ export async function updateCurrentUser(userId, input) {
       .slice(0, 3);
     updates.discoveryLocations = locs;
   }
+  if (input.avatar !== undefined) updates.avatar = input.avatar.trim();
 
   const user = await User.findByIdAndUpdate(userId, updates, {
     returnDocument: "after",
     runValidators: true,
   }).lean();
+  if (!user) throw createHttpError(401, "Your session is no longer valid", "SESSION_INVALID");
+  return toPublicUser(user);
+}
+
+export async function updateCurrentUserInterests(userId, interests) {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { interests, onboardingCompleted: interests.length > 0 },
+    { returnDocument: "after", runValidators: true },
+  ).lean();
   if (!user) throw createHttpError(401, "Your session is no longer valid", "SESSION_INVALID");
   return toPublicUser(user);
 }

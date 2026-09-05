@@ -6,6 +6,8 @@ export function toPublicUser(user) {
     location: user.location,
     discoveryLocations: user.discoveryLocations ?? [],
     interests: user.interests,
+    avatar: user.avatar ?? "",
+    onboardingCompleted: user.onboardingCompleted ?? false,
     savedEventIds: user.savedEventIds ?? [],
     interestedEventIds: user.interestedEventIds ?? [],
     attendedEventIds: user.attendedEventIds ?? [],
