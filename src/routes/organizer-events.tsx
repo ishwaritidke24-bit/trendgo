@@ -66,7 +66,7 @@ function OrganizerEvents() {
               <h1 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">My Events</h1>
             </div>
             <Button asChild>
-              <Link to="/organizer/events/create">
+              <Link to="/organizer-create">
                 <CalendarPlus /> Create Event
               </Link>
             </Button>
@@ -105,12 +105,12 @@ function OrganizerEvents() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" variant="ghost" asChild>
-                      <Link to="/organizer/events/$eventId" params={{ eventId: event.id }}>
+                      <Link to="/organizer-event-detail" search={{ eventId: event.id }}>
                         <Eye />
                       </Link>
                     </Button>
                     <Button size="sm" variant="ghost" asChild>
-                      <Link to="/organizer/events/$eventId" params={{ eventId: event.id }}>
+                      <Link to="/organizer-event-detail" search={{ eventId: event.id }}>
                         <Pencil />
                       </Link>
                     </Button>
@@ -122,8 +122,8 @@ function OrganizerEvents() {
                     </Button>
                     <Button size="sm" variant="ghost" asChild>
                       <Link
-                        to="/organizer/events/$eventId/attendees"
-                        params={{ eventId: event.id }}
+                        to="/organizer-attendees"
+                        search={{ eventId: event.id }}
                       >
                         <Users />
                       </Link>
@@ -140,7 +140,7 @@ function OrganizerEvents() {
               description="Create an experience and it will appear here."
               action={
                 <Button asChild>
-                  <Link to="/organizer/events/create">Create Event</Link>
+                  <Link to="/organizer-create">Create Event</Link>
                 </Button>
               }
             />

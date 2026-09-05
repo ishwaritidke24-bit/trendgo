@@ -42,7 +42,7 @@ function OrganizerDashboard() {
               </p>
             </div>
             <Button asChild>
-              <Link to="/organizer/events/create">
+              <Link to="/organizer-create">
                 <CalendarPlus /> Create Event
               </Link>
             </Button>
@@ -62,7 +62,7 @@ function OrganizerDashboard() {
               description="Create your first event and start building your audience."
               action={
                 <Button asChild>
-                  <Link to="/organizer/events/create">Create your first event</Link>
+                  <Link to="/organizer-create">Create your first event</Link>
                 </Button>
               }
             />
@@ -87,7 +87,7 @@ function OrganizerDashboard() {
                       </h2>
                     </div>
                     <Link
-                      to="/organizer/events"
+                      to="/organizer-events"
                       className="text-sm text-primary-glow hover:underline"
                     >
                       View all
@@ -97,8 +97,8 @@ function OrganizerDashboard() {
                     {upcoming.slice(0, 5).map((event) => (
                       <Link
                         key={event.id}
-                        to="/organizer/events/$eventId"
-                        params={{ eventId: event.id }}
+                        to="/organizer-event-detail"
+                        search={{ eventId: event.id }}
                         className="flex items-center gap-4 rounded-2xl border border-border bg-card/60 p-4 hover:border-primary/40"
                       >
                         <div className="min-w-0 flex-1">

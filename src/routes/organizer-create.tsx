@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CalendarPlus, LoaderCircle } from "lucide-react";
+import { CalendarPlus, CheckCircle, LoaderCircle } from "lucide-react";
 
 import { OrganizerShell } from "@/components/organizer/organizer-shell";
 import { Container, Section } from "@/components/layout/container";
@@ -29,19 +29,54 @@ function CreateOrganizerEvent() {
   const [form, setForm] = React.useState(initial);
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState(false);
+
+  function validateForm(): string | null {
+    if (!form.title.trim()) return "Title is required.";
+    if (!form.description.trim()) return "Description is required.";
+    if (!form.category.trim()) return "Category is required.";
+    if (!form.date) return "Date is required.";
+    if (!form.time) return "Start time is required.";
+    if (!form.venue.trim()) return "Venue is required.";
+    if (!form.address.trim()) return "Address is required.";
+    if (!form.city.trim()) return "City is required.";
+    // Validate date format YYYY-MM-DD
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return "Date must be in YYYY-MM-DD format.";
+    // Validate time format HH:MM
+    if (!/^\d{2}:\d{2}$/.test(form.time)) return "Start time must be in HH:MM format (e.g. 19:00).";
+    if (form.endTime && !/^\d{2}:\d{2}$/.test(form.endTime))
+      return "End time must be in HH:MM format (e.g. 21:00).";
+    if (form.endTime && form.endTime <= form.time)
+      return "End time must be after start time.";
+    if (form.price < 0) return "Price cannot be negative.";
+    if (form.capacity < 0) return "Capacity cannot be negative.";
+    // Validate image URL if provided
+    if (form.image) {
+      try { new URL(form.image); } catch { return "Image must be a valid URL."; }
+    }
+    return null;
+  }
+
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
-      const result = await createHostedEvent({
-        ...form,
-        tags: form.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean),
-      });
-      await navigate({ to: "/organizer/events/$eventId", params: { eventId: result.event.id } });
+      const tags = form.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+      // area defaults to city if not provided
+      const area = form.area.trim() || form.city.trim();
+      await createHostedEvent({ ...form, tags, area });
+      setSuccess(true);
+      // Navigate to My Events after short delay so user sees success
+      setTimeout(() => void navigate({ to: "/organizer-events" }), 1200);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Unable to create event");
     } finally {
@@ -88,7 +123,15 @@ function CreateOrganizerEvent() {
                     key === "venue" ||
                     key === "city"
                   }
-                  type={key === "image" ? "url" : "text"}
+                  type={
+                    key === "image"
+                      ? "url"
+                      : key === "date"
+                        ? "date"
+                        : key === "time" || key === "endTime"
+                          ? "time"
+                          : "text"
+                  }
                   value={form[key]}
                   onChange={(event) => setForm({ ...form, [key]: event.target.value })}
                   className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
@@ -129,8 +172,13 @@ function CreateOrganizerEvent() {
                 {error}
               </p>
             ) : null}
+            {success ? (
+              <p role="status" className="flex items-center gap-2 text-sm text-green-500 sm:col-span-2">
+                <CheckCircle className="size-4" /> Event created! Redirecting to My Events...
+              </p>
+            ) : null}
             <div className="flex justify-end sm:col-span-2">
-              <Button type="submit" disabled={saving}>
+              <Button type="submit" disabled={saving || success}>
                 {saving ? <LoaderCircle className="animate-spin" /> : <CalendarPlus />}
                 {saving ? "Creating..." : "Create draft"}
               </Button>

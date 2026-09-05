@@ -40,8 +40,18 @@ async function organizerRequest<T>(path: string, options?: RequestInit): Promise
     credentials: "include",
     headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) },
   });
-  const payload = (await response.json()) as T & { error?: { message?: string } };
-  if (!response.ok) throw new Error(payload.error?.message ?? "Organizer request failed");
+  const payload = (await response.json()) as T & {
+    error?: { message?: string; details?: { field: string; message: string }[] };
+    errors?: string[];
+  };
+  if (!response.ok) {
+    // If there are field-level validation details, combine them into a readable message
+    const details = (payload as any).error?.details;
+    if (Array.isArray(details) && details.length > 0) {
+      throw new Error(details.map((d: { message: string }) => d.message).join(". "));
+    }
+    throw new Error((payload as any).error?.message ?? "Organizer request failed");
+  }
   return payload;
 }
 

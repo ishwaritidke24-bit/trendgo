@@ -12,12 +12,12 @@ import { cn } from "@/lib/utils";
 
 const LINKS = [
   ["Dashboard", "/organizer"],
-  ["My Events", "/organizer/events"],
-  ["Create Event", "/organizer/events/create"],
-  ["Attendees", "/organizer/attendees"],
-  ["Invitations", "/organizer/invitations"],
+  ["My Events", "/organizer-events"],
+  ["Create Event", "/organizer-create"],
+  ["Attendees", "/organizer-attendees"],
+  ["Invitations", "/organizer-invitations"],
   ["Notifications", "/notifications"],
-  ["Organizer Profile", "/organizer/profile"],
+  ["Organizer Profile", "/organizer-profile"],
 ] as const;
 
 import { BecomeOrganizerForm } from "./become-organizer-dialog";

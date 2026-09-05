@@ -11,7 +11,7 @@ const eventSchema = new mongoose.Schema(
     time: { type: String, required: true, trim: true },
     endTime: { type: String, trim: true, default: "" },
     venue: { type: String, required: true, trim: true },
-    area: { type: String, required: true, trim: true },
+    area: { type: String, trim: true, default: "" },
     address: { type: String, trim: true, default: "" },
     city: { type: String, trim: true, default: "" },
     price: { type: Number, min: 0, default: 0 },

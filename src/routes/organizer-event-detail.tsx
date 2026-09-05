@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { getHostedEvents, updateHostedEvent, type HostedEvent } from "@/lib/organizer-api";
 
 export const Route = createFileRoute("/organizer-event-detail")({
+  validateSearch: (search: Record<string, unknown>) => ({ eventId: String(search.eventId ?? "") }),
   component: OrganizerEventDetail,
 });
 function OrganizerEventDetail() {
-  const { eventId } = Route.useParams();
+  const { eventId } = Route.useSearch();
   const [event, setEvent] = React.useState<HostedEvent | null>(null);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -38,7 +39,7 @@ function OrganizerEventDetail() {
       <Section spacing="sm" className="pt-10">
         <Container className="max-w-3xl">
           <Link
-            to="/organizer/events"
+            to="/organizer-events"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground"
           >
             <ArrowLeft /> My Events
@@ -77,7 +78,7 @@ function OrganizerEventDetail() {
                     )}
                   </Button>
                   <Button variant="outline" asChild>
-                    <Link to="/organizer/events/$eventId/attendees" params={{ eventId: event.id }}>
+                    <Link to="/organizer-attendees" search={{ eventId: event.id }}>
                       <Users /> View attendees
                     </Link>
                   </Button>
