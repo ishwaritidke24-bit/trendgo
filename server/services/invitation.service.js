@@ -5,6 +5,7 @@ import { createNotification } from "./notification.service.js";
 import { getEvent } from "../data/events.js";
 import { createHttpError } from "../utils/http-error.js";
 import { EventParticipant } from "../models/event-participant.model.js";
+import { Event } from "../models/event.model.js";
 
 function publicInvitation(invitation) {
   const event = getEvent(invitation.eventId);
@@ -149,6 +150,9 @@ export async function updateInvitation(userId, invitationId, status) {
         },
       },
     ]);
+    await Event.findByIdAndUpdate(invitation.eventId, {
+      $addToSet: { attendeeIds: userId, interestedIds: userId },
+    });
     await createNotification({
       userId: invitation.senderId,
       type: "invitation_response",

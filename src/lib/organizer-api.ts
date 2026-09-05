@@ -17,12 +17,17 @@ export interface HostedEvent {
   organizerId: string;
   title: string;
   description: string;
+  tags: string[];
   category: string;
   date: string;
   time: string;
+  endTime: string;
   venue: string;
   area: string;
+  address: string;
+  city: string;
   price: number;
+  capacity: number;
   image: string;
   status: "draft" | "published" | "unpublished";
   attendeeCount: number;
@@ -99,4 +104,8 @@ export async function getHostedEventAudience(eventId: string) {
       interested: { id: string; name: string; email: string }[];
     };
   }>(`/organizer/events/${eventId}/audience`);
+}
+
+export async function deleteHostedEvent(eventId: string) {
+  return organizerRequest<void>(`/organizer/events/${eventId}`, { method: "DELETE" });
 }

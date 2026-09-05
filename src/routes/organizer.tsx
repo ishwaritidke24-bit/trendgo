@@ -1,148 +1,49 @@
 import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarPlus, LoaderCircle, Rocket, Save } from "lucide-react";
+import { CalendarPlus, Users, Heart, BarChart3 } from "lucide-react";
 
-import { AppShell } from "@/components/layout/app-shell";
+import { OrganizerShell } from "@/components/organizer/organizer-shell";
 import { Container, Section } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useAuth } from "@/lib/auth-context";
-import {
-  activateOrganizer,
-  createHostedEvent,
-  getHostedEvents,
-  getOrganizerProfile,
-  setHostedEventStatus,
-  type HostedEvent,
-  type OrganizerProfile,
-} from "@/lib/organizer-api";
+import { getHostedEvents, type HostedEvent } from "@/lib/organizer-api";
 
-export const Route = createFileRoute("/organizer")({ component: OrganizerPage });
+export const Route = createFileRoute("/organizer")({ component: OrganizerDashboard });
 
-const blankEvent = {
-  title: "",
-  description: "",
-  category: "",
-  date: "",
-  time: "",
-  venue: "",
-  area: "",
-  price: 0,
-  image: "",
-};
-
-function OrganizerPage() {
-  const { user, refreshUser } = useAuth();
-  const [profile, setProfile] = React.useState<OrganizerProfile | null>(null);
+function OrganizerDashboard() {
   const [events, setEvents] = React.useState<HostedEvent[]>([]);
-  const [form, setForm] = React.useState({
-    displayName: user?.name ?? "",
-    bio: "",
-    organizationName: "",
-    website: "",
-  });
-  const [eventForm, setEventForm] = React.useState(blankEvent);
   const [loading, setLoading] = React.useState(true);
-  const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [success, setSuccess] = React.useState<string | null>(null);
-
-  const activeOrganizer = user?.roles.includes("organizer") && user.organizerStatus === "active";
-
   React.useEffect(() => {
-    if (!activeOrganizer) {
-      setLoading(false);
-      return;
-    }
-    void Promise.all([getOrganizerProfile(), getHostedEvents()])
-      .then(([profileResult, eventResult]) => {
-        setProfile(profileResult.organizer);
-        setEvents(eventResult.events);
-        if (profileResult.organizer) setForm(profileResult.organizer);
-      })
+    void getHostedEvents()
+      .then((result) => setEvents(result.events))
       .catch((requestError) =>
-        setError(
-          requestError instanceof Error ? requestError.message : "Unable to load organizer mode",
-        ),
+        setError(requestError instanceof Error ? requestError.message : "Unable to load dashboard"),
       )
       .finally(() => setLoading(false));
-  }, [activeOrganizer]);
-
-  async function becomeOrganizer(event: React.FormEvent) {
-    event.preventDefault();
-    setSaving(true);
-    setError(null);
-    setSuccess(null);
-    try {
-      const result = await activateOrganizer(form);
-      setProfile(result.organizer);
-      await refreshUser();
-      setSuccess("Organizer mode is active");
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error ? requestError.message : "Unable to activate organizer mode",
-      );
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function createEvent(event: React.FormEvent) {
-    event.preventDefault();
-    setSaving(true);
-    setError(null);
-    setSuccess(null);
-    try {
-      const result = await createHostedEvent(eventForm);
-      setEvents((current) => [result.event, ...current]);
-      setEventForm(blankEvent);
-      setSuccess("Event saved as a draft");
-    } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to create event");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function togglePublish(hostedEvent: HostedEvent) {
-    const status = hostedEvent.status === "published" ? "unpublished" : "published";
-    try {
-      const result = await setHostedEventStatus(hostedEvent.id, status);
-      setEvents((current) =>
-        current.map((item) => (item.id === hostedEvent.id ? result.event : item)),
-      );
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error ? requestError.message : "Unable to update event status",
-      );
-    }
-  }
-
-  if (loading)
-    return (
-      <AppShell>
-        <Container className="py-24 text-center text-sm text-muted-foreground">
-          Loading organizer mode...
-        </Container>
-      </AppShell>
-    );
-
+  }, []);
+  const published = events.filter((event) => event.status === "published");
+  const upcoming = published.filter((event) => event.status === "published");
+  const attendees = events.reduce((total, event) => total + event.attendeeCount, 0);
+  const interested = events.reduce((total, event) => total + event.interestedCount, 0);
   return (
-    <AppShell>
+    <OrganizerShell>
       <Section spacing="sm" className="pt-10">
         <Container>
           <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
-            Host experiences
+            Organizer mode
           </p>
           <div className="mt-3 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <h1 className="font-display text-3xl font-semibold sm:text-4xl">Organizer mode</h1>
+              <h1 className="font-display text-3xl font-semibold sm:text-4xl">Your experiences</h1>
               <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-                Use the same TrendGo account to create and manage events.
+                Manage the moments you are bringing to the TrendGo community.
               </p>
             </div>
-            <Button variant="outline" asChild>
-              <Link to="/profile">Back to profile</Link>
+            <Button asChild>
+              <Link to="/organizer/events/create">
+                <CalendarPlus /> Create Event
+              </Link>
             </Button>
           </div>
           {error ? (
@@ -150,188 +51,91 @@ function OrganizerPage() {
               {error}
             </p>
           ) : null}
-          {success ? <p className="mt-6 text-sm text-success">{success}</p> : null}
-          {!activeOrganizer ? (
-            <form
-              onSubmit={becomeOrganizer}
-              className="mt-8 grid gap-4 rounded-3xl border border-border bg-card/60 p-6 sm:grid-cols-2"
-            >
-              <div className="sm:col-span-2">
-                <h2 className="font-display text-xl font-semibold">Become an Organizer</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Create a host profile without creating another account.
-                </p>
-              </div>
-              <label className="text-sm">
-                Display name
-                <input
-                  required
-                  value={form.displayName}
-                  onChange={(event) => setForm({ ...form, displayName: event.target.value })}
-                  className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                />
-              </label>
-              <label className="text-sm">
-                Organization name
-                <input
-                  value={form.organizationName}
-                  onChange={(event) => setForm({ ...form, organizationName: event.target.value })}
-                  className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                />
-              </label>
-              <label className="text-sm sm:col-span-2">
-                Bio
-                <textarea
-                  value={form.bio}
-                  onChange={(event) => setForm({ ...form, bio: event.target.value })}
-                  className="mt-1 min-h-24 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                />
-              </label>
-              <label className="text-sm">
-                Website
-                <input
-                  type="url"
-                  value={form.website}
-                  onChange={(event) => setForm({ ...form, website: event.target.value })}
-                  className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                />
-              </label>
-              <div className="flex items-end">
-                <Button type="submit" disabled={saving}>
-                  {saving ? <LoaderCircle className="animate-spin" /> : <Rocket />}
-                  {saving ? "Activating..." : "Become an Organizer"}
+          {loading ? (
+            <p className="mt-8 text-sm text-muted-foreground">Loading your dashboard...</p>
+          ) : events.length === 0 ? (
+            <EmptyState
+              className="mt-8"
+              icon={<CalendarPlus />}
+              title="No events yet"
+              description="Create your first event and start building your audience."
+              action={
+                <Button asChild>
+                  <Link to="/organizer/events/create">Create your first event</Link>
                 </Button>
-              </div>
-            </form>
+              }
+            />
           ) : (
             <>
-              <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_20rem]">
-                <form
-                  onSubmit={createEvent}
-                  className="grid gap-4 rounded-3xl border border-border bg-card/60 p-6 sm:grid-cols-2"
-                >
-                  <h2 className="font-display text-xl font-semibold sm:col-span-2">
-                    Create an event
-                  </h2>
-                  {(
-                    [
-                      ["title", "Title"],
-                      ["category", "Category"],
-                      ["date", "Date"],
-                      ["time", "Time"],
-                      ["venue", "Venue"],
-                      ["area", "Area"],
-                    ] as const
-                  ).map(([key, label]) => (
-                    <label key={key} className="text-sm">
-                      {label}
-                      <input
-                        required
-                        value={eventForm[key]}
-                        onChange={(event) =>
-                          setEventForm({ ...eventForm, [key]: event.target.value })
-                        }
-                        className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                      />
-                    </label>
-                  ))}
-                  <label className="text-sm">
-                    Price
-                    <input
-                      type="number"
-                      min="0"
-                      value={eventForm.price}
-                      onChange={(event) =>
-                        setEventForm({ ...eventForm, price: Number(event.target.value) })
-                      }
-                      className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                    />
-                  </label>
-                  <label className="text-sm">
-                    Image URL
-                    <input
-                      type="url"
-                      value={eventForm.image}
-                      onChange={(event) =>
-                        setEventForm({ ...eventForm, image: event.target.value })
-                      }
-                      className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                    />
-                  </label>
-                  <label className="text-sm sm:col-span-2">
-                    Description
-                    <textarea
-                      value={eventForm.description}
-                      onChange={(event) =>
-                        setEventForm({ ...eventForm, description: event.target.value })
-                      }
-                      className="mt-1 min-h-24 w-full rounded-xl border border-border bg-surface px-3 py-2"
-                    />
-                  </label>
-                  <div className="sm:col-span-2">
-                    <Button type="submit" disabled={saving}>
-                      {saving ? <LoaderCircle className="animate-spin" /> : <CalendarPlus />}
-                      {saving ? "Saving..." : "Save draft"}
-                    </Button>
-                  </div>
-                </form>
-                <aside className="rounded-3xl border border-border bg-surface/60 p-5">
-                  <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
-                    Host profile
-                  </p>
-                  <h2 className="font-display mt-2 text-xl font-semibold">
-                    {profile?.displayName}
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {profile?.organizationName || "Independent organizer"}
-                  </p>
-                  <p className="mt-4 text-xs text-muted-foreground">
-                    Verification: {profile?.verificationStatus}
-                  </p>
-                  <p className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
-                    <Save className="size-4" /> {events.length} hosted events
-                  </p>
-                </aside>
+              <div className="mt-8 grid gap-3 sm:grid-cols-4">
+                <Metric icon={<CalendarPlus />} label="Total events" value={events.length} />
+                <Metric icon={<CalendarPlus />} label="Upcoming events" value={upcoming.length} />
+                <Metric icon={<Heart />} label="Interested users" value={interested} />
+                <Metric icon={<Users />} label="Total attendees" value={attendees} />
               </div>
-              <div className="mt-10">
-                <h2 className="font-display text-2xl font-semibold">Your hosted events</h2>
-                {events.length ? (
+              <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_20rem]">
+                <div>
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
+                        Upcoming Events
+                      </p>
+                      <h2 className="font-display mt-2 text-2xl font-semibold">
+                        Upcoming experiences
+                      </h2>
+                    </div>
+                    <Link
+                      to="/organizer/events"
+                      className="text-sm text-primary-glow hover:underline"
+                    >
+                      View all
+                    </Link>
+                  </div>
                   <div className="mt-5 flex flex-col gap-3">
-                    {events.map((hostedEvent) => (
-                      <div
-                        key={hostedEvent.id}
-                        className="flex flex-col gap-3 rounded-2xl border border-border bg-card/60 p-4 sm:flex-row sm:items-center"
+                    {upcoming.slice(0, 5).map((event) => (
+                      <Link
+                        key={event.id}
+                        to="/organizer/events/$eventId"
+                        params={{ eventId: event.id }}
+                        className="flex items-center gap-4 rounded-2xl border border-border bg-card/60 p-4 hover:border-primary/40"
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium">{hostedEvent.title}</p>
+                          <p className="font-medium">{event.title}</p>
                           <p className="mt-1 text-sm text-muted-foreground">
-                            {hostedEvent.date} · {hostedEvent.area} · {hostedEvent.attendeeCount}{" "}
-                            attendees · {hostedEvent.interestedCount} interested
+                            {event.date} · {event.area}
                           </p>
                         </div>
-                        <Button
-                          size="sm"
-                          variant={hostedEvent.status === "published" ? "outline" : "default"}
-                          onClick={() => void togglePublish(hostedEvent)}
-                        >
-                          {hostedEvent.status === "published" ? "Unpublish" : "Publish"}
-                        </Button>
-                      </div>
+                        <span className="text-xs text-muted-foreground">
+                          {event.attendeeCount} attendees
+                        </span>
+                      </Link>
                     ))}
                   </div>
-                ) : (
-                  <EmptyState
-                    className="mt-5"
-                    icon={<CalendarPlus />}
-                    title="No hosted events yet"
-                    description="Save a draft above to start building your hosted event list."
-                  />
-                )}
+                </div>
+                <aside className="rounded-3xl border border-border bg-surface/60 p-5">
+                  <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
+                    Event Performance
+                  </p>
+                  <BarChart3 className="mt-5 size-7 text-primary-glow" />
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Audience counts are calculated from real event activity. More detailed analytics
+                    can come later.
+                  </p>
+                </aside>
               </div>
             </>
           )}
         </Container>
       </Section>
-    </AppShell>
+    </OrganizerShell>
+  );
+}
+function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card/60 p-4">
+      <span className="text-primary-glow">{icon}</span>
+      <p className="font-display mt-3 text-2xl font-semibold">{value}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
+    </div>
   );
 }

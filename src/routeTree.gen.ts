@@ -16,6 +16,12 @@ import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OrganizerRouteImport } from './routes/organizer'
+import { Route as OrganizerAttendeesRouteImport } from './routes/organizer-attendees'
+import { Route as OrganizerCreateRouteImport } from './routes/organizer-create'
+import { Route as OrganizerEventDetailRouteImport } from './routes/organizer-event-detail'
+import { Route as OrganizerEventsRouteImport } from './routes/organizer-events'
+import { Route as OrganizerInvitationsRouteImport } from './routes/organizer-invitations'
+import { Route as OrganizerProfileRouteImport } from './routes/organizer-profile'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -56,6 +62,36 @@ const OrganizerRoute = OrganizerRouteImport.update({
   path: '/organizer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrganizerAttendeesRoute = OrganizerAttendeesRouteImport.update({
+  id: '/organizer-attendees',
+  path: '/organizer-attendees',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizerCreateRoute = OrganizerCreateRouteImport.update({
+  id: '/organizer-create',
+  path: '/organizer-create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizerEventDetailRoute = OrganizerEventDetailRouteImport.update({
+  id: '/organizer-event-detail',
+  path: '/organizer-event-detail',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizerEventsRoute = OrganizerEventsRouteImport.update({
+  id: '/organizer-events',
+  path: '/organizer-events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizerInvitationsRoute = OrganizerInvitationsRouteImport.update({
+  id: '/organizer-invitations',
+  path: '/organizer-invitations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizerProfileRoute = OrganizerProfileRouteImport.update({
+  id: '/organizer-profile',
+  path: '/organizer-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -85,6 +121,12 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
   '/organizer': typeof OrganizerRoute
+  '/organizer-attendees': typeof OrganizerAttendeesRoute
+  '/organizer-create': typeof OrganizerCreateRoute
+  '/organizer-event-detail': typeof OrganizerEventDetailRoute
+  '/organizer-events': typeof OrganizerEventsRoute
+  '/organizer-invitations': typeof OrganizerInvitationsRoute
+  '/organizer-profile': typeof OrganizerProfileRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -98,6 +140,12 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
   '/organizer': typeof OrganizerRoute
+  '/organizer-attendees': typeof OrganizerAttendeesRoute
+  '/organizer-create': typeof OrganizerCreateRoute
+  '/organizer-event-detail': typeof OrganizerEventDetailRoute
+  '/organizer-events': typeof OrganizerEventsRoute
+  '/organizer-invitations': typeof OrganizerInvitationsRoute
+  '/organizer-profile': typeof OrganizerProfileRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -112,6 +160,12 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
   '/organizer': typeof OrganizerRoute
+  '/organizer-attendees': typeof OrganizerAttendeesRoute
+  '/organizer-create': typeof OrganizerCreateRoute
+  '/organizer-event-detail': typeof OrganizerEventDetailRoute
+  '/organizer-events': typeof OrganizerEventsRoute
+  '/organizer-invitations': typeof OrganizerInvitationsRoute
+  '/organizer-profile': typeof OrganizerProfileRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -127,6 +181,12 @@ export interface FileRouteTypes {
     | '/home'
     | '/notifications'
     | '/organizer'
+    | '/organizer-attendees'
+    | '/organizer-create'
+    | '/organizer-event-detail'
+    | '/organizer-events'
+    | '/organizer-invitations'
+    | '/organizer-profile'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -140,6 +200,12 @@ export interface FileRouteTypes {
     | '/home'
     | '/notifications'
     | '/organizer'
+    | '/organizer-attendees'
+    | '/organizer-create'
+    | '/organizer-event-detail'
+    | '/organizer-events'
+    | '/organizer-invitations'
+    | '/organizer-profile'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -153,6 +219,12 @@ export interface FileRouteTypes {
     | '/home'
     | '/notifications'
     | '/organizer'
+    | '/organizer-attendees'
+    | '/organizer-create'
+    | '/organizer-event-detail'
+    | '/organizer-events'
+    | '/organizer-invitations'
+    | '/organizer-profile'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -167,6 +239,12 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   NotificationsRoute: typeof NotificationsRoute
   OrganizerRoute: typeof OrganizerRoute
+  OrganizerAttendeesRoute: typeof OrganizerAttendeesRoute
+  OrganizerCreateRoute: typeof OrganizerCreateRoute
+  OrganizerEventDetailRoute: typeof OrganizerEventDetailRoute
+  OrganizerEventsRoute: typeof OrganizerEventsRoute
+  OrganizerInvitationsRoute: typeof OrganizerInvitationsRoute
+  OrganizerProfileRoute: typeof OrganizerProfileRoute
   ProfileRoute: typeof ProfileRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
@@ -224,6 +302,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/organizer-attendees': {
+      id: '/organizer-attendees'
+      path: '/organizer-attendees'
+      fullPath: '/organizer-attendees'
+      preLoaderRoute: typeof OrganizerAttendeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizer-create': {
+      id: '/organizer-create'
+      path: '/organizer-create'
+      fullPath: '/organizer-create'
+      preLoaderRoute: typeof OrganizerCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizer-event-detail': {
+      id: '/organizer-event-detail'
+      path: '/organizer-event-detail'
+      fullPath: '/organizer-event-detail'
+      preLoaderRoute: typeof OrganizerEventDetailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizer-events': {
+      id: '/organizer-events'
+      path: '/organizer-events'
+      fullPath: '/organizer-events'
+      preLoaderRoute: typeof OrganizerEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizer-invitations': {
+      id: '/organizer-invitations'
+      path: '/organizer-invitations'
+      fullPath: '/organizer-invitations'
+      preLoaderRoute: typeof OrganizerInvitationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizer-profile': {
+      id: '/organizer-profile'
+      path: '/organizer-profile'
+      fullPath: '/organizer-profile'
+      preLoaderRoute: typeof OrganizerProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -263,6 +383,12 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   NotificationsRoute: NotificationsRoute,
   OrganizerRoute: OrganizerRoute,
+  OrganizerAttendeesRoute: OrganizerAttendeesRoute,
+  OrganizerCreateRoute: OrganizerCreateRoute,
+  OrganizerEventDetailRoute: OrganizerEventDetailRoute,
+  OrganizerEventsRoute: OrganizerEventsRoute,
+  OrganizerInvitationsRoute: OrganizerInvitationsRoute,
+  OrganizerProfileRoute: OrganizerProfileRoute,
   ProfileRoute: ProfileRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,

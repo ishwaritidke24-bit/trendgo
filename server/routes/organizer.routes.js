@@ -9,6 +9,7 @@ import {
   updateHostedEventController,
   updateOrganizerProfileController,
   getHostedEventAudienceController,
+  deleteHostedEventController,
 } from "../controllers/organizer.controller.js";
 import { requireAuth } from "../middleware/require-auth.js";
 import { requireOrganizer } from "../middleware/require-organizer.js";
@@ -36,5 +37,6 @@ organizerRouter.get(
   requireOrganizer,
   asyncHandler(getHostedEventAudienceController),
 );
+organizerRouter.delete("/events/:eventId", requireOrganizer, asyncHandler(deleteHostedEventController));
 
 export { organizerRouter };

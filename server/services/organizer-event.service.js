@@ -7,12 +7,17 @@ function publicEvent(event) {
     organizerId: event.organizerId.toString(),
     title: event.title,
     description: event.description,
+    tags: event.tags ?? [],
     category: event.category,
     date: event.date,
     time: event.time,
+    endTime: event.endTime,
     venue: event.venue,
     area: event.area,
+    address: event.address,
+    city: event.city,
     price: event.price,
+    capacity: event.capacity,
     image: event.image,
     status: event.status,
     attendeeCount: event.attendeeIds?.length ?? 0,
@@ -38,11 +43,16 @@ export async function updateHostedEvent(organizerId, eventId, input) {
     "title",
     "description",
     "category",
+    "tags",
     "date",
     "time",
+    "endTime",
     "venue",
     "area",
+    "address",
+    "city",
     "price",
+    "capacity",
     "image",
   ]) {
     if (input[field] !== undefined) updates[field] = input[field];
@@ -81,4 +91,9 @@ export async function getHostedEventAudience(organizerId, eventId) {
       email: user.email,
     })),
   };
+}
+
+export async function deleteHostedEvent(organizerId, eventId) {
+  const result = await Event.deleteOne({ _id: eventId, organizerId });
+  if (!result.deletedCount) throw createHttpError(404, "Hosted event not found", "EVENT_NOT_FOUND");
 }

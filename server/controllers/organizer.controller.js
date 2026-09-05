@@ -8,6 +8,7 @@ import {
   listHostedEvents,
   setHostedEventStatus,
   getHostedEventAudience,
+  deleteHostedEvent,
   updateHostedEvent,
 } from "../services/organizer-event.service.js";
 
@@ -54,4 +55,9 @@ export async function getHostedEventAudienceController(req, res) {
     success: true,
     audience: await getHostedEventAudience(req.auth.userId, req.params.eventId),
   });
+}
+
+export async function deleteHostedEventController(req, res) {
+  await deleteHostedEvent(req.auth.userId, req.params.eventId);
+  res.status(204).end();
 }

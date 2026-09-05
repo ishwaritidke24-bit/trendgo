@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import { Event } from "../models/event.model.js";
 import { createNotification } from "./notification.service.js";
 
 const EVENT_FIELDS = { save: "savedEventIds", interest: "interestedEventIds" };
@@ -22,6 +23,13 @@ export async function updateEventPreference(userId, eventId, preference, enabled
           : "Your interest was added to this event.",
       eventId,
     });
+  }
+
+  if (eventId.match(/^[a-f\d]{24}$/i)) {
+    await Event.findByIdAndUpdate(
+      eventId,
+      enabled ? { $addToSet: { interestedIds: userId } } : { $pull: { interestedIds: userId } },
+    );
   }
 
   return {
