@@ -5,7 +5,6 @@ import { Hero } from "@/components/sections/hero";
 import { ExploreByVibe } from "@/components/sections/explore-vibe";
 import { TrendingNearYou } from "@/components/sections/trending-near-you";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -31,13 +30,12 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="bg-aurora min-h-screen">
-      <Navbar notificationCount={3} />
+      <Navbar />
       <main>
         <Hero />
         <ExploreByVibe />
         <TrendingNearYou />
       </main>
     </div>
-
   );
 }

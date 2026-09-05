@@ -2,6 +2,7 @@ import * as React from "react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 
 import { Navbar } from "@/components/layout/navbar";
+import { getNotifications } from "@/lib/auth-api";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,7 @@ export function AppShell({
   className?: string;
 }) {
   const { user, loading, error, signOut } = useAuth();
+  const [notificationCount, setNotificationCount] = React.useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -24,6 +26,13 @@ export function AppShell({
       });
     }
   }, [loading, user, navigate, location.pathname, location.search]);
+
+  React.useEffect(() => {
+    if (!user) return;
+    void getNotifications()
+      .then((result) => setNotificationCount(result.unreadCount))
+      .catch(() => setNotificationCount(0));
+  }, [user]);
 
   if (loading || !user) {
     if (error) {
@@ -45,7 +54,8 @@ export function AppShell({
       <Navbar
         user={{ name: user.name, avatarUrl: user.avatar }}
         location={user.location || "Bengaluru"}
-        notificationCount={3}
+        notificationCount={notificationCount}
+        onNotifications={() => void navigate({ to: "/notifications" })}
         onSignOut={() => void signOut().then(() => navigate({ to: "/" }))}
       />
       <main className="pb-24">{children}</main>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Calendar, MapPin, Search, Shuffle, Sparkles } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
@@ -53,6 +54,7 @@ function Field({ icon, label, placeholder, value, onChange }: FieldProps) {
 }
 
 export function Hero() {
+  const navigate = useNavigate();
   const [what, setWhat] = React.useState("");
   const [where, setWhere] = React.useState("Bengaluru");
   const [when, setWhen] = React.useState("This weekend");
@@ -82,21 +84,26 @@ export function Hero() {
           </span>
 
           <h1 className="mt-6 font-display text-4xl leading-[1.05] font-semibold text-balance sm:text-6xl lg:text-7xl">
-            Find something{" "}
-            <span className="text-gradient-brand">worth doing next.</span>
+            Find something <span className="text-gradient-brand">worth doing next.</span>
           </h1>
 
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">
-            TrendGo learns what you actually like and surfaces the events, activities,
-            communities and experiences around you that match — from tiny gigs to weekend
-            workshops you'd never have found alone.
+            TrendGo learns what you actually like and surfaces the events, activities, communities
+            and experiences around you that match — from tiny gigs to weekend workshops you'd never
+            have found alone.
           </p>
         </div>
 
         {/* Discovery bar */}
         <div className="mx-auto mt-10 w-full max-w-4xl">
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(e) => {
+              e.preventDefault();
+              void navigate({
+                to: "/explore",
+                search: { q: what, location: where, date: when, category: activeChip ?? undefined },
+              });
+            }}
             className="glass-panel rounded-3xl p-2 shadow-[var(--shadow-elevated)]"
           >
             <div className="flex flex-col gap-1 md:flex-row md:items-center">
@@ -151,7 +158,12 @@ export function Hero() {
           </div>
 
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button variant="outline" size="lg" className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto"
+              onClick={() => void navigate({ to: "/explore", search: { sort: "Best match" } })}
+            >
               <Shuffle />
               Surprise Me
             </Button>

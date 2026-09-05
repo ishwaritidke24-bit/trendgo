@@ -14,6 +14,7 @@ import { Route as EventsRouteImport } from './routes/events'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -44,6 +45,11 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
+  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
+  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/friends': typeof FriendsRoute
   '/home': typeof HomeRoute
+  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/friends'
     | '/home'
+    | '/notifications'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/friends'
     | '/home'
+    | '/notifications'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/friends'
     | '/home'
+    | '/notifications'
     | '/profile'
     | '/signin'
     | '/signup'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   FriendsRoute: typeof FriendsRoute
   HomeRoute: typeof HomeRoute
+  NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   FriendsRoute: FriendsRoute,
   HomeRoute: HomeRoute,
+  NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,

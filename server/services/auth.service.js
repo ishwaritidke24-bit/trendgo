@@ -80,7 +80,7 @@ export async function updateCurrentUser(userId, input) {
   if (input.avatar !== undefined) updates.avatar = input.avatar.trim();
 
   const user = await User.findByIdAndUpdate(userId, updates, {
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   }).lean();
   if (!user) throw createHttpError(401, "Your session is no longer valid", "SESSION_INVALID");

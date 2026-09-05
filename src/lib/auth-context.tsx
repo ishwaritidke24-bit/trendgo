@@ -19,6 +19,7 @@ interface AuthContextValue {
   updateProfile: (
     input: Partial<Pick<AuthUser, "name" | "location" | "interests" | "avatar">>,
   ) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextValue | null>(null);
@@ -65,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
     },
     updateProfile: async (input) => setUser(await requestUpdateCurrentUser(input)),
+    refreshUser: async () => setUser(await getCurrentUser()),
   } satisfies AuthContextValue;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

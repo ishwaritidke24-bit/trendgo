@@ -7,8 +7,9 @@ import { Container, Section } from "@/components/layout/container";
 import { EventCard } from "@/components/events/event-card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { EVENTS, eventById } from "@/data/mock";
+import type { EventItem } from "@/data/mock";
 import { useAuth } from "@/lib/auth-context";
+import { getEvent } from "@/lib/events-api";
 
 export const Route = createFileRoute("/events")({ component: MyEventsPage });
 const TABS = ["interested", "saved", "going", "past"] as const;
@@ -25,9 +26,25 @@ function MyEventsPage() {
         : tab === "interested"
           ? (user?.interestedEventIds ?? [])
           : [];
-  const events = eventIds
-    .map((id) => eventById(id))
-    .filter((event): event is (typeof EVENTS)[number] => Boolean(event));
+  const eventIdsKey = eventIds.join(",");
+  const [events, setEvents] = React.useState<EventItem[]>([]);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    setLoading(true);
+    const ids = eventIdsKey ? eventIdsKey.split(",") : [];
+    void Promise.all(ids.map((id) => getEvent(id).catch(() => null)))
+      .then((loadedEvents) => {
+        if (active) setEvents(loadedEvents.filter((event): event is EventItem => Boolean(event)));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [eventIdsKey]);
   return (
     <AppShell>
       <Section spacing="sm" className="pt-10">
@@ -62,7 +79,9 @@ function MyEventsPage() {
               </button>
             ))}
           </div>
-          {events.length ? (
+          {loading ? (
+            <p className="mt-8 text-sm text-muted-foreground">Loading your events...</p>
+          ) : events.length ? (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
                 <EventCard key={event.id} event={event} showWhy={tab !== "past"} />

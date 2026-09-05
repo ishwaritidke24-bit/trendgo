@@ -7,6 +7,10 @@ import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
 import { requestId } from "./middleware/request-id.js";
 import { healthRouter } from "./routes/health.routes.js";
 import { authRouter } from "./routes/auth.routes.js";
+import { eventRouter } from "./routes/event.routes.js";
+import { eventsRouter } from "./routes/events.routes.js";
+import { notificationRouter } from "./routes/notification.routes.js";
+import { friendRouter } from "./routes/friend.routes.js";
 
 export function createApp() {
   const app = express();
@@ -35,6 +39,10 @@ export function createApp() {
   });
   app.use("/api/health", healthRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/events", eventsRouter);
+  app.use("/api/events", eventRouter);
+  app.use("/api/notifications", notificationRouter);
+  app.use("/api/friends", friendRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
 

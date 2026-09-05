@@ -1,4 +1,5 @@
 import { Clock, MapPin, Users } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 import { Container, Section } from "@/components/layout/container";
 import { SectionHeading } from "@/components/layout/section-heading";
@@ -58,7 +59,11 @@ const EVENTS: EventPreview[] = [
 
 function EventCard({ event }: { event: EventPreview }) {
   return (
-    <article className="group relative cursor-pointer overflow-hidden rounded-3xl border border-border bg-surface/60 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:border-primary/45 hover:shadow-[var(--shadow-glow)]">
+    <Link
+      to="/event/$eventId"
+      params={{ eventId: event.id }}
+      className="group relative block cursor-pointer overflow-hidden rounded-3xl border border-border bg-surface/60 transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1.5 hover:border-primary/45 hover:shadow-[var(--shadow-glow)]"
+    >
       <div className="relative aspect-[16/10] overflow-hidden">
         <img
           src={event.image}
@@ -104,7 +109,7 @@ function EventCard({ event }: { event: EventPreview }) {
           </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 
@@ -117,8 +122,8 @@ export function TrendingNearYou() {
           title="Trending near you"
           description="Picked from what people with taste like yours are showing up to this week."
           action={
-            <Button variant="outline" size="sm">
-              See all
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/explore">See all</Link>
             </Button>
           }
         />

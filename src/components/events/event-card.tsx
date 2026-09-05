@@ -1,12 +1,23 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { Bookmark, Check, ChevronDown, Clock, Heart, MapPin, Navigation, Sparkles } from "lucide-react";
+import {
+  Bookmark,
+  Check,
+  ChevronDown,
+  Clock,
+  Heart,
+  MapPin,
+  Navigation,
+  Sparkles,
+} from "lucide-react";
 
 import { FriendAvatars } from "@/components/events/friend-avatars";
 import { MatchBadge } from "@/components/events/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { EventItem } from "@/data/mock";
+import { updateEventPreference } from "@/lib/auth-api";
+import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
 export interface EventCardProps {
@@ -17,11 +28,32 @@ export interface EventCardProps {
 }
 
 export function EventCard({ event, size = "default", showWhy = true, className }: EventCardProps) {
-  const [interested, setInterested] = React.useState(false);
-  const [saved, setSaved] = React.useState(false);
+  const { user, refreshUser } = useAuth();
+  const [interested, setInterested] = React.useState(
+    () => user?.interestedEventIds.includes(event.id) ?? false,
+  );
+  const [saved, setSaved] = React.useState(() => user?.savedEventIds.includes(event.id) ?? false);
+  const [saving, setSaving] = React.useState(false);
+  const [actionError, setActionError] = React.useState<string | null>(null);
   const [whyOpen, setWhyOpen] = React.useState(false);
 
   const compact = size === "compact";
+
+  async function togglePreference(preference: "save" | "interest") {
+    const enabled = preference === "save" ? !saved : !interested;
+    setSaving(true);
+    setActionError(null);
+    try {
+      await updateEventPreference(event.id, preference, enabled);
+      await refreshUser();
+      if (preference === "save") setSaved(enabled);
+      else setInterested(enabled);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Unable to update this event");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <article
@@ -36,7 +68,9 @@ export function EventCard({ event, size = "default", showWhy = true, className }
         className="relative block overflow-hidden"
         aria-label={event.title}
       >
-        <div className={cn("relative overflow-hidden", compact ? "aspect-[16/10]" : "aspect-[16/9]")}>
+        <div
+          className={cn("relative overflow-hidden", compact ? "aspect-[16/10]" : "aspect-[16/9]")}
+        >
           <img
             src={event.image}
             alt={event.title}
@@ -91,7 +125,8 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           <div className="mt-4 flex items-center gap-2.5">
             <FriendAvatars ids={event.friendIds} />
             <span className="text-xs text-muted-foreground">
-              {event.friendIds.length} {event.friendIds.length === 1 ? "friend" : "friends"} interested
+              {event.friendIds.length} {event.friendIds.length === 1 ? "friend" : "friends"}{" "}
+              interested
             </span>
           </div>
         ) : (
@@ -108,7 +143,10 @@ export function EventCard({ event, size = "default", showWhy = true, className }
             >
               Why this event?
               <ChevronDown
-                className={cn("size-3.5 transition-transform duration-300", whyOpen && "rotate-180")}
+                className={cn(
+                  "size-3.5 transition-transform duration-300",
+                  whyOpen && "rotate-180",
+                )}
               />
             </button>
             <div
@@ -135,7 +173,8 @@ export function EventCard({ event, size = "default", showWhy = true, className }
             size="sm"
             variant={interested ? "default" : "outline"}
             className="flex-1"
-            onClick={() => setInterested((v) => !v)}
+            onClick={() => void togglePreference("interest")}
+            disabled={saving}
           >
             {interested ? <Check /> : <Heart />}
             {interested ? "Interested" : "Interested"}
@@ -143,13 +182,19 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           <Button
             size="sm"
             variant={saved ? "subtle" : "ghost"}
-            onClick={() => setSaved((v) => !v)}
+            onClick={() => void togglePreference("save")}
+            disabled={saving}
             aria-pressed={saved}
           >
             <Bookmark className={cn(saved && "fill-primary-glow text-primary-glow")} />
             {saved ? "Saved" : "Save"}
           </Button>
         </div>
+        {actionError ? (
+          <p role="alert" className="mt-2 text-xs text-destructive">
+            {actionError}
+          </p>
+        ) : null}
       </div>
     </article>
   );

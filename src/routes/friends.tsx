@@ -1,3 +1,4 @@
+import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CalendarDays, Heart, UserPlus, Users } from "lucide-react";
 
@@ -8,10 +9,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ACTIVITY, EVENTS, FRIENDS, eventById, friendById } from "@/data/mock";
+import { inviteFriend } from "@/lib/auth-api";
 
 export const Route = createFileRoute("/friends")({ component: FriendsPage });
 
 function FriendsPage() {
+  const [inviteState, setInviteState] = React.useState<string | null>(null);
   const socialEvents = ACTIVITY.map((item) => ({
     item,
     friend: friendById(item.friendId),
@@ -34,8 +37,10 @@ function FriendsPage() {
                 later.
               </p>
             </div>
-            <Button>
-              <UserPlus /> Find friends
+            <Button asChild>
+              <Link to="/explore">
+                <UserPlus /> Find friends
+              </Link>
             </Button>
           </div>
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_22rem]">
@@ -91,14 +96,26 @@ function FriendsPage() {
                       <p className="truncate text-sm font-medium">{friend.name}</p>
                       <p className="text-xs text-muted-foreground">{friend.mutual} mutuals</p>
                     </div>
-                    <Button variant="ghost" size="sm" aria-label={`Invite ${friend.name}`}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label={`Invite ${friend.name}`}
+                      onClick={() =>
+                        void inviteFriend(friend.id)
+                          .then(() => setInviteState(friend.id))
+                          .catch(() => setInviteState(null))
+                      }
+                    >
                       <UserPlus />
                     </Button>
+                    {inviteState === friend.id ? (
+                      <span className="text-xs text-success">Sent</span>
+                    ) : null}
                   </div>
                 ))}
               </div>
-              <Button variant="subtle" className="mt-5 w-full">
-                View all friends
+              <Button variant="subtle" className="mt-5 w-full" asChild>
+                <Link to="/friends">View all friends</Link>
               </Button>
             </aside>
           </div>
@@ -140,8 +157,10 @@ function FriendsPage() {
                   your feed feel even more like yours.
                 </p>
               </div>
-              <Button variant="outline">
-                <Heart /> Browse their picks
+              <Button variant="outline" asChild>
+                <Link to="/explore">
+                  <Heart /> Browse their picks
+                </Link>
               </Button>
             </div>
           </div>

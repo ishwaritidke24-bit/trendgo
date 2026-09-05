@@ -23,22 +23,60 @@ import { MatchBadge } from "@/components/events/match-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EVENTS, eventById, friendById } from "@/data/mock";
+import { inviteToEvent, updateEventPreference } from "@/lib/auth-api";
+import { useAuth } from "@/lib/auth-context";
+import { getEvent as getEventRequest } from "@/lib/events-api";
+import { EVENTS, friendById, type EventItem } from "@/data/mock";
 
 export const Route = createFileRoute("/event/$eventId")({ component: EventDetailPage });
 
 function EventDetailPage() {
   const { eventId } = Route.useParams();
-  const event = eventById(eventId);
-  const [interested, setInterested] = React.useState(false);
-  const [saved, setSaved] = React.useState(false);
+  const [event, setEvent] = React.useState<EventItem | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
+  const { user, refreshUser } = useAuth();
+  const [interested, setInterested] = React.useState(
+    () => user?.interestedEventIds.includes(eventId) ?? false,
+  );
+  const [saved, setSaved] = React.useState(() => user?.savedEventIds.includes(eventId) ?? false);
+  const [actionError, setActionError] = React.useState<string | null>(null);
 
-  if (!event) {
+  React.useEffect(() => {
+    let active = true;
+    void getEventRequest(eventId)
+      .then((loadedEvent) => {
+        if (active) setEvent(loadedEvent);
+      })
+      .catch((error) => {
+        if (active) setLoadError(error instanceof Error ? error.message : "Unable to load event");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [eventId]);
+
+  if (loading) {
+    return (
+      <AppShell>
+        <Container className="py-24 text-center text-sm text-muted-foreground">
+          Loading event...
+        </Container>
+      </AppShell>
+    );
+  }
+
+  if (!event || loadError) {
     return (
       <AppShell>
         <Container className="py-24 text-center">
           <h1 className="font-display text-3xl font-semibold">That experience moved on</h1>
-          <p className="mt-3 text-muted-foreground">Try another pick from your feed.</p>
+          <p className="mt-3 text-muted-foreground">
+            {loadError ?? "Try another pick from your feed."}
+          </p>
           <Button className="mt-6" asChild>
             <Link to="/home">Back to your feed</Link>
           </Button>
@@ -50,6 +88,36 @@ function EventDetailPage() {
   const similar = EVENTS.filter((item) => item.id !== event.id && item.category === event.category)
     .concat(EVENTS.filter((item) => item.id !== event.id && item.category !== event.category))
     .slice(0, 4);
+
+  async function togglePreference(preference: "save" | "interest") {
+    const enabled = preference === "save" ? !saved : !interested;
+    try {
+      await updateEventPreference(event.id, preference, enabled);
+      await refreshUser();
+      if (preference === "save") setSaved(enabled);
+      else setInterested(enabled);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Unable to update this event");
+    }
+  }
+
+  async function shareEvent() {
+    try {
+      const shareData = { title: event.title, text: event.description, url: window.location.href };
+      if (navigator.share) await navigator.share(shareData);
+      else await navigator.clipboard.writeText(window.location.href);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Unable to share this event");
+    }
+  }
+
+  async function inviteFriend() {
+    try {
+      await inviteToEvent(event.id);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Unable to create an invite");
+    }
+  }
 
   return (
     <AppShell>
@@ -107,21 +175,26 @@ function EventDetailPage() {
                   />
                 </div>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <Button onClick={() => setInterested((value) => !value)}>
+                  <Button onClick={() => void togglePreference("interest")}>
                     {interested ? <Check /> : <Heart />}{" "}
                     {interested ? "Interested" : "I'm interested"}
                   </Button>
-                  <Button variant="outline" onClick={() => setSaved((value) => !value)}>
+                  <Button variant="outline" onClick={() => void togglePreference("save")}>
                     <Bookmark className={saved ? "fill-primary-glow text-primary-glow" : ""} />{" "}
                     {saved ? "Saved" : "Save"}
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={() => void shareEvent()}>
                     <Share2 /> Share
                   </Button>
-                  <Button variant="ghost">
+                  <Button variant="ghost" onClick={() => void inviteFriend()}>
                     <Send /> Invite friends
                   </Button>
                 </div>
+                {actionError ? (
+                  <p role="alert" className="mt-3 text-sm text-destructive">
+                    {actionError}
+                  </p>
+                ) : null}
               </div>
               <aside className="self-start rounded-3xl border border-border bg-surface/60 p-5">
                 <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
@@ -192,8 +265,10 @@ function EventDetailPage() {
                   <p className="text-xs text-muted-foreground">{event.organizer.blurb}</p>
                 </div>
               </div>
-              <Button variant="subtle" className="mt-5 w-full">
-                <Clock3 /> View organizer
+              <Button variant="subtle" className="mt-5 w-full" asChild>
+                <Link to="/explore" search={{ q: event.organizer.name }}>
+                  <Clock3 /> View organizer
+                </Link>
               </Button>
             </div>
           </div>

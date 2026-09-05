@@ -1,12 +1,23 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { CalendarCheck, Edit3, Heart, MapPin, Plus, Sparkles, Ticket } from "lucide-react";
+import {
+  CalendarCheck,
+  Edit3,
+  Heart,
+  LoaderCircle,
+  MapPin,
+  Plus,
+  Sparkles,
+  Ticket,
+  X,
+} from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CATEGORIES } from "@/data/mock";
 import { useAuth } from "@/lib/auth-context";
@@ -17,6 +28,45 @@ function ProfilePage() {
   const { user, loading, error, updateProfile } = useAuth();
   const [savingInterests, setSavingInterests] = React.useState(false);
   const [updateError, setUpdateError] = React.useState<string | null>(null);
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [draft, setDraft] = React.useState({ name: "", location: "", avatar: "", interests: "" });
+  const [savingProfile, setSavingProfile] = React.useState(false);
+  const [saveSuccess, setSaveSuccess] = React.useState(false);
+  const openEditor = () => {
+    setDraft({
+      name: user?.name ?? "",
+      location: user?.location ?? "",
+      avatar: user?.avatar ?? "",
+      interests: user?.interests.join(", ") ?? "",
+    });
+    setUpdateError(null);
+    setSaveSuccess(false);
+    setEditOpen(true);
+  };
+  const saveProfile = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSavingProfile(true);
+    setUpdateError(null);
+    try {
+      await updateProfile({
+        name: draft.name,
+        location: draft.location,
+        avatar: draft.avatar,
+        interests: draft.interests
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean),
+      });
+      setEditOpen(false);
+      setSaveSuccess(true);
+    } catch (saveError) {
+      setUpdateError(
+        saveError instanceof Error ? saveError.message : "Unable to save your profile",
+      );
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   if (loading) return <ProfileState title="Loading your profile..." />;
   if (error || !user)
@@ -77,9 +127,10 @@ function ProfilePage() {
                   </p>
                 ) : null}
               </div>
-              <Button variant="outline">
+              <Button variant="outline" onClick={openEditor}>
                 <Edit3 /> Edit profile
               </Button>
+              {saveSuccess ? <p className="text-sm text-success">Profile saved</p> : null}
             </div>
             <div className="relative mt-8 grid grid-cols-3 border-t border-border pt-6">
               <Stat
@@ -104,7 +155,7 @@ function ProfilePage() {
                   </p>
                   <h2 className="font-display mt-2 text-2xl font-semibold">Your interests</h2>
                 </div>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={openEditor}>
                   <Plus /> Add interest
                 </Button>
               </div>
@@ -172,6 +223,64 @@ function ProfilePage() {
           </div>
         </Container>
       </Section>
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit profile</DialogTitle>
+          </DialogHeader>
+          <form className="mt-4 flex flex-col gap-4" onSubmit={saveProfile}>
+            <label className="text-sm">
+              Name
+              <input
+                required
+                minLength={2}
+                value={draft.name}
+                onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
+              />
+            </label>
+            <label className="text-sm">
+              Location
+              <input
+                value={draft.location}
+                onChange={(event) => setDraft({ ...draft, location: event.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
+              />
+            </label>
+            <label className="text-sm">
+              Avatar URL
+              <input
+                type="url"
+                value={draft.avatar}
+                onChange={(event) => setDraft({ ...draft, avatar: event.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
+              />
+            </label>
+            <label className="text-sm">
+              Interests
+              <input
+                value={draft.interests}
+                onChange={(event) => setDraft({ ...draft, interests: event.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
+              />
+            </label>
+            {updateError ? (
+              <p role="alert" className="text-sm text-destructive">
+                {updateError}
+              </p>
+            ) : null}
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="ghost" onClick={() => setEditOpen(false)}>
+                <X /> Cancel
+              </Button>
+              <Button type="submit" disabled={savingProfile}>
+                {savingProfile ? <LoaderCircle className="animate-spin" /> : <Edit3 />}
+                {savingProfile ? "Saving..." : "Save changes"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Section spacing="sm">
         <Container>
           <div className="flex items-end justify-between">

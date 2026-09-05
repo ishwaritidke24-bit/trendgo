@@ -1,4 +1,5 @@
 import { Coffee, GraduationCap, Moon, Sun, Users, Zap } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 
 import { Container, Section } from "@/components/layout/container";
@@ -14,6 +15,7 @@ const VIBES: { label: string; hint: string; icon: LucideIcon }[] = [
 ];
 
 export function ExploreByVibe() {
+  const navigate = useNavigate();
   return (
     <Section spacing="sm">
       <Container>
@@ -28,6 +30,7 @@ export function ExploreByVibe() {
             <button
               key={label}
               type="button"
+              onClick={() => void navigate({ to: "/explore", search: { q: label } })}
               className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 text-left transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1 hover:border-primary/50 hover:shadow-[var(--shadow-glow)]"
             >
               <span className="pointer-events-none absolute inset-0 bg-[image:var(--gradient-surface)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

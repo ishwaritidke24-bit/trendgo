@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Bell, ChevronDown, MapPin, Menu, X } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { label: "Explore", to: "/explore" },
   { label: "Trending", to: "/explore" },
   { label: "Friends", to: "/friends" },
+  { label: "My events", to: "/events" },
 ] as const;
 
 export interface NavbarUser {
@@ -27,6 +28,7 @@ export interface NavbarProps {
   notificationCount?: number;
   onSignIn?: () => void;
   onSignOut?: () => void;
+  onNotifications?: () => void;
 }
 
 function useScrolled(threshold = 12) {
@@ -46,8 +48,10 @@ export function Navbar({
   notificationCount = 0,
   onSignIn,
   onSignOut,
+  onNotifications,
 }: NavbarProps) {
   const scrolled = useScrolled();
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const handleSignIn = onSignIn ?? (() => window.location.assign("/signup"));
 
@@ -99,6 +103,7 @@ export function Navbar({
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => void navigate({ to: "/explore" })}
             className="hidden items-center gap-1.5 rounded-full border border-border bg-surface/60 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground lg:inline-flex"
           >
             <MapPin className="size-3.5 text-primary-glow" />
@@ -109,7 +114,7 @@ export function Navbar({
           {user ? (
             <>
               <div className="relative hidden sm:block">
-                <IconButton label="Notifications" variant="default">
+                <IconButton label="Notifications" variant="default" onClick={onNotifications}>
                   <Bell />
                 </IconButton>
                 {notificationCount > 0 ? (
@@ -124,7 +129,9 @@ export function Navbar({
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </Link>
-              <Button variant="ghost" size="sm" onClick={onSignOut}>Sign out</Button>
+              <Button variant="ghost" size="sm" onClick={onSignOut}>
+                Sign out
+              </Button>
             </>
           ) : (
             <Button className="hidden sm:inline-flex" onClick={handleSignIn}>
@@ -162,6 +169,15 @@ export function Navbar({
               {link.label}
             </Link>
           ))}
+          {user ? (
+            <Link
+              to="/profile"
+              onClick={() => setOpen(false)}
+              className="rounded-xl px-3 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+            >
+              Profile
+            </Link>
+          ) : null}
 
           <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-4">
             <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -169,7 +185,13 @@ export function Navbar({
               {location}
             </span>
             {user ? (
-              <IconButton label="Notifications">
+              <IconButton
+                label="Notifications"
+                onClick={() => {
+                  setOpen(false);
+                  onNotifications?.();
+                }}
+              >
                 <Bell />
               </IconButton>
             ) : (
