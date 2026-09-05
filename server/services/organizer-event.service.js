@@ -4,16 +4,16 @@ import { createHttpError } from "../utils/http-error.js";
 function publicEvent(event) {
   return {
     id: event._id.toString(),
-    organizerId: event.organizerId.toString(),
+    organizerId: event.organizerId?.toString() ?? null,
     title: event.title,
     description: event.description,
     tags: event.tags ?? [],
     category: event.category,
-    date: event.date,
-    time: event.time,
+    date: event.date instanceof Date ? event.date.toISOString().slice(0, 10) : event.date,
+    time: event.startTime,
     endTime: event.endTime,
     venue: event.venue,
-    area: event.area,
+    area: event.city,
     address: event.address,
     city: event.city,
     price: event.price,
@@ -33,7 +33,13 @@ export async function listHostedEvents(organizerId) {
 }
 
 export async function createHostedEvent(organizerId, input) {
-  const event = await Event.create({ ...input, organizerId, status: "draft" });
+  const event = await Event.create({
+    ...input,
+    organizerId,
+    startTime: input.startTime ?? input.time,
+    city: input.city ?? input.area,
+    status: "draft",
+  });
   return publicEvent(event);
 }
 
@@ -45,18 +51,20 @@ export async function updateHostedEvent(organizerId, eventId, input) {
     "category",
     "tags",
     "date",
-    "time",
+    "startTime",
     "endTime",
     "venue",
-    "area",
     "address",
     "city",
     "price",
     "capacity",
     "image",
+    "status",
   ]) {
     if (input[field] !== undefined) updates[field] = input[field];
   }
+  if (input.time !== undefined) updates.startTime = input.time;
+  if (input.area !== undefined) updates.city = input.area;
   const event = await Event.findOneAndUpdate(
     { _id: eventId, organizerId },
     { $set: updates },
@@ -67,7 +75,7 @@ export async function updateHostedEvent(organizerId, eventId, input) {
 }
 
 export async function setHostedEventStatus(organizerId, eventId, status) {
-  if (!["draft", "published", "unpublished"].includes(status)) {
+  if (!["draft", "published", "unpublished", "cancelled"].includes(status)) {
     throw createHttpError(400, "Invalid event status", "INVALID_EVENT_STATUS");
   }
   return updateHostedEvent(organizerId, eventId, { status });

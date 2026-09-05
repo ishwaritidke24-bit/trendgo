@@ -67,6 +67,7 @@ export async function updateCurrentUser(userId, input) {
   if (input.name !== undefined) updates.name = input.name.trim();
   if (input.email !== undefined) updates.email = normalizeEmail(input.email);
   if (input.location !== undefined) updates.location = input.location.trim();
+  if (input.avatar !== undefined) updates.avatar = input.avatar.trim();
   if (input.interests !== undefined) updates.interests = input.interests;
   if (input.discoveryLocations !== undefined) {
     const locs = input.discoveryLocations
@@ -75,7 +76,6 @@ export async function updateCurrentUser(userId, input) {
       .slice(0, 3);
     updates.discoveryLocations = locs;
   }
-  if (input.avatar !== undefined) updates.avatar = input.avatar.trim();
 
   const user = await User.findByIdAndUpdate(userId, updates, {
     returnDocument: "after",

@@ -60,7 +60,11 @@ interface BasicResponse {
   error?: { message?: string; details?: Array<{ field: string; message: string }> };
 }
 
-async function authRequest<T extends AuthResponse>(
+interface AuthResponse extends BasicResponse {
+  user: AuthUser;
+}
+
+async function authRequest<T extends BasicResponse = AuthResponse>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {

@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -14,7 +15,12 @@ import {
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
+<<<<<<< HEAD
+import { LocationSelector } from "@/components/layout/location-selector";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+=======
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+>>>>>>> 4a4b538 (add user interests)
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -31,8 +37,12 @@ function ProfilePage() {
   const [savingInterests, setSavingInterests] = React.useState(false);
   const [updateError, setUpdateError] = React.useState<string | null>(null);
   const [editOpen, setEditOpen] = React.useState(false);
+<<<<<<< HEAD
   const [becomeOrganizerOpen, setBecomeOrganizerOpen] = React.useState(false);
+  const [draft, setDraft] = React.useState({ name: "", location: "", interests: "" });
+=======
   const [draft, setDraft] = React.useState({ name: "", location: "", avatar: "", interests: [] as string[] });
+>>>>>>> 4a4b538 (add user interests)
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [saveSuccess, setSaveSuccess] = React.useState(false);
   const openEditor = () => {
@@ -157,6 +167,7 @@ function ProfilePage() {
           </div>
         </Container>
       </Section>
+      <BecomeOrganizerDialog open={becomeOrganizerOpen} onOpenChange={setBecomeOrganizerOpen} />
       <Section spacing="sm">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">

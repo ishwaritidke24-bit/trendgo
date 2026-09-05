@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Event } from "../models/event.model.js";
 import { aggregateEventsForCities, cleanExpiredEvents } from "../services/event-aggregator.service.js";
 
@@ -104,9 +105,19 @@ function matchesFilters(event, query) {
   if (query.price !== undefined && query.price !== "" && event.price > Number(query.price)) return false;
   return true;
 }
+=======
+import {
+  createEvent,
+  deleteEvent,
+  getPublicEvent,
+  listPublicEvents,
+  updateEvent,
+} from "../services/events.service.js";
+>>>>>>> fda1311 (changes to organizer profile)
 
 // ─── Controllers ───────────────────────────────────────────────────────────
 export async function listEventsController(req, res) {
+<<<<<<< HEAD
   const { q, category, date, location, price, distance, sort, locations, refresh } = req.query;
   const userInterests = req.user?.interests ?? [];
 
@@ -209,4 +220,24 @@ function getDateRange(dayGroup) {
     return { start: next, end: new Date(next.getTime() + 7 * 86400000) };
   }
   return null;
+=======
+  res.json({ success: true, ...(await listPublicEvents(req.query)) });
+}
+
+export async function getEventController(req, res) {
+  res.json({ success: true, event: await getPublicEvent(req.params.eventId) });
+}
+
+export async function createEventController(req, res) {
+  res.status(201).json({ success: true, event: await createEvent(req.auth.userId, req.body) });
+}
+
+export async function updateEventController(req, res) {
+  res.json({ success: true, event: await updateEvent(req.auth.userId, req.params.eventId, req.body) });
+}
+
+export async function deleteEventController(req, res) {
+  await deleteEvent(req.auth.userId, req.params.eventId);
+  res.status(204).end();
+>>>>>>> fda1311 (changes to organizer profile)
 }

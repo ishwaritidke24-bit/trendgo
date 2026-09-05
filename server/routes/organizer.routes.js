@@ -20,6 +20,7 @@ import { createEventValidator } from "../validators/organizer-event.validator.js
 const organizerRouter = Router();
 organizerRouter.use(requireAuth);
 organizerRouter.get("/profile", asyncHandler(getOrganizerProfileController));
+organizerRouter.post("/profile", asyncHandler(activateOrganizerController));
 organizerRouter.post("/activate", asyncHandler(activateOrganizerController));
 organizerRouter.put("/profile", requireOrganizer, asyncHandler(updateOrganizerProfileController));
 organizerRouter.get("/events", requireOrganizer, asyncHandler(listHostedEventsController));

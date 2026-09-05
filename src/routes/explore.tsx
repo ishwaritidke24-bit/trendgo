@@ -10,7 +10,12 @@ import { MatchBadge } from "@/components/events/match-badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { IconButton } from "@/components/ui/icon-button";
+<<<<<<< HEAD
 import { CATEGORIES, type EventItem } from "@/data/mock";
+=======
+import { Skeleton } from "@/components/ui/skeleton";
+import { CATEGORIES, type Category, type EventItem } from "@/data/mock";
+>>>>>>> fda1311 (changes to organizer profile)
 import { searchEvents } from "@/lib/events-api";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
@@ -153,7 +158,7 @@ function ExplorePage() {
             : "match",
       locations: locationsParam,
     })
-      .then((events) => {
+      .then(({ events }) => {
         if (active) {
           setResults(events);
           setError(null);
@@ -316,6 +321,7 @@ function ExplorePage() {
 
           {/* Results */}
           {loading ? (
+<<<<<<< HEAD
             <div className="mt-12 flex flex-col items-center gap-3 text-center">
               <div className="size-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary-glow" />
               <p className="text-sm text-muted-foreground">
@@ -323,6 +329,15 @@ function ExplorePage() {
                   ? `Fetching real events for ${activeLocation === "all" ? "your locations" : activeLocation}…`
                   : "Loading experiences…"}
               </p>
+=======
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Loading experiences">
+              {[0, 1, 2, 3, 4, 5].map((item) => (
+                <div key={item} className="overflow-hidden rounded-3xl border border-border bg-card/70">
+                  <Skeleton className="aspect-[16/9] w-full rounded-none" />
+                  <div className="space-y-3 p-5"><Skeleton className="h-5 w-4/5" /><Skeleton className="h-4 w-3/5" /><Skeleton className="h-4 w-2/5" /></div>
+                </div>
+              ))}
+>>>>>>> fda1311 (changes to organizer profile)
             </div>
           ) : error ? (
             <p role="alert" className="mt-8 text-sm text-destructive">

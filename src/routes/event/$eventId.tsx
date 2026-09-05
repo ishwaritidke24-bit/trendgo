@@ -24,10 +24,11 @@ import { MatchBadge } from "@/components/events/match-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { updateEventPreference } from "@/lib/auth-api";
 import { useAuth } from "@/lib/auth-context";
-import { getEvent as getEventRequest } from "@/lib/events-api";
-import { EVENTS, friendById, type EventItem } from "@/data/mock";
+import { getEvent as getEventRequest, searchEvents } from "@/lib/events-api";
+import { friendById, type EventItem } from "@/data/mock";
 
 export const Route = createFileRoute("/event/$eventId")({ component: EventDetailPage });
 
@@ -36,6 +37,7 @@ function EventDetailPage() {
   const [event, setEvent] = React.useState<EventItem | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [similar, setSimilar] = React.useState<EventItem[]>([]);
   const { user, refreshUser } = useAuth();
   const [interested, setInterested] = React.useState(
     () => user?.interestedEventIds.includes(eventId) ?? false,
@@ -48,7 +50,16 @@ function EventDetailPage() {
     let active = true;
     void getEventRequest(eventId)
       .then((loadedEvent) => {
-        if (active) setEvent(loadedEvent);
+        if (active) {
+          setEvent(loadedEvent);
+          void searchEvents({ category: loadedEvent.category, limit: 5 })
+            .then(({ events }) => {
+              if (active) setSimilar(events.filter((item) => item.id !== loadedEvent.id).slice(0, 4));
+            })
+            .catch(() => {
+              if (active) setSimilar([]);
+            });
+        }
       })
       .catch((error) => {
         if (active) setLoadError(error instanceof Error ? error.message : "Unable to load event");
@@ -65,7 +76,7 @@ function EventDetailPage() {
     return (
       <AppShell>
         <Container className="py-24 text-center text-sm text-muted-foreground">
-          Loading event...
+          <div className="mx-auto max-w-5xl space-y-5"><Skeleton className="h-72 w-full rounded-[2rem]" /><Skeleton className="h-6 w-2/3" /><Skeleton className="h-4 w-1/2" /></div>
         </Container>
       </AppShell>
     );
@@ -86,10 +97,6 @@ function EventDetailPage() {
       </AppShell>
     );
   }
-
-  const similar = EVENTS.filter((item) => item.id !== event.id && item.category === event.category)
-    .concat(EVENTS.filter((item) => item.id !== event.id && item.category !== event.category))
-    .slice(0, 4);
 
   async function togglePreference(preference: "save" | "interest") {
     const enabled = preference === "save" ? !saved : !interested;

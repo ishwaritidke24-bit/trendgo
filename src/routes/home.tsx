@@ -1,3 +1,4 @@
+import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Compass, Sparkles, TrendingUp, Users } from "lucide-react";
 
@@ -10,8 +11,11 @@ import { FriendAvatars } from "@/components/events/friend-avatars";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ACTIVITY, EVENTS, eventById, friendById } from "@/data/mock";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ACTIVITY, eventById, friendById, type EventItem } from "@/data/mock";
 import { useAuth } from "@/lib/auth-context";
+import { searchEvents } from "@/lib/events-api";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -36,12 +40,36 @@ export const Route = createFileRoute("/home")({
 
 function HomePage() {
   const { user } = useAuth();
-  const picked = [...EVENTS].sort((a, b) => b.match - a.match).slice(0, 3);
-  const becauseYouLiked = EVENTS.filter((e) => ["Music", "Nightlife"].includes(e.category));
-  const popular = [...EVENTS].sort((a, b) => b.interested - a.interested).slice(0, 5);
-  const friendPicks = EVENTS.filter((e) => e.friendIds.length >= 2);
-  const bubble = EVENTS.filter((e) => e.outsideBubble);
-  const weekend = EVENTS.filter((e) => e.dayGroup === "This weekend").slice(0, 5);
+  const [events, setEvents] = React.useState<EventItem[]>([]);
+  const [loadingEvents, setLoadingEvents] = React.useState(true);
+  const [eventsError, setEventsError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let active = true;
+    void searchEvents({ limit: 24 })
+      .then(({ events: loadedEvents }) => {
+        if (active) {
+          setEvents(loadedEvents);
+          setEventsError(null);
+        }
+      })
+      .catch((error) => {
+        if (active) setEventsError(error instanceof Error ? error.message : "Unable to load events");
+      })
+      .finally(() => {
+        if (active) setLoadingEvents(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const picked = [...events].sort((a, b) => b.match - a.match).slice(0, 3);
+  const becauseYouLiked = events.filter((e) => ["Music", "Nightlife"].includes(e.category));
+  const popular = [...events].sort((a, b) => b.interested - a.interested).slice(0, 5);
+  const friendPicks = events.slice(0, 2);
+  const bubble = events.filter((e) => e.category === "Outdoor" || e.category === "Workshops");
+  const weekend = events.filter((e) => e.dayGroup === "This weekend").slice(0, 5);
 
   return (
     <AppShell>
@@ -75,6 +103,26 @@ function HomePage() {
           </div>
         </Container>
       </Section>
+
+      {loadingEvents ? (
+        <Section spacing="sm">
+          <Container>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3" aria-label="Loading event feed">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="overflow-hidden rounded-3xl border border-border bg-card/70">
+                  <Skeleton className="aspect-[16/9] w-full rounded-none" />
+                  <div className="space-y-3 p-5"><Skeleton className="h-5 w-4/5" /><Skeleton className="h-4 w-3/5" /></div>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      ) : eventsError ? (
+        <Section spacing="sm"><Container><EmptyState icon={<Compass />} title="The event feed is unavailable" description={eventsError} action={<Button onClick={() => window.location.reload()}>Try again</Button>} /></Container></Section>
+      ) : events.length === 0 ? (
+        <Section spacing="sm"><Container><EmptyState icon={<Compass />} title="No events are published yet" description="Check back soon for new things to do around you." /></Container></Section>
+      ) : (
+        <>
 
       {/* Picked for you */}
       <Section spacing="sm">
@@ -213,6 +261,8 @@ function HomePage() {
           </div>
         </Container>
       </Section>
+        </>
+      )}
     </AppShell>
   );
 }

@@ -65,7 +65,7 @@ export async function activateOrganizer(
   input: Pick<OrganizerProfile, "displayName" | "bio" | "organizationName" | "website">,
 ) {
   return organizerRequest<{ success: boolean; organizer: OrganizerProfile }>(
-    "/organizer/activate",
+    "/organizer/profile",
     { method: "POST", body: JSON.stringify(input) },
   );
 }

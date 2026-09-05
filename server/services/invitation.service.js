@@ -2,13 +2,21 @@ import { FriendInvitation } from "../models/friend-invitation.model.js";
 import { Friendship } from "../models/friendship.model.js";
 import { User } from "../models/user.model.js";
 import { createNotification } from "./notification.service.js";
-import { getEvent } from "../data/events.js";
 import { createHttpError } from "../utils/http-error.js";
 import { EventParticipant } from "../models/event-participant.model.js";
 import { Event } from "../models/event.model.js";
 
-function publicInvitation(invitation) {
-  const event = getEvent(invitation.eventId);
+async function publicInvitation(invitation) {
+  const eventRecord = await Event.findById(invitation.eventId).lean();
+  const event = eventRecord
+    ? {
+        id: eventRecord._id.toString(),
+        title: eventRecord.title,
+        date: new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" }).format(eventRecord.date),
+        time: eventRecord.startTime,
+        area: eventRecord.city,
+      }
+    : null;
   return {
     id: invitation._id.toString(),
     eventId: invitation.eventId,
@@ -103,7 +111,7 @@ export async function createEventInvitations(senderId, eventId, recipientIds, me
       });
     }
   }
-  return invitations.map(publicInvitation);
+  return Promise.all(invitations.map(publicInvitation));
 }
 
 export async function listInvitations(userId) {
@@ -112,7 +120,7 @@ export async function listInvitations(userId) {
     .populate("recipientId", "name")
     .sort({ createdAt: -1 })
     .lean();
-  return invitations.map(publicInvitation);
+  return Promise.all(invitations.map(publicInvitation));
 }
 
 export async function updateInvitation(userId, invitationId, status) {
