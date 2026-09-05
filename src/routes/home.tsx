@@ -10,7 +10,8 @@ import { FriendAvatars } from "@/components/events/friend-avatars";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ACTIVITY, CURRENT_USER, EVENTS, eventById, friendById } from "@/data/mock";
+import { ACTIVITY, EVENTS, eventById, friendById } from "@/data/mock";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/home")({
 });
 
 function HomePage() {
+  const { user } = useAuth();
   const picked = [...EVENTS].sort((a, b) => b.match - a.match).slice(0, 3);
   const becauseYouLiked = EVENTS.filter((e) => ["Music", "Nightlife"].includes(e.category));
   const popular = [...EVENTS].sort((a, b) => b.interested - a.interested).slice(0, 5);
@@ -50,12 +52,12 @@ function HomePage() {
             <div>
               <p className="text-sm text-muted-foreground">Good evening 👋</p>
               <h1 className="font-display mt-2 text-3xl font-semibold text-balance text-foreground sm:text-4xl">
-                {CURRENT_USER.name.split(" ")[0]}, here&apos;s what&apos;s{" "}
+                {user?.name.split(" ")[0]}, here&apos;s what&apos;s{" "}
                 <span className="text-gradient-brand">worth doing</span> tonight
               </h1>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Badge variant="neutral">
-                  <Compass /> {CURRENT_USER.location}
+                  <Compass /> {user?.location || "Location not added"}
                 </Badge>
                 <Badge>
                   <Sparkles /> 9 new matches today
@@ -139,11 +141,15 @@ function HomePage() {
                         <AvatarFallback>{friend.initials}</AvatarFallback>
                       </Avatar>
                       <span className="min-w-0 flex-1 text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">{friend.name.split(" ")[0]}</span>{" "}
+                        <span className="font-medium text-foreground">
+                          {friend.name.split(" ")[0]}
+                        </span>{" "}
                         {item.action}{" "}
                         <span className="font-medium text-primary-glow">{event.title}</span>
                       </span>
-                      <span className="shrink-0 text-[11px] text-muted-foreground">{item.when}</span>
+                      <span className="shrink-0 text-[11px] text-muted-foreground">
+                        {item.when}
+                      </span>
                     </Link>
                   </li>
                 );
@@ -171,8 +177,8 @@ function HomePage() {
                   Step outside your bubble
                 </h2>
                 <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                  Three picks just off your usual pattern. Same city, different crowd — people with your
-                  taste tried these and stayed.
+                  Three picks just off your usual pattern. Same city, different crowd — people with
+                  your taste tried these and stayed.
                 </p>
               </div>
               <FriendAvatars ids={["dev", "mira", "kabir", "rahul"]} size="lg" />

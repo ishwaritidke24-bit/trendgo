@@ -1,34 +1,52 @@
 import * as React from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  CalendarCheck,
-  Edit3,
-  MapPin,
-  Plus,
-  Sparkles,
-  Ticket,
-  Users,
-} from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { CalendarCheck, Edit3, Heart, MapPin, Plus, Sparkles, Ticket } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
-import { EventCard } from "@/components/events/event-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CATEGORIES, CURRENT_USER, EVENTS } from "@/data/mock";
+import { EmptyState } from "@/components/ui/empty-state";
+import { CATEGORIES } from "@/data/mock";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
 
 function ProfilePage() {
-  const [interests, setInterests] = React.useState(CURRENT_USER.interests);
-  const toggleInterest = (interest: string) =>
-    setInterests((current) =>
-      current.includes(interest)
-        ? current.filter((item) => item !== interest)
-        : [...current, interest],
-    );
+  const { user, loading, error, updateProfile } = useAuth();
+  const [savingInterests, setSavingInterests] = React.useState(false);
+  const [updateError, setUpdateError] = React.useState<string | null>(null);
+
+  if (loading) return <ProfileState title="Loading your profile..." />;
+  if (error || !user)
+    return <ProfileState title={error?.message ?? "Your profile is unavailable"} />;
+
+  const initials = user.name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("");
+  const joined = user.createdAt
+    ? `Joined ${new Date(user.createdAt).toLocaleDateString(undefined, { month: "long", year: "numeric" })}`
+    : null;
+  const toggleInterest = async (interest: string) => {
+    const interests = user.interests.includes(interest)
+      ? user.interests.filter((item) => item !== interest)
+      : [...user.interests, interest];
+    setSavingInterests(true);
+    setUpdateError(null);
+    try {
+      await updateProfile({ interests });
+    } catch (updateFailure) {
+      setUpdateError(
+        updateFailure instanceof Error ? updateFailure.message : "Unable to update interests",
+      );
+    } finally {
+      setSavingInterests(false);
+    }
+  };
+
   return (
     <AppShell>
       <Section spacing="sm" className="pt-10">
@@ -37,32 +55,40 @@ function ProfilePage() {
             <div className="absolute top-0 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
             <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
               <Avatar size="xl" ring="accent">
-                <AvatarImage src={CURRENT_USER.avatar} alt={CURRENT_USER.name} />
-                <AvatarFallback>{CURRENT_USER.initials}</AvatarFallback>
+                {user.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
+                <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
                   Your TrendGo
                 </p>
                 <h1 className="font-display mt-2 text-3xl font-semibold sm:text-4xl">
-                  {CURRENT_USER.name}
+                  {user.name}
                 </h1>
-                <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <MapPin className="size-4 text-primary-glow" /> {CURRENT_USER.location} ·{" "}
-                  {CURRENT_USER.joined}
-                </p>
-                <p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground">
-                  {CURRENT_USER.bio}
-                </p>
+                {user.location || joined ? (
+                  <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+                    {user.location ? (
+                      <>
+                        <MapPin className="size-4 text-primary-glow" /> {user.location}
+                      </>
+                    ) : null}
+                    {user.location && joined ? " · " : null}
+                    {joined}
+                  </p>
+                ) : null}
               </div>
               <Button variant="outline">
                 <Edit3 /> Edit profile
               </Button>
             </div>
             <div className="relative mt-8 grid grid-cols-3 border-t border-border pt-6">
-              <Stat icon={<CalendarCheck />} value={CURRENT_USER.stats.attended} label="Attended" />
-              <Stat icon={<Ticket />} value={CURRENT_USER.stats.saved} label="Saved" />
-              <Stat icon={<Users />} value={CURRENT_USER.stats.friends} label="Friends" />
+              <Stat
+                icon={<CalendarCheck />}
+                value={user.attendedEventIds.length}
+                label="Attended"
+              />
+              <Stat icon={<Ticket />} value={user.savedEventIds.length} label="Saved" />
+              <Stat icon={<Heart />} value={user.interests.length} label="Interests" />
             </div>
           </div>
         </Container>
@@ -86,43 +112,56 @@ function ProfilePage() {
                 Tune the signals behind your recommendations.
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
-                {interests.map((interest) => (
+                {user.interests.map((interest) => (
                   <button
                     key={interest}
                     type="button"
                     onClick={() => toggleInterest(interest)}
+                    disabled={savingInterests}
                     className="rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-sm text-primary-glow transition-colors hover:bg-primary/20"
                   >
                     {interest} <span className="ml-2 opacity-60">x</span>
                   </button>
                 ))}
-                {CATEGORIES.filter(
-                  (category) => !CURRENT_USER.favouriteCategories.includes(category),
-                )
+                {CATEGORIES.filter((category) => !user.interests.includes(category))
                   .slice(0, 3)
                   .map((category) => (
                     <button
                       key={category}
                       type="button"
                       onClick={() => toggleInterest(category)}
+                      disabled={savingInterests}
                       className="rounded-full border border-dashed border-border-strong px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
                     >
                       + {category}
                     </button>
                   ))}
               </div>
+              {updateError ? <p className="mt-3 text-sm text-destructive">{updateError}</p> : null}
+              {!user.interests.length ? (
+                <p className="mt-5 text-sm text-muted-foreground">No interests added yet</p>
+              ) : null}
             </div>
             <aside className="rounded-3xl border border-border bg-surface/60 p-5">
               <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
                 Favorite categories
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                {CURRENT_USER.favouriteCategories.map((category) => (
-                  <Badge key={category} variant="neutral">
-                    {category}
-                  </Badge>
-                ))}
+                {user.interests
+                  .filter((interest) =>
+                    CATEGORIES.includes(interest as (typeof CATEGORIES)[number]),
+                  )
+                  .map((category) => (
+                    <Badge key={category} variant="neutral">
+                      {category}
+                    </Badge>
+                  ))}
               </div>
+              {!user.interests.some((interest) =>
+                CATEGORIES.includes(interest as (typeof CATEGORIES)[number]),
+              ) ? (
+                <p className="mt-4 text-sm text-muted-foreground">No favorite categories yet</p>
+              ) : null}
               <div className="mt-6 flex items-start gap-3 border-t border-border pt-5">
                 <Sparkles className="mt-0.5 size-4 shrink-0 text-primary-glow" />
                 <p className="text-xs leading-5 text-muted-foreground">
@@ -142,23 +181,63 @@ function ProfilePage() {
               </p>
               <h2 className="font-display mt-2 text-2xl font-semibold">Saved experiences</h2>
             </div>
-            <Link
-              to="/events"
-              className="inline-flex items-center gap-1 text-sm text-primary-glow hover:underline"
-            >
-              View all <ArrowRight className="size-4" />
-            </Link>
           </div>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {EVENTS.filter((event) =>
-              ["clay-studio", "sunrise-trek", "indie-basement"].includes(event.id),
-            ).map((event) => (
-              <EventCard key={event.id} event={event} showWhy={false} />
-            ))}
+          <div className="mt-6 grid gap-5 lg:grid-cols-3">
+            <EventCollectionState
+              icon={<Ticket />}
+              count={user.savedEventIds.length}
+              emptyTitle="No saved events"
+              countLabel="saved events"
+              description="Events you save will appear here."
+            />
+            <EventCollectionState
+              icon={<Heart />}
+              count={user.interestedEventIds.length}
+              emptyTitle="No interested events yet"
+              countLabel="interested events"
+              description="Events you mark as interested will appear here."
+            />
+            <EventCollectionState
+              icon={<CalendarCheck />}
+              count={user.attendedEventIds.length}
+              emptyTitle="No events attended yet"
+              countLabel="attended events"
+              description="Events you attend will appear here."
+            />
           </div>
         </Container>
       </Section>
     </AppShell>
+  );
+}
+
+function ProfileState({ title }: { title: string }) {
+  return (
+    <div className="bg-aurora grid min-h-screen place-items-center px-6 text-center text-sm text-muted-foreground">
+      {title}
+    </div>
+  );
+}
+
+function EventCollectionState({
+  icon,
+  count,
+  emptyTitle,
+  countLabel,
+  description,
+}: {
+  icon: React.ReactNode;
+  count: number;
+  emptyTitle: string;
+  countLabel: string;
+  description: string;
+}) {
+  return (
+    <EmptyState
+      icon={icon}
+      title={count ? `${count} ${countLabel}` : emptyTitle}
+      description={description}
+    />
   );
 }
 

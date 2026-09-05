@@ -56,12 +56,54 @@ export interface EventItem {
 const av = (seed: string) => `https://i.pravatar.cc/160?img=${seed}`;
 
 export const FRIENDS: Friend[] = [
-  { id: "sneha", name: "Sneha Rao", initials: "SR", avatar: av("47"), mutual: 12, taste: "Indie & live music" },
-  { id: "rahul", name: "Rahul Menon", initials: "RM", avatar: av("12"), mutual: 8, taste: "Standup & food crawls" },
-  { id: "aisha", name: "Aisha Khan", initials: "AK", avatar: av("32"), mutual: 21, taste: "Art walks & film" },
-  { id: "dev", name: "Dev Sharma", initials: "DS", avatar: av("15"), mutual: 5, taste: "Football & trails" },
-  { id: "mira", name: "Mira Joseph", initials: "MJ", avatar: av("45"), mutual: 17, taste: "Ceramics & slow mornings" },
-  { id: "kabir", name: "Kabir Sen", initials: "KS", avatar: av("60"), mutual: 3, taste: "Techno & rooftops" },
+  {
+    id: "sneha",
+    name: "Sneha Rao",
+    initials: "SR",
+    avatar: av("47"),
+    mutual: 12,
+    taste: "Indie & live music",
+  },
+  {
+    id: "rahul",
+    name: "Rahul Menon",
+    initials: "RM",
+    avatar: av("12"),
+    mutual: 8,
+    taste: "Standup & food crawls",
+  },
+  {
+    id: "aisha",
+    name: "Aisha Khan",
+    initials: "AK",
+    avatar: av("32"),
+    mutual: 21,
+    taste: "Art walks & film",
+  },
+  {
+    id: "dev",
+    name: "Dev Sharma",
+    initials: "DS",
+    avatar: av("15"),
+    mutual: 5,
+    taste: "Football & trails",
+  },
+  {
+    id: "mira",
+    name: "Mira Joseph",
+    initials: "MJ",
+    avatar: av("45"),
+    mutual: 17,
+    taste: "Ceramics & slow mornings",
+  },
+  {
+    id: "kabir",
+    name: "Kabir Sen",
+    initials: "KS",
+    avatar: av("60"),
+    mutual: 3,
+    taste: "Techno & rooftops",
+  },
 ];
 
 export const friendById = (id: string) => FRIENDS.find((f) => f.id === id);
@@ -81,7 +123,11 @@ export const EVENTS: EventItem[] = [
     distanceKm: 3.2,
     price: 499,
     tags: ["Live music", "Indie", "Small venue"],
-    organizer: { name: "Basement Collective", blurb: "Curating intimate gigs since 2018", initials: "BC" },
+    organizer: {
+      name: "Basement Collective",
+      blurb: "Curating intimate gigs since 2018",
+      initials: "BC",
+    },
     description:
       "Three of the city's most-talked-about indie acts in a 120-capacity room. Low ceilings, loud amps, no phones on stage — the kind of night people describe for weeks.",
     interested: 128,
@@ -128,7 +174,11 @@ export const EVENTS: EventItem[] = [
       "Twelve kitchens, one rooftop, and a sunset that does most of the work. Small plates, natural wine and a vinyl set that runs until close.",
     interested: 302,
     friendIds: ["aisha", "mira", "sneha"],
-    reasons: ["You attended 3 food pop-ups", "Popular with people like you", "3 friends interested"],
+    reasons: [
+      "You attended 3 food pop-ups",
+      "Popular with people like you",
+      "3 friends interested",
+    ],
   },
   {
     id: "gallery-late",
@@ -272,29 +322,28 @@ export interface ActivityItem {
 }
 
 export const ACTIVITY: ActivityItem[] = [
-  { id: "a1", friendId: "sneha", action: "interested in", eventId: "indie-basement", when: "2h ago" },
+  {
+    id: "a1",
+    friendId: "sneha",
+    action: "interested in",
+    eventId: "indie-basement",
+    when: "2h ago",
+  },
   { id: "a2", friendId: "rahul", action: "is going to", eventId: "open-mic", when: "5h ago" },
   { id: "a3", friendId: "aisha", action: "saved", eventId: "gallery-late", when: "Yesterday" },
-  { id: "a4", friendId: "kabir", action: "is going to", eventId: "techno-terrace", when: "Yesterday" },
-  { id: "a5", friendId: "mira", action: "interested in", eventId: "clay-studio", when: "2 days ago" },
+  {
+    id: "a4",
+    friendId: "kabir",
+    action: "is going to",
+    eventId: "techno-terrace",
+    when: "Yesterday",
+  },
+  {
+    id: "a5",
+    friendId: "mira",
+    action: "interested in",
+    eventId: "clay-studio",
+    when: "2 days ago",
+  },
   { id: "a6", friendId: "dev", action: "attended", eventId: "turf-league", when: "Last week" },
 ];
-
-export const CURRENT_USER = {
-  name: "Ananya Iyer",
-  initials: "AI",
-  avatar: av("5"),
-  location: "Bengaluru",
-  joined: "Joined March 2024",
-  bio: "Chasing small rooms with loud music and anyone who'll come along.",
-  interests: ["Electronic music", "Indie gigs", "Standup", "Supper clubs", "Contemporary art", "Night markets"],
-  favouriteCategories: ["Music", "Nightlife", "Food", "Art"],
-  stats: { attended: 37, saved: 14, friends: 128 },
-};
-
-export const MY_EVENTS: Record<"interested" | "saved" | "going" | "past", string[]> = {
-  interested: ["indie-basement", "gallery-late", "loft-meetup"],
-  saved: ["clay-studio", "sunrise-trek"],
-  going: ["techno-terrace", "open-mic"],
-  past: ["rooftop-market"],
-};

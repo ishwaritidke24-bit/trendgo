@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema(
     location: { type: String, trim: true, default: "" },
     interests: { type: [String], default: [] },
     avatar: { type: String, default: "" },
+    savedEventIds: { type: [String], default: [] },
+    interestedEventIds: { type: [String], default: [] },
+    attendedEventIds: { type: [String], default: [] },
   },
   { timestamps: true },
 );

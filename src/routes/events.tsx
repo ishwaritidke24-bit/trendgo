@@ -7,15 +7,25 @@ import { Container, Section } from "@/components/layout/container";
 import { EventCard } from "@/components/events/event-card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { EVENTS, MY_EVENTS, eventById } from "@/data/mock";
+import { EVENTS, eventById } from "@/data/mock";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/events")({ component: MyEventsPage });
 const TABS = ["interested", "saved", "going", "past"] as const;
 type Tab = (typeof TABS)[number];
 
 function MyEventsPage() {
+  const { user } = useAuth();
   const [tab, setTab] = React.useState<Tab>("interested");
-  const events = MY_EVENTS[tab]
+  const eventIds =
+    tab === "saved"
+      ? (user?.savedEventIds ?? [])
+      : tab === "past"
+        ? (user?.attendedEventIds ?? [])
+        : tab === "interested"
+          ? (user?.interestedEventIds ?? [])
+          : [];
+  const events = eventIds
     .map((id) => eventById(id))
     .filter((event): event is (typeof EVENTS)[number] => Boolean(event));
   return (

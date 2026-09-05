@@ -6,6 +6,9 @@ export function toPublicUser(user) {
     location: user.location,
     interests: user.interests,
     avatar: user.avatar,
+    savedEventIds: user.savedEventIds ?? [],
+    interestedEventIds: user.interestedEventIds ?? [],
+    attendedEventIds: user.attendedEventIds ?? [],
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

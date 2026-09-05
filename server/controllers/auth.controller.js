@@ -4,6 +4,7 @@ import {
   getCurrentUser,
   signin,
   signup,
+  updateCurrentUser,
 } from "../services/auth.service.js";
 import { env } from "../config/env.js";
 
@@ -26,5 +27,10 @@ export function signoutController(req, res) {
 
 export async function meController(req, res) {
   const user = await getCurrentUser(req.auth.userId);
+  res.status(200).json({ success: true, user });
+}
+
+export async function updateMeController(req, res) {
+  const user = await updateCurrentUser(req.auth.userId, req.body);
   res.status(200).json({ success: true, user });
 }
