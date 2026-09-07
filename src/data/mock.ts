@@ -69,7 +69,10 @@ export const friendById = (id: string) => FRIENDS.find((f) => f.id === id);
 
 export const EVENTS: EventItem[] = [];
 
-export const eventById = (id: string) => EVENTS.find((e) => e.id === id);
+import { REAL_EVENTS_CATALOG } from "@/lib/real-events";
+
+export const eventById = (id: string) =>
+  EVENTS.find((e) => e.id === id) ?? REAL_EVENTS_CATALOG.find((e) => e.id === id);
 
 export interface ActivityItem {
   id: string;

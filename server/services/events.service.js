@@ -3,6 +3,69 @@ import mongoose from "mongoose";
 import { Event } from "../models/event.model.js";
 import { User } from "../models/user.model.js";
 import { createHttpError } from "../utils/http-error.js";
+import { env } from "../config/env.js";
+
+async function fetchSerpApiEvents(city) {
+  if (!env.serpApiKey || !city) return [];
+
+  try {
+    const params = new URLSearchParams({
+      engine: "google_events",
+      q: `events in ${city}`,
+      api_key: env.serpApiKey,
+      hl: "en",
+      gl: "in",
+    });
+
+    const res = await fetch(`https://serpapi.com/search.json?${params.toString()}`);
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    const eventsResults = data?.events_results || [];
+
+    const now = new Date();
+    const normalized = eventsResults.slice(0, 10).map((ev) => {
+      const title = ev.title || "Local Event";
+      const startDate = ev.date?.start_date ? new Date(ev.date.start_date) : new Date(now.getTime() + 86400000 * 2);
+      const startTime = ev.date?.when?.split("–")?.[0]?.trim() || "6:00 PM";
+      const venue = ev.venue?.name || ev.address?.[0] || `${city} Venue`;
+      const address = (ev.address || []).join(", ") || `${venue}, ${city}`;
+
+      return {
+        title,
+        description: ev.description || `Live experience in ${city}.`,
+        category: "Communities",
+        tags: ["Live", city, "Google Events"],
+        image:
+          ev.thumbnail ||
+          ev.image ||
+          "https://images.unsplash.com/photo-1501386761578-eaa54b4af1b8?auto=format&fit=crop&w=1200&q=80",
+        date: startDate,
+        startTime,
+        endTime: "10:00 PM",
+        venue,
+        address,
+        city,
+        price: 0,
+        capacity: 100,
+        organizer: {
+          name: ev.venue?.name || "Local Host",
+          blurb: "Event via Google Events",
+          initials: (title[0] || "E").toUpperCase(),
+        },
+        status: "published",
+      };
+    });
+
+    if (normalized.length > 0) {
+      await Event.insertMany(normalized, { ordered: false }).catch(() => {});
+    }
+    return normalized;
+  } catch (error) {
+    console.warn("SerpApi aggregation error:", error.message);
+    return [];
+  }
+}
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-IN", {
@@ -129,6 +192,14 @@ export async function listPublicEvents(query) {
   const longitude = Number(query.longitude ?? query.lng);
   const hasOrigin = Number.isFinite(latitude) && Number.isFinite(longitude);
   const maximumDistance = Number(query.distance);
+
+  if (typeof query.city === "string" && query.city.trim() && env.serpApiKey) {
+    const existingCount = await Event.countDocuments(filters);
+    if (existingCount === 0) {
+      await fetchSerpApiEvents(query.city.trim());
+    }
+  }
+
   const events = await Event.find(filters).sort({ date: 1, startTime: 1 }).lean();
   const origin = hasOrigin ? { latitude, longitude } : null;
   const filtered =

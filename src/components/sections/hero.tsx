@@ -1,10 +1,13 @@
 import * as React from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Calendar, MapPin, Search, Shuffle, Sparkles } from "lucide-react";
+import { Calendar, Loader2, MapPin, Search, Shuffle, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useUserLocation } from "@/lib/location-context";
+import { searchEvents } from "@/lib/events-api";
 
 import heroCrowd from "@/assets/hero-crowd.jpg";
 
@@ -25,12 +28,16 @@ interface FieldProps {
   placeholder: string;
   value: string;
   onChange: (v: string) => void;
+  onClick?: () => void;
 }
 
-function Field({ icon, label, placeholder, value, onChange }: FieldProps) {
+function Field({ icon, label, placeholder, value, onChange, onClick }: FieldProps) {
   const id = React.useId();
   return (
-    <div className="group flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-4 py-3 transition-colors duration-200 hover:bg-surface/70 focus-within:bg-surface/70">
+    <div
+      onClick={onClick}
+      className="group flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-4 py-3 transition-colors duration-200 hover:bg-surface/70 focus-within:bg-surface/70"
+    >
       <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary-glow transition-colors duration-200 group-hover:bg-primary/20 [&_svg]:size-4">
         {icon}
       </span>
@@ -55,10 +62,91 @@ function Field({ icon, label, placeholder, value, onChange }: FieldProps) {
 
 export function Hero() {
   const navigate = useNavigate();
+  const { location, setLocation, detectLocation, setIsModalOpen, isDetecting } = useUserLocation();
+
   const [what, setWhat] = React.useState("");
-  const [where, setWhere] = React.useState("Bengaluru");
+  const [where, setWhere] = React.useState(location);
   const [when, setWhen] = React.useState("This weekend");
   const [activeChip, setActiveChip] = React.useState<string | null>(null);
+
+  const [isSurprising, setIsSurprising] = React.useState(false);
+  const [liveCount, setLiveCount] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (location) {
+      setWhere(location);
+    }
+  }, [location]);
+
+  React.useEffect(() => {
+    const targetCity = (where || location).trim();
+    if (!targetCity) {
+      setLiveCount(null);
+      return;
+    }
+
+    let active = true;
+    void searchEvents({ city: targetCity, limit: 50 })
+      .then((res) => {
+        if (active) {
+          const total = res.pagination?.total ?? res.events.length;
+          setLiveCount(total);
+        }
+      })
+      .catch(() => {
+        if (active) setLiveCount(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [where, location]);
+
+  const handleWhereChange = (val: string) => {
+    setWhere(val);
+    if (val.trim()) {
+      setLocation(val.trim());
+    }
+  };
+
+  const handleSurpriseMe = async () => {
+    let targetCity = (where || location).trim();
+
+    if (!targetCity) {
+      const detected = await detectLocation();
+      if (detected) {
+        targetCity = detected;
+      } else {
+        toast.info("Please select or enter your city to get surprised!");
+        setIsModalOpen(true);
+        return;
+      }
+    }
+
+    setIsSurprising(true);
+    try {
+      const result = await searchEvents({ city: targetCity, limit: 30 });
+      const availableEvents = result.events || [];
+
+      if (availableEvents.length === 0) {
+        toast.info(`No experiences found near ${targetCity} right now. Try expanding your search!`);
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * availableEvents.length);
+      const selected = availableEvents[randomIndex];
+
+      toast.success(`Surprise! Showing "${selected.title}"`);
+      void navigate({
+        to: "/event/$eventId",
+        params: { eventId: selected.id },
+      });
+    } catch {
+      toast.error("Unable to find a surprise experience right now. Please try again!");
+    } finally {
+      setIsSurprising(false);
+    }
+  };
 
   return (
     <section className="relative isolate overflow-hidden">
@@ -118,9 +206,9 @@ export function Hero() {
               <Field
                 icon={<MapPin />}
                 label="Where?"
-                placeholder="City or neighbourhood"
+                placeholder={isDetecting ? "Detecting location..." : "Select location or city"}
                 value={where}
-                onChange={setWhere}
+                onChange={handleWhereChange}
               />
               <div className="hidden h-10 w-px shrink-0 bg-border md:block" />
               <Field
@@ -130,7 +218,11 @@ export function Hero() {
                 value={when}
                 onChange={setWhen}
               />
-              <Button type="submit" size="lg" className="mt-1 w-full md:mt-0 md:w-auto">
+              <Button
+                type="submit"
+                size="lg"
+                className="mt-1 w-full md:mt-0 md:w-auto cursor-pointer"
+              >
                 <Search />
                 Discover
               </Button>
@@ -159,17 +251,29 @@ export function Hero() {
 
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
+              type="button"
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto"
-              onClick={() => void navigate({ to: "/explore", search: { sort: "Best match" } })}
+              className="w-full sm:w-auto cursor-pointer"
+              disabled={isSurprising}
+              onClick={handleSurpriseMe}
             >
-              <Shuffle />
-              Surprise Me
+              {isSurprising ? (
+                <Loader2 className="size-4 animate-spin text-primary-glow" />
+              ) : (
+                <Shuffle className="size-4" />
+              )}
+              {isSurprising ? "Finding experience..." : "Surprise Me"}
             </Button>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-foreground">2,480</span> experiences live near you this week
-            </p>
+
+            {liveCount !== null && liveCount > 0 ? (
+              <p className="text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground">{liveCount}</span> experiences live
+                near you this week
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">Explore experiences near you</p>
+            )}
           </div>
         </div>
       </Container>

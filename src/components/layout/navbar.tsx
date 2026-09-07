@@ -4,10 +4,10 @@ import { Bell, ChevronDown, MapPin, Menu, X } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
-import { LocationSelector } from "@/components/layout/location-selector";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
+import { useUserLocation } from "@/lib/location-context";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -45,7 +45,7 @@ function useScrolled(threshold = 12) {
 
 export function Navbar({
   user = null,
-  location = "Bengaluru",
+  location: propLocation,
   notificationCount = 0,
   onSignIn,
   onSignOut,
@@ -54,6 +54,9 @@ export function Navbar({
 }: NavbarProps) {
   const scrolled = useScrolled();
   const navigate = useNavigate();
+  const { location: ctxLocation, setIsModalOpen, isDetecting } = useUserLocation();
+  const location =
+    propLocation || ctxLocation || (isDetecting ? "Detecting location..." : "Select location");
   const [open, setOpen] = React.useState(false);
   const handleSignIn = onSignIn ?? (() => window.location.assign("/signup"));
 
@@ -113,19 +116,15 @@ export function Navbar({
         </nav>
 
         <div className="flex items-center gap-2">
-          {user ? (
-            <LocationSelector className="hidden lg:block" />
-          ) : (
-            <button
-              type="button"
-              onClick={() => void navigate({ to: "/explore" })}
-              className="hidden items-center gap-1.5 rounded-full border border-border bg-surface/60 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground lg:inline-flex"
-            >
-              <MapPin className="size-3.5 text-primary-glow" />
-              {location}
-              <ChevronDown className="size-3.5 opacity-60" />
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="hidden items-center gap-1.5 rounded-full border border-border bg-surface/60 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground lg:inline-flex cursor-pointer"
+          >
+            <MapPin className="size-3.5 text-primary-glow" />
+            {location}
+            <ChevronDown className="size-3.5 opacity-60" />
+          </button>
 
           {user ? (
             <>
@@ -204,10 +203,18 @@ export function Navbar({
           ) : null}
 
           <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-4">
-            <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                setIsModalOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground cursor-pointer"
+            >
               <MapPin className="size-4 text-primary-glow" />
               {location}
-            </span>
+              <ChevronDown className="size-3.5 opacity-60" />
+            </button>
             {user ? (
               <IconButton
                 label="Notifications"
