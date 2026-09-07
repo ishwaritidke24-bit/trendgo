@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
     passwordHash: { type: String, required: true, select: false },
     location: { type: String, trim: true, default: "" },
+    // Up to 3 discovery locations for real-time event aggregation
+    discoveryLocations: { type: [String], default: [], validate: [(arr) => arr.length <= 3, "Maximum 3 discovery locations allowed"] },
     interests: { type: [String], default: [] },
     savedEventIds: { type: [String], default: [] },
     interestedEventIds: { type: [String], default: [] },

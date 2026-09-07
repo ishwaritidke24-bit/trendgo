@@ -37,4 +37,6 @@ export const env = Object.freeze({
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean),
+  // External event API keys — optional (graceful fallback when not set)
+  ticketmasterApiKey: process.env.TICKETMASTER_API_KEY ?? "",
 });

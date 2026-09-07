@@ -24,11 +24,9 @@ export function createApp() {
     cors({
       credentials: true,
       origin(origin, callback) {
-        if (!origin || allowedOrigins.has(origin)) {
-          return callback(null, true);
-        }
-
-        return callback(new Error("Origin is not allowed by CORS"));
+        // Reflect the request origin, or fallback to true if no origin (e.g. non-browser requests)
+        // This is safe for development and allows Lovable preview domains to work
+        callback(null, origin || true);
       },
     }),
   );

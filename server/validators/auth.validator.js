@@ -40,7 +40,7 @@ export function signinValidator({ body }) {
 
 export function updateProfileValidator({ body }) {
   const errors = [];
-  const allowedFields = ["name", "location", "interests"];
+  const allowedFields = ["name", "location", "interests", "discoveryLocations"];
 
   if (!allowedFields.some((field) => field in body)) {
     errors.push({ field: "profile", message: "At least one profile field is required" });
@@ -63,6 +63,14 @@ export function updateProfileValidator({ body }) {
       body.interests.some((interest) => typeof interest !== "string"))
   ) {
     errors.push({ field: "interests", message: "Interests must be a list of text values" });
+  }
+  if (
+    body.discoveryLocations !== undefined &&
+    (!Array.isArray(body.discoveryLocations) ||
+      body.discoveryLocations.length > 3 ||
+      body.discoveryLocations.some((loc) => typeof loc !== "string" || loc.length > 120))
+  ) {
+    errors.push({ field: "discoveryLocations", message: "Up to 3 valid location names required" });
   }
   return { valid: errors.length === 0, errors };
 }

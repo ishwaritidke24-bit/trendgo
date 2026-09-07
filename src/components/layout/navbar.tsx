@@ -4,6 +4,7 @@ import { Bell, ChevronDown, MapPin, Menu, X } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
+import { LocationSelector } from "@/components/layout/location-selector";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
@@ -112,15 +113,19 @@ export function Navbar({
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => void navigate({ to: "/explore" })}
-            className="hidden items-center gap-1.5 rounded-full border border-border bg-surface/60 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground lg:inline-flex"
-          >
-            <MapPin className="size-3.5 text-primary-glow" />
-            {location}
-            <ChevronDown className="size-3.5 opacity-60" />
-          </button>
+          {user ? (
+            <LocationSelector className="hidden lg:block" />
+          ) : (
+            <button
+              type="button"
+              onClick={() => void navigate({ to: "/explore" })}
+              className="hidden items-center gap-1.5 rounded-full border border-border bg-surface/60 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground lg:inline-flex"
+            >
+              <MapPin className="size-3.5 text-primary-glow" />
+              {location}
+              <ChevronDown className="size-3.5 opacity-60" />
+            </button>
+          )}
 
           {user ? (
             <>

@@ -14,6 +14,7 @@ import {
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
+import { LocationSelector } from "@/components/layout/location-selector";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -231,6 +232,33 @@ function ProfilePage() {
                 <p className="text-xs leading-5 text-muted-foreground">
                   Your profile helps TrendGo balance familiar favorites with something different.
                 </p>
+              </div>
+
+              {/* Discovery Locations */}
+              <div className="mt-6 border-t border-border pt-5">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
+                    Discovery Locations
+                  </p>
+                  <LocationSelector />
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Events are fetched for these cities every month.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(user.discoveryLocations ?? []).length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No locations added yet</p>
+                  ) : (
+                    (user.discoveryLocations ?? []).map((loc) => (
+                      <span
+                        key={loc}
+                        className="inline-flex items-center gap-1 rounded-full border border-primary/35 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary-glow"
+                      >
+                        <MapPin className="size-3" /> {loc}
+                      </span>
+                    ))
+                  )}
+                </div>
               </div>
             </aside>
           </div>

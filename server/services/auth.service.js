@@ -69,6 +69,13 @@ export async function updateCurrentUser(userId, input) {
   if (input.name !== undefined) updates.name = input.name.trim();
   if (input.location !== undefined) updates.location = input.location.trim();
   if (input.interests !== undefined) updates.interests = input.interests;
+  if (input.discoveryLocations !== undefined) {
+    const locs = input.discoveryLocations
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .slice(0, 3);
+    updates.discoveryLocations = locs;
+  }
 
   const user = await User.findByIdAndUpdate(userId, updates, {
     returnDocument: "after",

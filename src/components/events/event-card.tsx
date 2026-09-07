@@ -5,6 +5,7 @@ import {
   Check,
   ChevronDown,
   Clock,
+  ExternalLink,
   Heart,
   MapPin,
   Navigation,
@@ -115,12 +116,24 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           <span className="inline-flex items-center gap-2">
             <MapPin className="size-3.5 shrink-0 text-primary-glow" />
             <span className="truncate">
-              {event.venue}, {event.area}
+              {event.venue}{event.venue && (event.area || event.city) ? ", " : ""}{event.area || event.city}
             </span>
           </span>
+          {event.city ? (
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full border border-border bg-surface/80 px-2 py-0.5 text-[10px] font-medium">
+                📍 {event.city}
+              </span>
+              {event.source && event.source !== "trendgo" ? (
+                <span className="inline-flex items-center gap-1 rounded-full border border-border bg-surface/60 px-2 py-0.5 text-[10px] text-muted-foreground capitalize">
+                  via {event.source}
+                </span>
+              ) : null}
+            </span>
+          ) : null}
           <span className="inline-flex items-center gap-2">
             <Navigation className="size-3.5 shrink-0 text-primary-glow" />
-            {event.distanceKm} km away · {event.price === 0 ? "Free" : `₹${event.price}`}
+            {event.distanceKm > 0 ? `${event.distanceKm} km away · ` : ""}{event.isFree || event.price === 0 ? "Free" : `₹${event.price}`}
           </span>
         </div>
 
@@ -192,14 +205,27 @@ export function EventCard({ event, size = "default", showWhy = true, className }
             <Bookmark className={cn(saved && "fill-primary-glow text-primary-glow")} />
             {saved ? "Saved" : "Save"}
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setInviteOpen(true)}
-            aria-label="Invite friends"
-          >
-            <Send />
-          </Button>
+          {event.ticketUrl ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              asChild
+              aria-label="Get tickets"
+            >
+              <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="size-3.5" />
+              </a>
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setInviteOpen(true)}
+              aria-label="Invite friends"
+            >
+              <Send />
+            </Button>
+          )}
         </div>
         {actionError ? (
           <p role="alert" className="mt-2 text-xs text-destructive">

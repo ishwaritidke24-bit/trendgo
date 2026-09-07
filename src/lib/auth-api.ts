@@ -5,6 +5,7 @@ export interface AuthUser {
   name: string;
   email: string;
   location: string;
+  discoveryLocations: string[];
   interests: string[];
   savedEventIds: string[];
   interestedEventIds: string[];
@@ -105,13 +106,17 @@ export async function signOut() {
 }
 
 export async function updateCurrentUser(
-  input: Partial<Pick<AuthUser, "name" | "location" | "interests">>,
+  input: Partial<Pick<AuthUser, "name" | "location" | "interests" | "discoveryLocations">>,
 ) {
   const payload = await authRequest<AuthResponse>("/auth/me", {
     method: "PUT",
     body: JSON.stringify(input),
   });
   return payload.user;
+}
+
+export async function updateLocations(discoveryLocations: string[]) {
+  return updateCurrentUser({ discoveryLocations });
 }
 
 async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
