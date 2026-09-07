@@ -16,7 +16,11 @@ export async function connectDatabase() {
     console.log(`MongoDB connected (database: ${mongoose.connection.name})`);
   } catch (err) {
     console.error("MongoDB connection failed:", err.message);
-    process.exit(1);
+    if (env.nodeEnv === "production") {
+      process.exit(1);
+    } else {
+      console.warn("⚠️  Server started in offline/standalone mode. To connect database, whitelist your current IP in MongoDB Atlas: https://cloud.mongodb.com -> Network Access -> Add IP (or 0.0.0.0/0).");
+    }
   }
 }
 
