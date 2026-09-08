@@ -161,10 +161,19 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   return <LocationContext.Provider value={value}>{children}</LocationContext.Provider>;
 }
 
+const defaultLocationContext: LocationContextValue = {
+  location: "",
+  status: "idle",
+  isDetecting: false,
+  permissionDenied: false,
+  error: null,
+  isModalOpen: false,
+  setIsModalOpen: () => {},
+  setLocation: () => {},
+  detectLocation: async () => null,
+};
+
 export function useUserLocation(): LocationContextValue {
   const context = React.useContext(LocationContext);
-  if (!context) {
-    throw new Error("useUserLocation must be used within a LocationProvider");
-  }
-  return context;
+  return context ?? defaultLocationContext;
 }
