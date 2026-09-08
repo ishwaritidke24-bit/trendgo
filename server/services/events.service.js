@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import { Event } from "../models/event.model.js";
 import { User } from "../models/user.model.js";
+import { seedEvents } from "../data/seed-events.data.js";
 import { createHttpError } from "../utils/http-error.js";
 import { env } from "../config/env.js";
 
@@ -193,14 +194,31 @@ export async function listPublicEvents(query) {
   const hasOrigin = Number.isFinite(latitude) && Number.isFinite(longitude);
   const maximumDistance = Number(query.distance);
 
-  if (typeof query.city === "string" && query.city.trim() && env.serpApiKey) {
-    const existingCount = await Event.countDocuments(filters);
-    if (existingCount === 0) {
-      await fetchSerpApiEvents(query.city.trim());
+  let events;
+  if (mongoose.connection.readyState === 1) {
+    if (typeof query.city === "string" && query.city.trim() && env.serpApiKey) {
+      const existingCount = await Event.countDocuments(filters);
+      if (existingCount === 0) {
+        await fetchSerpApiEvents(query.city.trim());
+      }
     }
+    events = await Event.find(filters).sort({ date: 1, startTime: 1 }).lean();
+  } else {
+    // Graceful in-memory fallback when database is disconnected / offline
+    events = seedEvents
+      .map((ev, index) => ({ ...ev, _id: `seed_${index + 1}` }))
+      .filter((ev) => {
+        if (query.city && !new RegExp(`^${query.city.trim()}$`, "i").test(ev.city)) return false;
+        if (category.length && !category.includes(ev.category)) return false;
+        if (maximumPrice && ev.price > maximumPrice) return false;
+        if (search) {
+          const text = `${ev.title} ${ev.description} ${ev.category} ${ev.venue} ${ev.city}`.toLowerCase();
+          if (!text.includes(search.toLowerCase())) return false;
+        }
+        return true;
+      });
   }
 
-  const events = await Event.find(filters).sort({ date: 1, startTime: 1 }).lean();
   const origin = hasOrigin ? { latitude, longitude } : null;
   const filtered =
     origin && Number.isFinite(maximumDistance) && maximumDistance >= 0
@@ -226,11 +244,16 @@ export async function listPublicEvents(query) {
 }
 
 export async function getPublicEvent(eventId) {
-  if (!mongoose.isObjectIdOrHexString(eventId))
-    throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
-  const event = await Event.findOne({ _id: eventId, status: "published" }).lean();
-  if (!event) throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
-  return toPublicEvent(event);
+  if (mongoose.connection.readyState === 1 && mongoose.isObjectIdOrHexString(eventId)) {
+    const event = await Event.findOne({ _id: eventId, status: "published" }).lean();
+    if (event) return toPublicEvent(event);
+  }
+  // In-memory fallback
+  const seed = seedEvents
+    .map((ev, index) => ({ ...ev, _id: `seed_${index + 1}` }))
+    .find((ev) => ev._id === eventId || ev.title.toLowerCase().replace(/\s+/g, "-") === eventId);
+  if (seed) return toPublicEvent(seed);
+  throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
 }
 
 function organizerDetails(user) {
