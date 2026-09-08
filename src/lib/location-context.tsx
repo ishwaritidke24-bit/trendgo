@@ -175,9 +175,6 @@ const defaultLocationContext: LocationContextValue = {
 
 export function useUserLocation(): LocationContextValue {
   const context = React.useContext(LocationContext);
-  if (!context) {
-    throw new Error("useUserLocation must be used within a LocationProvider");
-  }
-  return context;
   return context ?? defaultLocationContext;
 }
+

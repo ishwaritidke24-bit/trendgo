@@ -194,10 +194,6 @@ export async function listPublicEvents(query) {
   const hasOrigin = Number.isFinite(latitude) && Number.isFinite(longitude);
   const maximumDistance = Number(query.distance);
 
-  if (typeof query.city === "string" && query.city.trim() && env.serpApiKey) {
-    const existingCount = await Event.countDocuments(filters);
-    if (existingCount === 0) {
-      await fetchSerpApiEvents(query.city.trim());
   let events;
   if (mongoose.connection.readyState === 1) {
     if (typeof query.city === "string" && query.city.trim() && env.serpApiKey) {
@@ -207,9 +203,18 @@ export async function listPublicEvents(query) {
       }
     }
     events = await Event.find(filters).sort({ date: 1, startTime: 1 }).lean();
-  } else {
-    // Graceful in-memory fallback when database is disconnected / offline
-    events = seedEvents
+    if (events.length === 0) {
+      const totalCount = await Event.estimatedDocumentCount();
+      if (totalCount === 0) {
+        await Event.insertMany(seedEvents).catch(() => {});
+        events = await Event.find(filters).sort({ date: 1, startTime: 1 }).lean();
+      }
+    }
+  }
+  
+  if (!events || events.length === 0) {
+    // Graceful in-memory fallback when database has no matches or is disconnected / offline
+    const memoryEvents = seedEvents
       .map((ev, index) => ({ ...ev, _id: `seed_${index + 1}` }))
       .filter((ev) => {
         if (query.city && !new RegExp(`^${query.city.trim()}$`, "i").test(ev.city)) return false;
@@ -221,9 +226,11 @@ export async function listPublicEvents(query) {
         }
         return true;
       });
+    if (!events || (events.length === 0 && memoryEvents.length > 0)) {
+      events = memoryEvents;
+    }
   }
 
-  const events = await Event.find(filters).sort({ date: 1, startTime: 1 }).lean();
   const origin = hasOrigin ? { latitude, longitude } : null;
   const filtered =
     origin && Number.isFinite(maximumDistance) && maximumDistance >= 0
@@ -249,11 +256,6 @@ export async function listPublicEvents(query) {
 }
 
 export async function getPublicEvent(eventId) {
-  if (!mongoose.isObjectIdOrHexString(eventId))
-    throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
-  const event = await Event.findOne({ _id: eventId, status: "published" }).lean();
-  if (!event) throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
-  return toPublicEvent(event);
   if (mongoose.connection.readyState === 1 && mongoose.isObjectIdOrHexString(eventId)) {
     const event = await Event.findOne({ _id: eventId, status: "published" }).lean();
     if (event) return toPublicEvent(event);
