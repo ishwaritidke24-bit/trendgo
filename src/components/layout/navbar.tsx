@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Bell, ChevronDown, MapPin, Menu, X } from "lucide-react";
 
@@ -10,6 +11,7 @@ import { IconButton } from "@/components/ui/icon-button";
 import { useUserLocation } from "@/lib/location-context";
 import { cn } from "@/lib/utils";
 
+const NAV_LINKS = [
 export interface NavLinkItem {
   label: string;
   to: string;
@@ -19,6 +21,7 @@ export interface NavLinkItem {
 const NAV_LINKS: readonly NavLinkItem[] = [
   { label: "Discover", to: "/home" },
   { label: "Explore", to: "/explore" },
+  { label: "Trending", to: "/explore" },
   { label: "Trending", to: "/explore", search: { sort: "Trending" } },
   { label: "Friends", to: "/friends" },
   { label: "My events", to: "/events" },
@@ -131,6 +134,16 @@ export function Navbar({
 
         <nav aria-label="Primary" className="hidden md:block">
           <ul className="flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <li key={link.label}>
+                <Link
+                  to={link.to}
+                  className="rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-surface hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
             {NAV_LINKS.map((link) => {
               const active = isLinkActive(link);
               return (
@@ -155,6 +168,7 @@ export function Navbar({
               <li>
                 <Link
                   to="/organizer"
+                  className="rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-surface hover:text-foreground"
                   className={cn(
                     "rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-200",
                     currentPath.startsWith("/organizer")
@@ -227,6 +241,16 @@ export function Navbar({
         )}
       >
         <Container className="flex flex-col gap-1 py-4">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.label}
+              to={link.to}
+              onClick={() => setOpen(false)}
+              className="rounded-xl px-3 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+            >
+              {link.label}
+            </Link>
+          ))}
           {NAV_LINKS.map((link) => {
             const active = isLinkActive(link);
             return (

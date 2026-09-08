@@ -46,6 +46,7 @@ function MyEventsPage() {
     };
   }, [eventIdsKey]);
   return (
+    <AppShell>
     <AppShell requireAuth>
       <Section spacing="sm" className="pt-10">
         <Container>

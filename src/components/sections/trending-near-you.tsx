@@ -114,6 +114,7 @@ export function TrendingNearYou() {
   }, [activeCity]);
 
   return (
+    <Section>
     <Section id="trending">
       <Container>
         <SectionHeading
