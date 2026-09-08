@@ -291,3 +291,4 @@ export const seedEvents = [
     status: "published",
   },
 ];
+
