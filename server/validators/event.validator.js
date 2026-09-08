@@ -25,12 +25,19 @@ function isRequestBody(body) {
 
 function validateFields(body, required) {
   const errors = [];
-  if (!isRequestBody(body)) return [{ field: "event", message: "Event data must be an object" }];
-  const unsupported = Object.keys(body).filter((field) => !editableFields.includes(field));
+  if (!isRequestBody(body))
+    return [{ field: "event", message: "Event data must be an object" }];
+  const unsupported = Object.keys(body).filter(
+    (field) => !editableFields.includes(field),
+  );
   if (unsupported.length)
-    errors.push({ field: "event", message: "Event contains unsupported fields" });
+    errors.push({
+      field: "event",
+      message: "Event contains unsupported fields",
+    });
   for (const field of required) {
-    if (!(field in body)) errors.push({ field, message: `${field} is required` });
+    if (!(field in body))
+      errors.push({ field, message: `${field} is required` });
   }
   const textLimits = {
     title: 160,
@@ -46,11 +53,17 @@ function validateFields(body, required) {
       body[field] !== undefined &&
       (typeof body[field] !== "string" || body[field].trim().length > maximum)
     ) {
-      errors.push({ field, message: `${field} must be text up to ${maximum} characters` });
+      errors.push({
+        field,
+        message: `${field} must be text up to ${maximum} characters`,
+      });
     }
   }
   if (body.title !== undefined && body.title.trim().length < 3)
-    errors.push({ field: "title", message: "title must be at least 3 characters" });
+    errors.push({
+      field: "title",
+      message: "title must be at least 3 characters",
+    });
   if (
     body.date !== undefined &&
     (typeof body.date !== "string" || Number.isNaN(Date.parse(body.date)))
@@ -59,16 +72,22 @@ function validateFields(body, required) {
   for (const field of ["startTime", "endTime"]) {
     if (
       body[field] !== undefined &&
-      (typeof body[field] !== "string" || !/^\d{1,2}:\d{2}(\s?[AP]M)?$/i.test(body[field]))
+      (typeof body[field] !== "string" ||
+        !/^\d{1,2}:\d{2}(\s?[AP]M)?$/i.test(body[field]))
     )
       errors.push({ field, message: `${field} must be a valid time` });
   }
   if (
     body.tags !== undefined &&
     (!Array.isArray(body.tags) ||
-      body.tags.some((tag) => typeof tag !== "string" || !tag.trim() || tag.length > 50))
+      body.tags.some(
+        (tag) => typeof tag !== "string" || !tag.trim() || tag.length > 50,
+      ))
   )
-    errors.push({ field: "tags", message: "tags must be a list of short text values" });
+    errors.push({
+      field: "tags",
+      message: "tags must be a list of short text values",
+    });
   for (const [field, minimum, maximum] of [
     ["latitude", -90, 90],
     ["longitude", -180, 180],
@@ -77,7 +96,9 @@ function validateFields(body, required) {
   ]) {
     if (
       body[field] !== undefined &&
-      (typeof body[field] !== "number" || body[field] < minimum || body[field] > maximum)
+      (typeof body[field] !== "number" ||
+        body[field] < minimum ||
+        body[field] > maximum)
     )
       errors.push({ field, message: `${field} is invalid` });
   }
@@ -87,13 +108,23 @@ function validateFields(body, required) {
 }
 
 export function createEventValidator({ body }) {
-  const errors = validateFields(body, ["title", "category", "date", "startTime", "venue", "city"]);
+  const errors = validateFields(body, [
+    "title",
+    "category",
+    "date",
+    "startTime",
+    "venue",
+    "city",
+  ]);
   return { valid: errors.length === 0, errors };
 }
 
 export function updateEventValidator({ body }) {
   const errors = validateFields(body, []);
   if (isRequestBody(body) && !Object.keys(body).length)
-    errors.push({ field: "event", message: "At least one event field is required" });
+    errors.push({
+      field: "event",
+      message: "At least one event field is required",
+    });
   return { valid: errors.length === 0, errors };
 }

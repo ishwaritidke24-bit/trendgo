@@ -2,7 +2,10 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-export interface SectionHeadingProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
+export interface SectionHeadingProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "title"
+> {
   eyebrow?: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
@@ -30,7 +33,9 @@ export function SectionHeading({
       )}
       {...props}
     >
-      <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center")}>
+      <div
+        className={cn("max-w-2xl", align === "center" && "mx-auto text-center")}
+      >
         {eyebrow ? (
           <p className="mb-3 text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
             {eyebrow}

@@ -12,9 +12,13 @@ import type { EventItem } from "@/data/mock";
 
 function EventCard({ event, city }: { event: EventItem; city: string }) {
   const whenText =
-    event.date && event.time ? `${event.date} · ${event.time}` : event.date || "Upcoming";
+    event.date && event.time
+      ? `${event.date} · ${event.time}`
+      : event.date || "Upcoming";
   const venueText = event.venue || event.area || city;
-  const distanceText = event.distanceKm ? `${event.distanceKm} km away` : event.area || city;
+  const distanceText = event.distanceKm
+    ? `${event.distanceKm} km away`
+    : event.area || city;
 
   return (
     <Link
@@ -72,7 +76,9 @@ function EventCard({ event, city }: { event: EventItem; city: string }) {
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4">
           <span className="inline-flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
             <Users className="size-3.5 shrink-0" />
-            <span className="truncate">{event.interested ?? 12} people interested</span>
+            <span className="truncate">
+              {event.interested ?? 12} people interested
+            </span>
           </span>
           <span className="shrink-0 text-xs font-medium text-primary-glow opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             View →

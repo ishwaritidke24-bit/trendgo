@@ -89,7 +89,11 @@ export const REAL_EVENTS_CATALOG: (EventItem & { city: string })[] = [
       "An easy-paced guided walk through historic Panchavati ghats, temporary pop-up installations, live sketch corners, and open conversations with emerging Nashik artists.",
     interested: 64,
     friendIds: ["aisha"],
-    reasons: ["Free community walk", "Historic Ramkund ghats", "Great for creatives"],
+    reasons: [
+      "Free community walk",
+      "Historic Ramkund ghats",
+      "Great for creatives",
+    ],
   },
   {
     id: "nashik-founders-chai",
@@ -117,7 +121,11 @@ export const REAL_EVENTS_CATALOG: (EventItem & { city: string })[] = [
       "A no-stage casual evening for local founders, engineers, and designers to swap notes, meet collaborators, and showcase what they are building over hot kulhad chai.",
     interested: 39,
     friendIds: ["rahul"],
-    reasons: ["Tech & startup community", "College Road hotspot", "Informal discussions"],
+    reasons: [
+      "Tech & startup community",
+      "College Road hotspot",
+      "Informal discussions",
+    ],
   },
   {
     id: "soma-wine-tour-sunset",
@@ -177,7 +185,11 @@ export const REAL_EVENTS_CATALOG: (EventItem & { city: string })[] = [
       "A raw, high-energy late evening comedy session featuring 8 emerging Nashik comedians trying fresh material, accompanied by a special guest headliner from Mumbai.",
     interested: 53,
     friendIds: ["rahul", "dev"],
-    reasons: ["Popular College Road night", "Fast-paced comedy", "Rooftop ambiance"],
+    reasons: [
+      "Popular College Road night",
+      "Fast-paced comedy",
+      "Rooftop ambiance",
+    ],
   },
   {
     id: "pandavleni-sunrise-trek",
@@ -205,7 +217,11 @@ export const REAL_EVENTS_CATALOG: (EventItem & { city: string })[] = [
       "Climb 300 steps in the cool morning mist to the 2,000-year-old Trirashmi Buddhist caves. Catch the sunrise across the Nashik valley, followed by group tea at the base.",
     interested: 71,
     friendIds: ["dev"],
-    reasons: ["Panoramic Nashik skyline", "Ancient rock-cut caves", "Energizing morning walk"],
+    reasons: [
+      "Panoramic Nashik skyline",
+      "Ancient rock-cut caves",
+      "Energizing morning walk",
+    ],
   },
   {
     id: "panchavati-misal-crawl",
@@ -233,7 +249,11 @@ export const REAL_EVENTS_CATALOG: (EventItem & { city: string })[] = [
       "Taste authentic wood-fired Nashik misal, traditional wadas, freshly roasted farsan, and historic dessert spots through winding alleys that standard food apps miss.",
     interested: 60,
     friendIds: ["rahul", "aisha"],
-    reasons: ["Authentic traditional flavours", "Historic old wadas", "Small group tour"],
+    reasons: [
+      "Authentic traditional flavours",
+      "Historic old wadas",
+      "Small group tour",
+    ],
   },
   {
     id: "godavari-pottery-lab",
@@ -261,7 +281,11 @@ export const REAL_EVENTS_CATALOG: (EventItem & { city: string })[] = [
       "A tactile 3-hour morning workshop learning handbuilding and wheel throwing. Shape your own coffee mug or vase under guidance of master potters, with all materials included.",
     interested: 42,
     friendIds: ["sneha"],
-    reasons: ["Take home your creation", "Quiet riverside studio", "Beginner friendly"],
+    reasons: [
+      "Take home your creation",
+      "Quiet riverside studio",
+      "Beginner friendly",
+    ],
   },
   {
     id: "monsoon-lens-photo-walk",
@@ -297,7 +321,9 @@ export const REAL_EVENTS_CATALOG: (EventItem & { city: string })[] = [
   },
 ];
 
-export function filterRealEvents(params: Record<string, string | number | undefined>): {
+export function filterRealEvents(
+  params: Record<string, string | number | undefined>,
+): {
   events: EventItem[];
   pagination: {
     page: number;
@@ -307,12 +333,19 @@ export function filterRealEvents(params: Record<string, string | number | undefi
     hasNextPage: boolean;
   };
 } {
-  const city = typeof params.city === "string" ? params.city.trim().toLowerCase() : "";
-  const category = typeof params.category === "string" ? params.category.trim().toLowerCase() : "";
-  const query = typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
+  const city =
+    typeof params.city === "string" ? params.city.trim().toLowerCase() : "";
+  const category =
+    typeof params.category === "string"
+      ? params.category.trim().toLowerCase()
+      : "";
+  const query =
+    typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
   const date = typeof params.date === "string" ? params.date : "";
   const maxPrice =
-    params.price !== undefined && params.price !== "" ? Number(params.price) : undefined;
+    params.price !== undefined && params.price !== ""
+      ? Number(params.price)
+      : undefined;
   const page = Number(params.page) || 1;
   const limit = Number(params.limit) || 20;
 
@@ -334,7 +367,9 @@ export function filterRealEvents(params: Record<string, string | number | undefi
 
   if (category) {
     const categories = category.split(",").map((c) => c.trim().toLowerCase());
-    filtered = filtered.filter((ev) => categories.includes(ev.category.toLowerCase()));
+    filtered = filtered.filter((ev) =>
+      categories.includes(ev.category.toLowerCase()),
+    );
   }
 
   if (query) {
@@ -347,7 +382,9 @@ export function filterRealEvents(params: Record<string, string | number | undefi
 
   if (date && date !== "Any time") {
     filtered = filtered.filter(
-      (ev) => ev.dayGroup === date || ev.date.toLowerCase().includes(date.toLowerCase()),
+      (ev) =>
+        ev.dayGroup === date ||
+        ev.date.toLowerCase().includes(date.toLowerCase()),
     );
   }
 

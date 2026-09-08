@@ -2,7 +2,13 @@ import { Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export function MatchBadge({ value, className }: { value: number; className?: string }) {
+export function MatchBadge({
+  value,
+  className,
+}: {
+  value: number;
+  className?: string;
+}) {
   return (
     <span
       className={cn(

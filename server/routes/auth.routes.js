@@ -18,8 +18,16 @@ import {
 
 const authRouter = Router();
 
-authRouter.post("/signup", validateRequest(signupValidator), asyncHandler(signupController));
-authRouter.post("/signin", validateRequest(signinValidator), asyncHandler(signinController));
+authRouter.post(
+  "/signup",
+  validateRequest(signupValidator),
+  asyncHandler(signupController),
+);
+authRouter.post(
+  "/signin",
+  validateRequest(signinValidator),
+  asyncHandler(signinController),
+);
 authRouter.post("/signout", signoutController);
 authRouter.get("/me", requireAuth, asyncHandler(meController));
 authRouter.put(

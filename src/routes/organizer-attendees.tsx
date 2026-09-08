@@ -5,9 +5,15 @@ import { ArrowLeft, Users } from "lucide-react";
 import { OrganizerShell } from "@/components/organizer/organizer-shell";
 import { Container, Section } from "@/components/layout/container";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getHostedEvents, getHostedEventAudience, type HostedEvent } from "@/lib/organizer-api";
+import {
+  getHostedEvents,
+  getHostedEventAudience,
+  type HostedEvent,
+} from "@/lib/organizer-api";
 
-export const Route = createFileRoute("/organizer-attendees")({ component: OrganizerAttendees });
+export const Route = createFileRoute("/organizer-attendees")({
+  component: OrganizerAttendees,
+});
 function OrganizerAttendees() {
   const [events, setEvents] = React.useState<HostedEvent[]>([]);
   const [selected, setSelected] = React.useState("");
@@ -23,7 +29,9 @@ function OrganizerAttendees() {
   }, []);
   React.useEffect(() => {
     if (selected)
-      void getHostedEventAudience(selected).then((result) => setAudience(result.audience));
+      void getHostedEventAudience(selected).then((result) =>
+        setAudience(result.audience),
+      );
   }, [selected]);
   return (
     <OrganizerShell>
@@ -35,7 +43,9 @@ function OrganizerAttendees() {
           >
             <ArrowLeft /> Dashboard
           </Link>
-          <h1 className="font-display mt-5 text-3xl font-semibold">Manage Attendees</h1>
+          <h1 className="font-display mt-5 text-3xl font-semibold">
+            Manage Attendees
+          </h1>
           {events.length ? (
             <>
               <select
@@ -51,7 +61,10 @@ function OrganizerAttendees() {
               </select>
               <div className="mt-6 grid gap-6 md:grid-cols-2">
                 <Audience title="Attending" users={audience?.attendees ?? []} />
-                <Audience title="Interested" users={audience?.interested ?? []} />
+                <Audience
+                  title="Interested"
+                  users={audience?.interested ?? []}
+                />
               </div>
             </>
           ) : (
@@ -82,14 +95,19 @@ function Audience({
       {users.length ? (
         <div className="mt-4 flex flex-col gap-3">
           {users.map((user) => (
-            <div key={user.id} className="rounded-xl border border-border bg-surface/40 p-3">
+            <div
+              key={user.id}
+              className="rounded-xl border border-border bg-surface/40 p-3"
+            >
               <p className="text-sm font-medium">{user.name}</p>
               <p className="text-xs text-muted-foreground">TrendGo member</p>
             </div>
           ))}
         </div>
       ) : (
-        <p className="mt-4 text-sm text-muted-foreground">No people here yet.</p>
+        <p className="mt-4 text-sm text-muted-foreground">
+          No people here yet.
+        </p>
       )}
     </div>
   );

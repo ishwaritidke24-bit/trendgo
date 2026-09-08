@@ -65,7 +65,8 @@ export function LocationModal() {
             Select Your Location
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            TrendGo tailors experiences, gigs, and communities happening around you.
+            TrendGo tailors experiences, gigs, and communities happening around
+            you.
           </DialogDescription>
         </DialogHeader>
 
@@ -93,8 +94,8 @@ export function LocationModal() {
 
           {permissionDenied && (
             <p className="text-xs text-amber-400/90 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20">
-              Location permission was denied in your browser. You can manually enter or select your
-              city below.
+              Location permission was denied in your browser. You can manually
+              enter or select your city below.
             </p>
           )}
 

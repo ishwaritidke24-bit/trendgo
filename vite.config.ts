@@ -5,8 +5,9 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig as lovableConfig } from "@lovable.dev/vite-tanstack-config";
+import type { ConfigEnv, PluginOption } from "vite";
 
-export default async function configure(env: any) {
+export default async function configure(env: ConfigEnv) {
   const configFn = lovableConfig({
     tanstackStart: {
       // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
@@ -20,7 +21,14 @@ export default async function configure(env: any) {
   if (Array.isArray(config.plugins)) {
     config.plugins = config.plugins
       .flat(Infinity)
-      .filter((p: any) => p && p.name !== "vite-tsconfig-paths" && p.name !== "vite-plugin-tsconfig-paths");
+      .filter(
+        (p: PluginOption) =>
+          p &&
+          typeof p === "object" &&
+          "name" in p &&
+          p.name !== "vite-tsconfig-paths" &&
+          p.name !== "vite-plugin-tsconfig-paths",
+      );
   }
   config.resolve = {
     ...config.resolve,
@@ -29,4 +37,3 @@ export default async function configure(env: any) {
 
   return config;
 }
-

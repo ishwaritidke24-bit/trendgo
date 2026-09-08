@@ -1,6 +1,13 @@
 import * as React from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Calendar, Loader2, MapPin, Search, Shuffle, Sparkles } from "lucide-react";
+import {
+  Calendar,
+  Loader2,
+  MapPin,
+  Search,
+  Shuffle,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Container } from "@/components/layout/container";
@@ -31,7 +38,14 @@ interface FieldProps {
   onClick?: () => void;
 }
 
-function Field({ icon, label, placeholder, value, onChange, onClick }: FieldProps) {
+function Field({
+  icon,
+  label,
+  placeholder,
+  value,
+  onChange,
+  onClick,
+}: FieldProps) {
   const id = React.useId();
   return (
     <div
@@ -62,7 +76,8 @@ function Field({ icon, label, placeholder, value, onChange, onClick }: FieldProp
 
 export function Hero() {
   const navigate = useNavigate();
-  const { location, setLocation, detectLocation, setIsModalOpen, isDetecting } = useUserLocation();
+  const { location, setLocation, detectLocation, setIsModalOpen, isDetecting } =
+    useUserLocation();
 
   const [what, setWhat] = React.useState("");
   const [where, setWhere] = React.useState(location);
@@ -129,7 +144,9 @@ export function Hero() {
       const availableEvents = result.events || [];
 
       if (availableEvents.length === 0) {
-        toast.info(`No experiences found near ${targetCity} right now. Try expanding your search!`);
+        toast.info(
+          `No experiences found near ${targetCity} right now. Try expanding your search!`,
+        );
         return;
       }
 
@@ -142,7 +159,9 @@ export function Hero() {
         params: { eventId: selected.id },
       });
     } catch {
-      toast.error("Unable to find a surprise experience right now. Please try again!");
+      toast.error(
+        "Unable to find a surprise experience right now. Please try again!",
+      );
     } finally {
       setIsSurprising(false);
     }
@@ -172,13 +191,14 @@ export function Hero() {
           </span>
 
           <h1 className="mt-6 font-display text-4xl leading-[1.05] font-semibold text-balance sm:text-6xl lg:text-7xl">
-            Find something <span className="text-gradient-brand">worth doing next.</span>
+            Find something{" "}
+            <span className="text-gradient-brand">worth doing next.</span>
           </h1>
 
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">
-            TrendGo learns what you actually like and surfaces the events, activities, communities
-            and experiences around you that match — from tiny gigs to weekend workshops you'd never
-            have found alone.
+            TrendGo learns what you actually like and surfaces the events,
+            activities, communities and experiences around you that match — from
+            tiny gigs to weekend workshops you'd never have found alone.
           </p>
         </div>
 
@@ -189,7 +209,12 @@ export function Hero() {
               e.preventDefault();
               void navigate({
                 to: "/explore",
-                search: { q: what, location: where, date: when, category: activeChip ?? undefined },
+                search: {
+                  q: what,
+                  location: where,
+                  date: when,
+                  category: activeChip ?? undefined,
+                },
               });
             }}
             className="glass-panel rounded-3xl p-2 shadow-[var(--shadow-elevated)]"
@@ -206,7 +231,11 @@ export function Hero() {
               <Field
                 icon={<MapPin />}
                 label="Where?"
-                placeholder={isDetecting ? "Detecting location..." : "Select location or city"}
+                placeholder={
+                  isDetecting
+                    ? "Detecting location..."
+                    : "Select location or city"
+                }
                 value={where}
                 onChange={handleWhereChange}
               />
@@ -268,11 +297,15 @@ export function Hero() {
 
             {liveCount !== null && liveCount > 0 ? (
               <p className="text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">{liveCount}</span> experiences live
-                near you this week
+                <span className="font-semibold text-foreground">
+                  {liveCount}
+                </span>{" "}
+                experiences live near you this week
               </p>
             ) : (
-              <p className="text-xs text-muted-foreground">Explore experiences near you</p>
+              <p className="text-xs text-muted-foreground">
+                Explore experiences near you
+              </p>
             )}
           </div>
         </div>

@@ -13,7 +13,9 @@ function normalizeEmail(email) {
 }
 
 function issueToken(userId) {
-  return jwt.sign({ sub: userId.toString() }, env.jwtSecret, { expiresIn: env.jwtExpiresIn });
+  return jwt.sign({ sub: userId.toString() }, env.jwtSecret, {
+    expiresIn: env.jwtExpiresIn,
+  });
 }
 
 export function getAuthCookieOptions() {
@@ -35,7 +37,11 @@ export async function signup({ name, email, password }) {
   const normalizedEmail = normalizeEmail(email);
   const existingUser = await User.findOne({ email: normalizedEmail }).lean();
   if (existingUser)
-    throw createHttpError(409, "An account with that email already exists", "EMAIL_IN_USE");
+    throw createHttpError(
+      409,
+      "An account with that email already exists",
+      "EMAIL_IN_USE",
+    );
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
   const user = await User.create({
@@ -47,17 +53,30 @@ export async function signup({ name, email, password }) {
 }
 
 export async function signin({ email, password }) {
-  const user = await User.findOne({ email: normalizeEmail(email) }).select("+passwordHash");
-  const validPassword = user ? await bcrypt.compare(password, user.passwordHash) : false;
+  const user = await User.findOne({ email: normalizeEmail(email) }).select(
+    "+passwordHash",
+  );
+  const validPassword = user
+    ? await bcrypt.compare(password, user.passwordHash)
+    : false;
   if (!validPassword)
-    throw createHttpError(401, "Invalid email or password", "INVALID_CREDENTIALS");
+    throw createHttpError(
+      401,
+      "Invalid email or password",
+      "INVALID_CREDENTIALS",
+    );
 
   return { user: toPublicUser(user), token: issueToken(user._id) };
 }
 
 export async function getCurrentUser(userId) {
   const user = await User.findById(userId).lean();
-  if (!user) throw createHttpError(401, "Your session is no longer valid", "SESSION_INVALID");
+  if (!user)
+    throw createHttpError(
+      401,
+      "Your session is no longer valid",
+      "SESSION_INVALID",
+    );
   return toPublicUser(user);
 }
 
@@ -81,7 +100,12 @@ export async function updateCurrentUser(userId, input) {
     returnDocument: "after",
     runValidators: true,
   }).lean();
-  if (!user) throw createHttpError(401, "Your session is no longer valid", "SESSION_INVALID");
+  if (!user)
+    throw createHttpError(
+      401,
+      "Your session is no longer valid",
+      "SESSION_INVALID",
+    );
   return toPublicUser(user);
 }
 
@@ -91,6 +115,11 @@ export async function updateCurrentUserInterests(userId, interests) {
     { interests, onboardingCompleted: interests.length > 0 },
     { returnDocument: "after", runValidators: true },
   ).lean();
-  if (!user) throw createHttpError(401, "Your session is no longer valid", "SESSION_INVALID");
+  if (!user)
+    throw createHttpError(
+      401,
+      "Your session is no longer valid",
+      "SESSION_INVALID",
+    );
   return toPublicUser(user);
 }

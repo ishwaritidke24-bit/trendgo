@@ -3,7 +3,12 @@ import { Check, LoaderCircle, Send, Users, X } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { getFriends, inviteFriends, type FriendItem } from "@/lib/auth-api";
 
 export function InviteFriendsDialog({
@@ -33,7 +38,9 @@ export function InviteFriendsDialog({
       .then((result) => setFriends(result.friends))
       .catch((requestError) =>
         setError(
-          requestError instanceof Error ? requestError.message : "Unable to load your friends",
+          requestError instanceof Error
+            ? requestError.message
+            : "Unable to load your friends",
         ),
       )
       .finally(() => setLoading(false));
@@ -41,7 +48,9 @@ export function InviteFriendsDialog({
 
   function toggleFriend(friendId: string) {
     setSelected((current) =>
-      current.includes(friendId) ? current.filter((id) => id !== friendId) : [...current, friendId],
+      current.includes(friendId)
+        ? current.filter((id) => id !== friendId)
+        : [...current, friendId],
     );
   }
 
@@ -54,7 +63,11 @@ export function InviteFriendsDialog({
       setShared(false);
       setSelected([]);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to send invites");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to send invites",
+      );
     } finally {
       setSending(false);
     }
@@ -62,7 +75,8 @@ export function InviteFriendsDialog({
 
   async function shareInvite() {
     const url = window.location.href;
-    if (navigator.share) await navigator.share({ title: "TrendGo event invite", url });
+    if (navigator.share)
+      await navigator.share({ title: "TrendGo event invite", url });
     else await navigator.clipboard.writeText(url);
     setShared(true);
   }
@@ -82,7 +96,9 @@ export function InviteFriendsDialog({
           {!loading && !error && friends.length === 0 ? (
             <div className="py-8 text-center">
               <Users className="mx-auto size-8 text-muted-foreground" />
-              <p className="mt-3 text-sm text-muted-foreground">No TrendGo friends yet</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                No TrendGo friends yet
+              </p>
             </div>
           ) : null}
           {!loading && friends.length ? (
@@ -99,8 +115,12 @@ export function InviteFriendsDialog({
                     <AvatarFallback>{friend.initials}</AvatarFallback>
                   </Avatar>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">{friend.name}</span>
-                    {friend.online ? <span className="text-xs text-success">Available</span> : null}
+                    <span className="block text-sm font-medium">
+                      {friend.name}
+                    </span>
+                    {friend.online ? (
+                      <span className="text-xs text-success">Available</span>
+                    ) : null}
                   </span>
                   {selected.includes(friend.id) ? (
                     <Check className="size-4 text-primary-glow" />
@@ -128,13 +148,22 @@ export function InviteFriendsDialog({
               <p className="flex items-center gap-2">
                 <Check className="size-4" /> Invites sent
               </p>
-              <Button type="button" size="sm" variant="ghost" onClick={() => void shareInvite()}>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => void shareInvite()}
+              >
                 {shared ? "Invite link copied" : "Share invite"}
               </Button>
             </div>
           ) : null}
           <div className="mt-5 flex justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
+            >
               <X /> Close
             </Button>
             <Button

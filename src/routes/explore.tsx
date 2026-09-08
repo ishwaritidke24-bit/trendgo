@@ -1,6 +1,13 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { LayoutGrid, List, MapPin, Search, SlidersHorizontal, X } from "lucide-react";
+import {
+  LayoutGrid,
+  List,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
@@ -43,16 +50,33 @@ export const Route = createFileRoute("/explore")({
   component: ExplorePage,
 });
 
-const DATES = ["Any time", "Today", "Tomorrow", "This week", "Next week"] as const;
+const DATES = [
+  "Any time",
+  "Today",
+  "Tomorrow",
+  "This week",
+  "Next week",
+] as const;
 const PRICES = [
   { label: "Any price", value: 99999 },
   { label: "Free", value: 0 },
   { label: "Under ₹500", value: 500 },
   { label: "Under ₹1000", value: 1000 },
 ] as const;
-const SORTS = ["Trending", "Best match", "Soonest", "Price: low to high"] as const;
+const SORTS = [
+  "Trending",
+  "Best match",
+  "Soonest",
+  "Price: low to high",
+] as const;
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+function FilterGroup({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <p className="mb-2.5 text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
@@ -113,7 +137,9 @@ function ExplorePage() {
   const [error, setError] = React.useState<string | null>(null);
 
   const toggleCategory = (c: string) =>
-    setCategories((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
+    setCategories((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+    );
 
   const reset = () => {
     setQuery("");
@@ -124,7 +150,10 @@ function ExplorePage() {
   };
 
   React.useEffect(() => {
-    if (search.category && CATEGORIES.includes(search.category as (typeof CATEGORIES)[number]))
+    if (
+      search.category &&
+      CATEGORIES.includes(search.category as (typeof CATEGORIES)[number])
+    )
       setCategories([search.category]);
   }, [search.category]);
 
@@ -170,7 +199,11 @@ function ExplorePage() {
       })
       .catch((requestError) => {
         if (active)
-          setError(requestError instanceof Error ? requestError.message : "Unable to load events");
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : "Unable to load events",
+          );
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -178,10 +211,20 @@ function ExplorePage() {
     return () => {
       active = false;
     };
-  }, [query, categories, date, price, sort, activeLocation, userLocations.join(",")]);
+  }, [
+    query,
+    categories,
+    date,
+    price,
+    sort,
+    activeLocation,
+    userLocations.join(","),
+  ]);
 
   const activeFilters =
-    categories.length + (date !== "Any time" ? 1 : 0) + (price !== 99999 ? 1 : 0);
+    categories.length +
+    (date !== "Any time" ? 1 : 0) +
+    (price !== 99999 ? 1 : 0);
 
   const hasLocations = userLocations.length > 0;
 
@@ -208,7 +251,10 @@ function ExplorePage() {
           {/* Location tabs — shown only when user has locations */}
           {hasLocations ? (
             <div className="mt-6 flex flex-wrap gap-2">
-              <Chip active={activeLocation === "all"} onClick={() => setActiveLocation("all")}>
+              <Chip
+                active={activeLocation === "all"}
+                onClick={() => setActiveLocation("all")}
+              >
                 <MapPin className="mr-1 inline-block size-3 text-primary-glow" />
                 All Locations
               </Chip>
@@ -251,7 +297,8 @@ function ExplorePage() {
               className="sm:hidden"
               onClick={() => setFiltersOpen((v) => !v)}
             >
-              <SlidersHorizontal /> Filters{activeFilters ? ` (${activeFilters})` : ""}
+              <SlidersHorizontal /> Filters
+              {activeFilters ? ` (${activeFilters})` : ""}
             </Button>
           </div>
 
@@ -265,7 +312,11 @@ function ExplorePage() {
             <div className="sm:col-span-2 lg:col-span-4">
               <FilterGroup label="Category">
                 {CATEGORIES.map((c) => (
-                  <Chip key={c} active={categories.includes(c)} onClick={() => toggleCategory(c)}>
+                  <Chip
+                    key={c}
+                    active={categories.includes(c)}
+                    onClick={() => toggleCategory(c)}
+                  >
                     {c}
                   </Chip>
                 ))}
@@ -280,7 +331,11 @@ function ExplorePage() {
             </FilterGroup>
             <FilterGroup label="Price">
               {PRICES.map((p) => (
-                <Chip key={p.label} active={price === p.value} onClick={() => setPrice(p.value)}>
+                <Chip
+                  key={p.label}
+                  active={price === p.value}
+                  onClick={() => setPrice(p.value)}
+                >
                   {p.label}
                 </Chip>
               ))}
@@ -297,8 +352,15 @@ function ExplorePage() {
           {/* Result bar */}
           <div className="mt-6 flex items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{results.length}</span> experiences
-              {activeFilters ? " match your filters" : hasLocations ? " this month" : " available"}
+              <span className="font-medium text-foreground">
+                {results.length}
+              </span>{" "}
+              experiences
+              {activeFilters
+                ? " match your filters"
+                : hasLocations
+                  ? " this month"
+                  : " available"}
             </p>
             <div className="flex items-center gap-2">
               {activeFilters ? (
@@ -345,13 +407,21 @@ function ExplorePage() {
             <EmptyState
               className="mt-8"
               icon={<Search />}
-              title={hasLocations ? "No events found this month" : "Add locations to get started"}
+              title={
+                hasLocations
+                  ? "No events found this month"
+                  : "Add locations to get started"
+              }
               description={
                 hasLocations
                   ? "Try widening your filters, or check back soon as new events get added daily."
                   : "Click the 📍 location pin in the top-right of the navbar to add cities like Nashik, Pune, or Mumbai."
               }
-              action={activeFilters ? <Button onClick={reset}>Clear filters</Button> : undefined}
+              action={
+                activeFilters ? (
+                  <Button onClick={reset}>Clear filters</Button>
+                ) : undefined
+              }
             />
           ) : view === "grid" ? (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -393,8 +463,11 @@ function ExplorePage() {
                         {event.category} · {event.date} · {event.time}
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {event.venue}{event.city ? ` · ${event.city}` : ""} ·{" "}
-                        {event.isFree || event.price === 0 ? "Free" : `₹${event.price}`}
+                        {event.venue}
+                        {event.city ? ` · ${event.city}` : ""} ·{" "}
+                        {event.isFree || event.price === 0
+                          ? "Free"
+                          : `₹${event.price}`}
                       </p>
                       {event.source && event.source !== "trendgo" ? (
                         <p className="mt-1 text-[10px] text-muted-foreground capitalize">

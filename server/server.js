@@ -9,8 +9,12 @@ const server = createServer(app);
 
 server.on("error", (error) => {
   if (error.code === "EADDRINUSE") {
-    console.error(`❌ Port ${env.port} is already in use by another running server process.`);
-    console.error(`   Tip: Close existing terminals or run: Stop-Process -Name node -Force`);
+    console.error(
+      `❌ Port ${env.port} is already in use by another running server process.`,
+    );
+    console.error(
+      `   Tip: Close existing terminals or run: Stop-Process -Name node -Force`,
+    );
   } else {
     console.error("❌ Server error:", error);
   }

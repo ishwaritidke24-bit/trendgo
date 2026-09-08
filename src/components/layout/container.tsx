@@ -16,13 +16,21 @@ const containerVariants = cva("mx-auto w-full px-4 sm:px-6 lg:px-8", {
 });
 
 export interface ContainerProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof containerVariants> {
   as?: React.ElementType;
 }
 
-export function Container({ className, width, as: Comp = "div", ...props }: ContainerProps) {
-  return <Comp className={cn(containerVariants({ width }), className)} {...props} />;
+export function Container({
+  className,
+  width,
+  as: Comp = "div",
+  ...props
+}: ContainerProps) {
+  return (
+    <Comp className={cn(containerVariants({ width }), className)} {...props} />
+  );
 }
 
 export interface SectionProps extends React.HTMLAttributes<HTMLElement> {
@@ -35,6 +43,12 @@ const sectionSpacing = {
   lg: "py-24 sm:py-32",
 } as const;
 
-export function Section({ className, spacing = "default", ...props }: SectionProps) {
-  return <section className={cn(sectionSpacing[spacing], className)} {...props} />;
+export function Section({
+  className,
+  spacing = "default",
+  ...props
+}: SectionProps) {
+  return (
+    <section className={cn(sectionSpacing[spacing], className)} {...props} />
+  );
 }

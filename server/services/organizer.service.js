@@ -24,7 +24,12 @@ export async function getOrganizerProfile(userId) {
 
 export async function activateOrganizer(userId, input) {
   const user = await User.findById(userId).lean();
-  if (!user) throw createHttpError(401, "Your session is no longer valid", "SESSION_INVALID");
+  if (!user)
+    throw createHttpError(
+      401,
+      "Your session is no longer valid",
+      "SESSION_INVALID",
+    );
   const profile = await OrganizerProfile.findOneAndUpdate(
     { userId },
     {
@@ -49,13 +54,19 @@ export async function updateOrganizerProfile(userId, input) {
   const updates = {};
   for (const field of ["displayName", "bio", "organizationName", "website"]) {
     if (input[field] !== undefined)
-      updates[field] = typeof input[field] === "string" ? input[field].trim() : input[field];
+      updates[field] =
+        typeof input[field] === "string" ? input[field].trim() : input[field];
   }
   const profile = await OrganizerProfile.findOneAndUpdate(
     { userId },
     { $set: updates },
     { returnDocument: "after", runValidators: true },
   ).lean();
-  if (!profile) throw createHttpError(404, "Organizer profile not found", "ORGANIZER_NOT_FOUND");
+  if (!profile)
+    throw createHttpError(
+      404,
+      "Organizer profile not found",
+      "ORGANIZER_NOT_FOUND",
+    );
   return publicOrganizer(profile);
 }

@@ -8,8 +8,9 @@ export async function updateEventPreferenceController(req, res) {
     Boolean(req.body.enabled),
   );
   if (!result)
-    return res
-      .status(401)
-      .json({ success: false, error: { message: "Your session is no longer valid" } });
+    return res.status(401).json({
+      success: false,
+      error: { message: "Your session is no longer valid" },
+    });
   return res.json({ success: true, ...result });
 }

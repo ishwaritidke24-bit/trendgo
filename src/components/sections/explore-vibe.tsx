@@ -30,7 +30,9 @@ export function ExploreByVibe() {
             <button
               key={label}
               type="button"
-              onClick={() => void navigate({ to: "/explore", search: { q: label } })}
+              onClick={() =>
+                void navigate({ to: "/explore", search: { q: label } })
+              }
               className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 text-left transition-all duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1 hover:border-primary/50 hover:shadow-[var(--shadow-glow)]"
             >
               <span className="pointer-events-none absolute inset-0 bg-[image:var(--gradient-surface)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -40,7 +42,9 @@ export function ExploreByVibe() {
               <span className="relative mt-3 block text-sm font-semibold text-foreground">
                 {label}
               </span>
-              <span className="relative mt-1 block text-xs text-muted-foreground">{hint}</span>
+              <span className="relative mt-1 block text-xs text-muted-foreground">
+                {hint}
+              </span>
             </button>
           ))}
         </div>

@@ -13,16 +13,24 @@ import {
   type HostedEvent,
 } from "@/lib/organizer-api";
 
-export const Route = createFileRoute("/organizer-events")({ component: OrganizerEvents });
+export const Route = createFileRoute("/organizer-events")({
+  component: OrganizerEvents,
+});
 function OrganizerEvents() {
   const [events, setEvents] = React.useState<HostedEvent[]>([]);
-  const [tab, setTab] = React.useState<"upcoming" | "published" | "drafts" | "past">("upcoming");
+  const [tab, setTab] = React.useState<
+    "upcoming" | "published" | "drafts" | "past"
+  >("upcoming");
   const [error, setError] = React.useState<string | null>(null);
   React.useEffect(() => {
     void getHostedEvents()
       .then((result) => setEvents(result.events))
       .catch((requestError) =>
-        setError(requestError instanceof Error ? requestError.message : "Unable to load events"),
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : "Unable to load events",
+        ),
       );
   }, []);
   const filtered = events.filter((event) =>
@@ -40,9 +48,15 @@ function OrganizerEvents() {
         event.id,
         event.status === "published" ? "unpublished" : "published",
       );
-      setEvents((current) => current.map((item) => (item.id === event.id ? result.event : item)));
+      setEvents((current) =>
+        current.map((item) => (item.id === event.id ? result.event : item)),
+      );
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to update event");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to update event",
+      );
     }
   }
   async function remove(event: HostedEvent) {
@@ -51,7 +65,11 @@ function OrganizerEvents() {
       await deleteHostedEvent(event.id);
       setEvents((current) => current.filter((item) => item.id !== event.id));
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to delete event");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to delete event",
+      );
     }
   }
   return (
@@ -63,7 +81,9 @@ function OrganizerEvents() {
               <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
                 Manage experiences
               </p>
-              <h1 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">My Events</h1>
+              <h1 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">
+                My Events
+              </h1>
             </div>
             <Button asChild>
               <Link to="/organizer-create">
@@ -72,16 +92,18 @@ function OrganizerEvents() {
             </Button>
           </div>
           <div className="mt-8 flex gap-1 overflow-x-auto rounded-2xl border border-border bg-card/60 p-1">
-            {(["upcoming", "published", "drafts", "past"] as const).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setTab(item)}
-                className={`rounded-xl px-4 py-2.5 text-sm capitalize ${tab === item ? "bg-primary/15 text-primary-glow" : "text-muted-foreground"}`}
-              >
-                {item}
-              </button>
-            ))}
+            {(["upcoming", "published", "drafts", "past"] as const).map(
+              (item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setTab(item)}
+                  className={`rounded-xl px-4 py-2.5 text-sm capitalize ${tab === item ? "bg-primary/15 text-primary-glow" : "text-muted-foreground"}`}
+                >
+                  {item}
+                </button>
+              ),
+            )}
           </div>
           {error ? (
             <p role="alert" className="mt-5 text-sm text-destructive">
@@ -98,26 +120,42 @@ function OrganizerEvents() {
                   <div className="min-w-0 flex-1">
                     <p className="font-medium">{event.title}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {event.date} · {event.area} · {event.attendeeCount} attendees ·{" "}
-                      {event.interestedCount} interested
+                      {event.date} · {event.area} · {event.attendeeCount}{" "}
+                      attendees · {event.interestedCount} interested
                     </p>
-                    <span className="text-xs capitalize text-primary-glow">{event.status}</span>
+                    <span className="text-xs capitalize text-primary-glow">
+                      {event.status}
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" variant="ghost" asChild>
-                      <Link to="/organizer-event-detail" search={{ eventId: event.id }}>
+                      <Link
+                        to="/organizer-event-detail"
+                        search={{ eventId: event.id }}
+                      >
                         <Eye />
                       </Link>
                     </Button>
                     <Button size="sm" variant="ghost" asChild>
-                      <Link to="/organizer-event-detail" search={{ eventId: event.id }}>
+                      <Link
+                        to="/organizer-event-detail"
+                        search={{ eventId: event.id }}
+                      >
                         <Pencil />
                       </Link>
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => void toggle(event)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void toggle(event)}
+                    >
                       {event.status === "published" ? "Unpublish" : "Publish"}
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={() => void remove(event)}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => void remove(event)}
+                    >
                       <Trash2 />
                     </Button>
                     <Button size="sm" variant="ghost" asChild>

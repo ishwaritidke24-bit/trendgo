@@ -7,7 +7,9 @@ import { Container, Section } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { createHostedEvent } from "@/lib/organizer-api";
 
-export const Route = createFileRoute("/organizer-create")({ component: CreateOrganizerEvent });
+export const Route = createFileRoute("/organizer-create")({
+  component: CreateOrganizerEvent,
+});
 const initial = {
   title: "",
   description: "",
@@ -41,9 +43,11 @@ function CreateOrganizerEvent() {
     if (!form.address.trim()) return "Address is required.";
     if (!form.city.trim()) return "City is required.";
     // Validate date format YYYY-MM-DD
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return "Date must be in YYYY-MM-DD format.";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(form.date))
+      return "Date must be in YYYY-MM-DD format.";
     // Validate time format HH:MM
-    if (!/^\d{2}:\d{2}$/.test(form.time)) return "Start time must be in HH:MM format (e.g. 19:00).";
+    if (!/^\d{2}:\d{2}$/.test(form.time))
+      return "Start time must be in HH:MM format (e.g. 19:00).";
     if (form.endTime && !/^\d{2}:\d{2}$/.test(form.endTime))
       return "End time must be in HH:MM format (e.g. 21:00).";
     if (form.endTime && form.endTime <= form.time)
@@ -52,7 +56,11 @@ function CreateOrganizerEvent() {
     if (form.capacity < 0) return "Capacity cannot be negative.";
     // Validate image URL if provided
     if (form.image) {
-      try { new URL(form.image); } catch { return "Image must be a valid URL."; }
+      try {
+        new URL(form.image);
+      } catch {
+        return "Image must be a valid URL.";
+      }
     }
     return null;
   }
@@ -78,7 +86,11 @@ function CreateOrganizerEvent() {
       // Navigate to My Events after short delay so user sees success
       setTimeout(() => void navigate({ to: "/organizer-events" }), 1200);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to create event");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to create event",
+      );
     } finally {
       setSaving(false);
     }
@@ -103,7 +115,9 @@ function CreateOrganizerEvent() {
           <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
             Build an experience
           </p>
-          <h1 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">Create Event</h1>
+          <h1 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">
+            Create Event
+          </h1>
           <p className="mt-3 text-sm text-muted-foreground">
             Your account will automatically own this event.
           </p>
@@ -133,7 +147,9 @@ function CreateOrganizerEvent() {
                           : "text"
                   }
                   value={form[key]}
-                  onChange={(event) => setForm({ ...form, [key]: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, [key]: event.target.value })
+                  }
                   className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
                 />
               </label>
@@ -144,7 +160,9 @@ function CreateOrganizerEvent() {
                 type="number"
                 min="0"
                 value={form.price}
-                onChange={(event) => setForm({ ...form, price: Number(event.target.value) })}
+                onChange={(event) =>
+                  setForm({ ...form, price: Number(event.target.value) })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -154,7 +172,9 @@ function CreateOrganizerEvent() {
                 type="number"
                 min="0"
                 value={form.capacity}
-                onChange={(event) => setForm({ ...form, capacity: Number(event.target.value) })}
+                onChange={(event) =>
+                  setForm({ ...form, capacity: Number(event.target.value) })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -163,23 +183,36 @@ function CreateOrganizerEvent() {
               <textarea
                 required
                 value={form.description}
-                onChange={(event) => setForm({ ...form, description: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, description: event.target.value })
+                }
                 className="mt-1 min-h-32 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
             {error ? (
-              <p role="alert" className="text-sm text-destructive sm:col-span-2">
+              <p
+                role="alert"
+                className="text-sm text-destructive sm:col-span-2"
+              >
                 {error}
               </p>
             ) : null}
             {success ? (
-              <p role="status" className="flex items-center gap-2 text-sm text-green-500 sm:col-span-2">
-                <CheckCircle className="size-4" /> Event created! Redirecting to My Events...
+              <p
+                role="status"
+                className="flex items-center gap-2 text-sm text-green-500 sm:col-span-2"
+              >
+                <CheckCircle className="size-4" /> Event created! Redirecting to
+                My Events...
               </p>
             ) : null}
             <div className="flex justify-end sm:col-span-2">
               <Button type="submit" disabled={saving || success}>
-                {saving ? <LoaderCircle className="animate-spin" /> : <CalendarPlus />}
+                {saving ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  <CalendarPlus />
+                )}
                 {saving ? "Creating..." : "Create draft"}
               </Button>
             </div>

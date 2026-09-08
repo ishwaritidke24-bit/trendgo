@@ -18,7 +18,9 @@ async function fetchSerpApiEvents(city) {
       gl: "in",
     });
 
-    const res = await fetch(`https://serpapi.com/search.json?${params.toString()}`);
+    const res = await fetch(
+      `https://serpapi.com/search.json?${params.toString()}`,
+    );
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -27,7 +29,9 @@ async function fetchSerpApiEvents(city) {
     const now = new Date();
     const normalized = eventsResults.slice(0, 10).map((ev) => {
       const title = ev.title || "Local Event";
-      const startDate = ev.date?.start_date ? new Date(ev.date.start_date) : new Date(now.getTime() + 86400000 * 2);
+      const startDate = ev.date?.start_date
+        ? new Date(ev.date.start_date)
+        : new Date(now.getTime() + 86400000 * 2);
       const startTime = ev.date?.when?.split("–")?.[0]?.trim() || "6:00 PM";
       const venue = ev.venue?.name || ev.address?.[0] || `${city} Venue`;
       const address = (ev.address || []).join(", ") || `${venue}, ${city}`;
@@ -89,22 +93,38 @@ function dayGroup(date) {
 }
 
 function distanceInKm(latitude, longitude, originLatitude, originLongitude) {
-  if ([latitude, longitude, originLatitude, originLongitude].some((value) => value === null))
+  if (
+    [latitude, longitude, originLatitude, originLongitude].some(
+      (value) => value === null,
+    )
+  )
     return 0;
   const radians = (value) => (value * Math.PI) / 180;
   const latDelta = radians(latitude - originLatitude);
   const lngDelta = radians(longitude - originLongitude);
   const calculation =
     Math.sin(latDelta / 2) ** 2 +
-    Math.cos(radians(originLatitude)) * Math.cos(radians(latitude)) * Math.sin(lngDelta / 2) ** 2;
+    Math.cos(radians(originLatitude)) *
+      Math.cos(radians(latitude)) *
+      Math.sin(lngDelta / 2) ** 2;
   return (
-    Math.round(6371 * 2 * Math.atan2(Math.sqrt(calculation), Math.sqrt(1 - calculation)) * 10) / 10
+    Math.round(
+      6371 *
+        2 *
+        Math.atan2(Math.sqrt(calculation), Math.sqrt(1 - calculation)) *
+        10,
+    ) / 10
   );
 }
 
 export function toPublicEvent(event, origin) {
   const distanceKm = origin
-    ? distanceInKm(event.latitude, event.longitude, origin.latitude, origin.longitude)
+    ? distanceInKm(
+        event.latitude,
+        event.longitude,
+        origin.latitude,
+        origin.longitude,
+      )
     : 0;
   return {
     id: event._id.toString(),
@@ -140,7 +160,9 @@ export function toPublicEvent(event, origin) {
 
 function parsePositiveInteger(value, fallback, maximum) {
   const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, maximum) : fallback;
+  return Number.isInteger(parsed) && parsed > 0
+    ? Math.min(parsed, maximum)
+    : fallback;
 }
 
 function getDateRange(filter) {
@@ -169,7 +191,9 @@ export async function listPublicEvents(query) {
   const limit = parsePositiveInteger(query.limit, 12, 50);
   const filters = { status: "published" };
   const category =
-    typeof query.category === "string" ? query.category.split(",").filter(Boolean) : [];
+    typeof query.category === "string"
+      ? query.category.split(",").filter(Boolean)
+      : [];
   if (category.length) filters.category = { $in: category };
   if (typeof query.city === "string" && query.city.trim()) {
     filters.city = {
@@ -180,14 +204,24 @@ export async function listPublicEvents(query) {
   const dateRange = getDateRange(query.date);
   if (dateRange) filters.date = dateRange;
   const maximumPrice = Number(query.price);
-  if (query.price !== undefined && Number.isFinite(maximumPrice) && maximumPrice >= 0)
+  if (
+    query.price !== undefined &&
+    Number.isFinite(maximumPrice) &&
+    maximumPrice >= 0
+  )
     filters.price = { $lte: maximumPrice };
   const search = typeof query.search === "string" ? query.search : query.q;
   if (typeof search === "string" && search.trim()) {
     const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    filters.$or = ["title", "description", "category", "tags", "venue", "address", "city"].map(
-      (field) => ({ [field]: { $regex: escaped, $options: "i" } }),
-    );
+    filters.$or = [
+      "title",
+      "description",
+      "category",
+      "tags",
+      "venue",
+      "address",
+      "city",
+    ].map((field) => ({ [field]: { $regex: escaped, $options: "i" } }));
   }
   const latitude = Number(query.latitude ?? query.lat);
   const longitude = Number(query.longitude ?? query.lng);
@@ -207,21 +241,28 @@ export async function listPublicEvents(query) {
       const totalCount = await Event.estimatedDocumentCount();
       if (totalCount === 0) {
         await Event.insertMany(seedEvents).catch(() => {});
-        events = await Event.find(filters).sort({ date: 1, startTime: 1 }).lean();
+        events = await Event.find(filters)
+          .sort({ date: 1, startTime: 1 })
+          .lean();
       }
     }
   }
-  
+
   if (!events || events.length === 0) {
     // Graceful in-memory fallback when database has no matches or is disconnected / offline
     const memoryEvents = seedEvents
       .map((ev, index) => ({ ...ev, _id: `seed_${index + 1}` }))
       .filter((ev) => {
-        if (query.city && !new RegExp(`^${query.city.trim()}$`, "i").test(ev.city)) return false;
+        if (
+          query.city &&
+          !new RegExp(`^${query.city.trim()}$`, "i").test(ev.city)
+        )
+          return false;
         if (category.length && !category.includes(ev.category)) return false;
         if (maximumPrice && ev.price > maximumPrice) return false;
         if (search) {
-          const text = `${ev.title} ${ev.description} ${ev.category} ${ev.venue} ${ev.city}`.toLowerCase();
+          const text =
+            `${ev.title} ${ev.description} ${ev.category} ${ev.venue} ${ev.city}`.toLowerCase();
           if (!text.includes(search.toLowerCase())) return false;
         }
         return true;
@@ -236,7 +277,12 @@ export async function listPublicEvents(query) {
     origin && Number.isFinite(maximumDistance) && maximumDistance >= 0
       ? events.filter(
           (event) =>
-            distanceInKm(event.latitude, event.longitude, latitude, longitude) <= maximumDistance,
+            distanceInKm(
+              event.latitude,
+              event.longitude,
+              latitude,
+              longitude,
+            ) <= maximumDistance,
         )
       : events;
 
@@ -249,7 +295,9 @@ export async function listPublicEvents(query) {
   } else if (query.sort === "price") {
     filtered.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
   } else if (query.sort === "soonest") {
-    filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    filtered.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
   }
 
   const total = filtered.length;
@@ -269,14 +317,24 @@ export async function listPublicEvents(query) {
 }
 
 export async function getPublicEvent(eventId) {
-  if (mongoose.connection.readyState === 1 && mongoose.isObjectIdOrHexString(eventId)) {
-    const event = await Event.findOne({ _id: eventId, status: "published" }).lean();
+  if (
+    mongoose.connection.readyState === 1 &&
+    mongoose.isObjectIdOrHexString(eventId)
+  ) {
+    const event = await Event.findOne({
+      _id: eventId,
+      status: "published",
+    }).lean();
     if (event) return toPublicEvent(event);
   }
   // In-memory fallback
   const seed = seedEvents
     .map((ev, index) => ({ ...ev, _id: `seed_${index + 1}` }))
-    .find((ev) => ev._id === eventId || ev.title.toLowerCase().replace(/\s+/g, "-") === eventId);
+    .find(
+      (ev) =>
+        ev._id === eventId ||
+        ev.title.toLowerCase().replace(/\s+/g, "-") === eventId,
+    );
   if (seed) return toPublicEvent(seed);
   throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
 }
@@ -293,7 +351,8 @@ function organizerDetails(user) {
 
 export async function createEvent(userId, input) {
   const user = await User.findById(userId).select("name").lean();
-  if (!user) throw createHttpError(401, "Authentication required", "AUTH_INVALID");
+  if (!user)
+    throw createHttpError(401, "Authentication required", "AUTH_INVALID");
   const event = await Event.create({
     ...input,
     organizerId: user._id,
@@ -318,5 +377,6 @@ export async function deleteEvent(userId, eventId) {
   if (!mongoose.isObjectIdOrHexString(eventId))
     throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
   const result = await Event.deleteOne({ _id: eventId, organizerId: userId });
-  if (!result.deletedCount) throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
+  if (!result.deletedCount)
+    throw createHttpError(404, "Event not found", "EVENT_NOT_FOUND");
 }

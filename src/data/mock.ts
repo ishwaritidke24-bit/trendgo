@@ -1,5 +1,3 @@
-
-
 export const CATEGORIES = [
   "Music",
   "Techno",
@@ -38,7 +36,14 @@ export interface EventItem {
   date: string;
   time: string;
   endTime?: string;
-  dayGroup: "Today" | "Tomorrow" | "This weekend" | "This week" | "Next week" | "This month" | "Upcoming";
+  dayGroup:
+    | "Today"
+    | "Tomorrow"
+    | "This weekend"
+    | "This week"
+    | "Next week"
+    | "This month"
+    | "Upcoming";
   venue: string;
   area: string;
   city?: string;
@@ -72,7 +77,8 @@ export const EVENTS: EventItem[] = [];
 import { REAL_EVENTS_CATALOG } from "@/lib/real-events";
 
 export const eventById = (id: string) =>
-  EVENTS.find((e) => e.id === id) ?? REAL_EVENTS_CATALOG.find((e) => e.id === id);
+  EVENTS.find((e) => e.id === id) ??
+  REAL_EVENTS_CATALOG.find((e) => e.id === id);
 
 export interface ActivityItem {
   id: string;

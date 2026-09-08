@@ -101,7 +101,11 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
             }
           } catch (err) {
             setStatus("error");
-            setError(err instanceof Error ? err.message : "Failed to determine city name");
+            setError(
+              err instanceof Error
+                ? err.message
+                : "Failed to determine city name",
+            );
             resolve(null);
           }
         },
@@ -109,7 +113,9 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
           if (geoError.code === 1) {
             // Permission denied by user
             setStatus("denied");
-            setError("Location permission was denied. Please select your city manually.");
+            setError(
+              "Location permission was denied. Please select your city manually.",
+            );
           } else {
             setStatus("error");
             setError("Unable to retrieve your location from device");
@@ -158,7 +164,11 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     detectLocation,
   };
 
-  return <LocationContext.Provider value={value}>{children}</LocationContext.Provider>;
+  return (
+    <LocationContext.Provider value={value}>
+      {children}
+    </LocationContext.Provider>
+  );
 }
 
 const defaultLocationContext: LocationContextValue = {
@@ -177,4 +187,3 @@ export function useUserLocation(): LocationContextValue {
   const context = React.useContext(LocationContext);
   return context ?? defaultLocationContext;
 }
-

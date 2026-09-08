@@ -4,12 +4,21 @@ import { createNotification } from "./notification.service.js";
 
 const EVENT_FIELDS = { save: "savedEventIds", interest: "interestedEventIds" };
 
-export async function updateEventPreference(userId, eventId, preference, enabled) {
+export async function updateEventPreference(
+  userId,
+  eventId,
+  preference,
+  enabled,
+) {
   const field = EVENT_FIELDS[preference];
   if (!field) throw new Error("Unsupported event preference");
 
-  const update = enabled ? { $addToSet: { [field]: eventId } } : { $pull: { [field]: eventId } };
-  const user = await User.findByIdAndUpdate(userId, update, { returnDocument: "after" }).lean();
+  const update = enabled
+    ? { $addToSet: { [field]: eventId } }
+    : { $pull: { [field]: eventId } };
+  const user = await User.findByIdAndUpdate(userId, update, {
+    returnDocument: "after",
+  }).lean();
   if (!user) return null;
 
   if (enabled) {
@@ -28,7 +37,9 @@ export async function updateEventPreference(userId, eventId, preference, enabled
   if (eventId.match(/^[a-f\d]{24}$/i)) {
     await Event.findByIdAndUpdate(
       eventId,
-      enabled ? { $addToSet: { interestedIds: userId } } : { $pull: { interestedIds: userId } },
+      enabled
+        ? { $addToSet: { interestedIds: userId } }
+        : { $pull: { interestedIds: userId } },
     );
   }
 

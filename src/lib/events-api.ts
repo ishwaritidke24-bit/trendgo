@@ -27,10 +27,13 @@ export async function searchEvents(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-    const response = await fetch(`${getApiBaseUrl()}/events?${query.toString()}`, {
-      credentials: "include",
-      signal: controller.signal,
-    });
+    const response = await fetch(
+      `${getApiBaseUrl()}/events?${query.toString()}`,
+      {
+        credentials: "include",
+        signal: controller.signal,
+      },
+    );
     clearTimeout(timeoutId);
 
     if (response.ok) {
@@ -59,7 +62,10 @@ export async function getEvent(eventId: string): Promise<EventItem> {
     clearTimeout(timeoutId);
 
     if (response.ok) {
-      const payload = (await response.json()) as { event: EventItem; error?: { message?: string } };
+      const payload = (await response.json()) as {
+        event: EventItem;
+        error?: { message?: string };
+      };
       if (payload.event) return payload.event;
     }
   } catch {

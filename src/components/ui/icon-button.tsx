@@ -12,7 +12,8 @@ const iconButtonVariants = cva(
         default:
           "border border-border bg-surface/60 text-muted-foreground hover:text-foreground hover:border-border-strong hover:bg-surface-elevated",
         ghost: "text-muted-foreground hover:text-foreground hover:bg-surface",
-        accent: "border border-primary/30 bg-primary/12 text-primary-glow hover:bg-primary/20",
+        accent:
+          "border border-primary/30 bg-primary/12 text-primary-glow hover:bg-primary/20",
       },
       size: {
         default: "h-10 w-10 [&_svg]:size-[18px]",
@@ -25,7 +26,8 @@ const iconButtonVariants = cva(
 );
 
 export interface IconButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof iconButtonVariants> {
   asChild?: boolean;
   /** Accessible label — required since the button has no visible text. */
@@ -33,7 +35,10 @@ export interface IconButtonProps
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ className, variant, size, asChild = false, label, children, ...props }, ref) => {
+  (
+    { className, variant, size, asChild = false, label, children, ...props },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp

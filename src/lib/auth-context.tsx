@@ -15,10 +15,24 @@ interface AuthContextValue {
   loading: boolean;
   error: Error | null;
   signIn: (input: { email: string; password: string }) => Promise<AuthUser>;
-  signUp: (input: { name: string; email: string; password: string }) => Promise<AuthUser>;
+  signUp: (input: {
+    name: string;
+    email: string;
+    password: string;
+  }) => Promise<AuthUser>;
   signOut: () => Promise<void>;
   updateProfile: (
-    input: Partial<Pick<AuthUser, "name" | "email" | "location" | "avatar" | "interests" | "discoveryLocations">>,
+    input: Partial<
+      Pick<
+        AuthUser,
+        | "name"
+        | "email"
+        | "location"
+        | "avatar"
+        | "interests"
+        | "discoveryLocations"
+      >
+    >,
   ) => Promise<void>;
   updateInterests: (interests: string[]) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -61,7 +75,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
       return authenticatedUser;
     },
-    signUp: async (input: { name: string; email: string; password: string }) => {
+    signUp: async (input: {
+      name: string;
+      email: string;
+      password: string;
+    }) => {
       const authenticatedUser = await requestSignUp(input);
       setUser(authenticatedUser);
       setError(null);
@@ -71,7 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await requestSignOut();
       setUser(null);
     },
-    updateProfile: async (input) => setUser(await requestUpdateCurrentUser(input)),
+    updateProfile: async (input) =>
+      setUser(await requestUpdateCurrentUser(input)),
     updateInterests: async (interests) =>
       setUser(await requestUpdateCurrentUserInterests(interests)),
     refreshUser: async () => setUser(await getCurrentUser()),

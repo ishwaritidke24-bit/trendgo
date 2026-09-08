@@ -24,7 +24,8 @@ const avatarVariants = cva(
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & VariantProps<typeof avatarVariants>
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> &
+    VariantProps<typeof avatarVariants>
 >(({ className, size, ring, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}

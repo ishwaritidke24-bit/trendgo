@@ -21,7 +21,9 @@ export function areValidInterests(interests) {
   return (
     Array.isArray(interests) &&
     interests.length <= INTEREST_CATEGORIES.length &&
-    interests.every((interest) => typeof interest === "string" && interestSet.has(interest)) &&
+    interests.every(
+      (interest) => typeof interest === "string" && interestSet.has(interest),
+    ) &&
     new Set(interests).size === interests.length
   );
 }

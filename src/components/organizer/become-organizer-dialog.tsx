@@ -1,6 +1,13 @@
 import * as React from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { CalendarPlus, CheckCircle2, LoaderCircle, ShieldCheck, Sparkles, Users } from "lucide-react";
+import {
+  CalendarPlus,
+  CheckCircle2,
+  LoaderCircle,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -60,14 +67,20 @@ export function BecomeOrganizerForm({
       });
 
       await refreshUser();
-      toast.success("Welcome to TrendGo Host! Your organizer profile is active.");
+      toast.success(
+        "Welcome to TrendGo Host! Your organizer profile is active.",
+      );
       if (onSuccess) {
         onSuccess();
       } else {
         void navigate({ to: "/organizer" });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to activate organizer account");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to activate organizer account",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -80,13 +93,16 @@ export function BecomeOrganizerForm({
           <Sparkles className="size-4" /> Organizer perks
         </p>
         <p className="mt-2 flex items-center gap-2">
-          <CalendarPlus className="size-3.5 text-primary-glow" /> Publish public or invite-only experiences
+          <CalendarPlus className="size-3.5 text-primary-glow" /> Publish public
+          or invite-only experiences
         </p>
         <p className="mt-1.5 flex items-center gap-2">
-          <Users className="size-3.5 text-primary-glow" /> Track RSVPs, guest lists, and attendee metrics
+          <Users className="size-3.5 text-primary-glow" /> Track RSVPs, guest
+          lists, and attendee metrics
         </p>
         <p className="mt-1.5 flex items-center gap-2">
-          <ShieldCheck className="size-3.5 text-primary-glow" /> Build your verified curator reputation
+          <ShieldCheck className="size-3.5 text-primary-glow" /> Build your
+          verified curator reputation
         </p>
       </div>
 
@@ -104,7 +120,8 @@ export function BecomeOrganizerForm({
         </label>
 
         <label className="text-sm font-medium text-foreground">
-          Organization / Brand Name <span className="text-xs text-muted-foreground">(Optional)</span>
+          Organization / Brand Name{" "}
+          <span className="text-xs text-muted-foreground">(Optional)</span>
           <input
             type="text"
             value={organizationName}
@@ -115,7 +132,8 @@ export function BecomeOrganizerForm({
         </label>
 
         <label className="text-sm font-medium text-foreground">
-          Website or Social Link <span className="text-xs text-muted-foreground">(Optional)</span>
+          Website or Social Link{" "}
+          <span className="text-xs text-muted-foreground">(Optional)</span>
           <input
             type="url"
             value={website}
@@ -126,7 +144,8 @@ export function BecomeOrganizerForm({
         </label>
 
         <label className="text-sm font-medium text-foreground">
-          Bio / About You <span className="text-xs text-muted-foreground">(Optional)</span>
+          Bio / About You{" "}
+          <span className="text-xs text-muted-foreground">(Optional)</span>
           <textarea
             rows={3}
             value={bio}
@@ -145,12 +164,21 @@ export function BecomeOrganizerForm({
 
       <div className="mt-2 flex justify-end gap-2">
         {showCancel && onCancel ? (
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={submitting}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={submitting}
+          >
             Cancel
           </Button>
         ) : null}
         <Button type="submit" disabled={submitting}>
-          {submitting ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />}
+          {submitting ? (
+            <LoaderCircle className="animate-spin" />
+          ) : (
+            <CheckCircle2 />
+          )}
           {submitting ? "Activating..." : "Activate Organizer"}
         </Button>
       </div>
@@ -177,7 +205,8 @@ export function BecomeOrganizerDialog({
             Become a TrendGo Organizer
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Activate host mode to create and publish events, manage attendee RSVPs, and cultivate your community.
+            Activate host mode to create and publish events, manage attendee
+            RSVPs, and cultivate your community.
           </DialogDescription>
         </DialogHeader>
 

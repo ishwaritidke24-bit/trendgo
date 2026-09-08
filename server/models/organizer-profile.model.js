@@ -23,4 +23,5 @@ const organizerProfileSchema = new mongoose.Schema(
 );
 
 export const OrganizerProfile =
-  mongoose.models.OrganizerProfile ?? mongoose.model("OrganizerProfile", organizerProfileSchema);
+  mongoose.models.OrganizerProfile ??
+  mongoose.model("OrganizerProfile", organizerProfileSchema);

@@ -15,11 +15,17 @@ export async function getEventController(req, res) {
 }
 
 export async function createEventController(req, res) {
-  res.status(201).json({ success: true, event: await createEvent(req.auth.userId, req.body) });
+  res.status(201).json({
+    success: true,
+    event: await createEvent(req.auth.userId, req.body),
+  });
 }
 
 export async function updateEventController(req, res) {
-  res.json({ success: true, event: await updateEvent(req.auth.userId, req.params.eventId, req.body) });
+  res.json({
+    success: true,
+    event: await updateEvent(req.auth.userId, req.params.eventId, req.body),
+  });
 }
 
 export async function deleteEventController(req, res) {

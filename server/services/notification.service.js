@@ -27,11 +27,17 @@ export async function countUnreadNotifications(userId) {
 }
 
 export async function markNotificationRead(userId, notificationId) {
-  await Notification.updateOne({ _id: notificationId, userId }, { $set: { readAt: new Date() } });
+  await Notification.updateOne(
+    { _id: notificationId, userId },
+    { $set: { readAt: new Date() } },
+  );
 }
 
 export async function markAllNotificationsRead(userId) {
-  await Notification.updateMany({ userId, readAt: null }, { $set: { readAt: new Date() } });
+  await Notification.updateMany(
+    { userId, readAt: null },
+    { $set: { readAt: new Date() } },
+  );
 }
 
 export async function createNotification(input) {

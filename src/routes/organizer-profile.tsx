@@ -11,7 +11,9 @@ import {
   type OrganizerProfile,
 } from "@/lib/organizer-api";
 
-export const Route = createFileRoute("/organizer-profile")({ component: OrganizerProfilePage });
+export const Route = createFileRoute("/organizer-profile")({
+  component: OrganizerProfilePage,
+});
 function OrganizerProfilePage() {
   const [profile, setProfile] = React.useState<OrganizerProfile | null>(null);
   const [form, setForm] = React.useState({
@@ -36,7 +38,9 @@ function OrganizerProfilePage() {
       setProfile(result.organizer);
       setMessage("Organizer profile saved");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to save profile");
+      setMessage(
+        error instanceof Error ? error.message : "Unable to save profile",
+      );
     } finally {
       setSaving(false);
     }
@@ -60,7 +64,9 @@ function OrganizerProfilePage() {
               <input
                 required
                 value={form.displayName}
-                onChange={(event) => setForm({ ...form, displayName: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, displayName: event.target.value })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -68,7 +74,9 @@ function OrganizerProfilePage() {
               Organization name
               <input
                 value={form.organizationName}
-                onChange={(event) => setForm({ ...form, organizationName: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, organizationName: event.target.value })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -77,7 +85,9 @@ function OrganizerProfilePage() {
               <input
                 type="url"
                 value={form.website}
-                onChange={(event) => setForm({ ...form, website: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, website: event.target.value })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -85,7 +95,9 @@ function OrganizerProfilePage() {
               Bio
               <textarea
                 value={form.bio}
-                onChange={(event) => setForm({ ...form, bio: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, bio: event.target.value })
+                }
                 className="mt-1 min-h-32 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>

@@ -16,7 +16,10 @@ interface LocationSelectorProps {
  * Multi-location selector supporting up to 3 cities.
  * Saves to the user's profile and supports browser geolocation.
  */
-export function LocationSelector({ onChange, className }: LocationSelectorProps) {
+export function LocationSelector({
+  onChange,
+  className,
+}: LocationSelectorProps) {
   const { user, refreshUser } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [input, setInput] = React.useState("");
@@ -95,7 +98,8 @@ export function LocationSelector({ onChange, className }: LocationSelectorProps)
       },
       (err) => {
         setDetecting(false);
-        if (err.code === 1) setError("Location permission denied. Add cities manually.");
+        if (err.code === 1)
+          setError("Location permission denied. Add cities manually.");
         else setError("Unable to detect your location");
       },
       { timeout: 10_000 },
@@ -157,7 +161,9 @@ export function LocationSelector({ onChange, className }: LocationSelectorProps)
               </span>
             ))}
             {locations.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No locations added yet</p>
+              <p className="text-xs text-muted-foreground">
+                No locations added yet
+              </p>
             ) : null}
           </div>
 
@@ -187,7 +193,8 @@ export function LocationSelector({ onChange, className }: LocationSelectorProps)
             </form>
           ) : (
             <p className="mb-3 text-xs text-muted-foreground">
-              Maximum {MAX_LOCATIONS} locations reached. Remove one to add another.
+              Maximum {MAX_LOCATIONS} locations reached. Remove one to add
+              another.
             </p>
           )}
 

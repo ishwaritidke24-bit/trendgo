@@ -17,7 +17,12 @@ import { Container, Section } from "@/components/layout/container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CATEGORIES } from "@/data/mock";
 import { useAuth } from "@/lib/auth-context";
@@ -31,7 +36,12 @@ function ProfilePage() {
   const [updateError, setUpdateError] = React.useState<string | null>(null);
   const [editOpen, setEditOpen] = React.useState(false);
   const [becomeOrganizerOpen, setBecomeOrganizerOpen] = React.useState(false);
-  const [draft, setDraft] = React.useState({ name: "", location: "", avatar: "", interests: [] as string[] });
+  const [draft, setDraft] = React.useState({
+    name: "",
+    location: "",
+    avatar: "",
+    interests: [] as string[],
+  });
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [saveSuccess, setSaveSuccess] = React.useState(false);
   const openEditor = () => {
@@ -60,7 +70,9 @@ function ProfilePage() {
       setSaveSuccess(true);
     } catch (saveError) {
       setUpdateError(
-        saveError instanceof Error ? saveError.message : "Unable to save your profile",
+        saveError instanceof Error
+          ? saveError.message
+          : "Unable to save your profile",
       );
     } finally {
       setSavingProfile(false);
@@ -69,7 +81,9 @@ function ProfilePage() {
 
   if (loading) return <ProfileState title="Loading your profile..." />;
   if (error || !user)
-    return <ProfileState title={error?.message ?? "Your profile is unavailable"} />;
+    return (
+      <ProfileState title={error?.message ?? "Your profile is unavailable"} />
+    );
 
   const initials =
     (user.name || "User")
@@ -93,7 +107,9 @@ function ProfilePage() {
       await updateInterests(interests);
     } catch (updateFailure) {
       setUpdateError(
-        updateFailure instanceof Error ? updateFailure.message : "Unable to update interests",
+        updateFailure instanceof Error
+          ? updateFailure.message
+          : "Unable to update interests",
       );
     } finally {
       setSavingInterests(false);
@@ -108,7 +124,12 @@ function ProfilePage() {
             <div className="absolute top-0 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
             <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
               <Avatar size="xl" ring="accent">
-                {user.avatar ? <AvatarImage src={user.avatar} alt={`${user.name}'s avatar`} /> : null}
+                {user.avatar ? (
+                  <AvatarImage
+                    src={user.avatar}
+                    alt={`${user.name}'s avatar`}
+                  />
+                ) : null}
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
@@ -122,7 +143,8 @@ function ProfilePage() {
                   <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                     {user.location ? (
                       <>
-                        <MapPin className="size-4 text-primary-glow" /> {user.location}
+                        <MapPin className="size-4 text-primary-glow" />{" "}
+                        {user.location}
                       </>
                     ) : null}
                     {user.location && joined ? " · " : null}
@@ -133,8 +155,11 @@ function ProfilePage() {
               <Button variant="outline" onClick={openEditor}>
                 <Edit3 /> Edit profile
               </Button>
-              {saveSuccess ? <p className="text-sm text-success">Profile saved</p> : null}
-              {user.roles.includes("organizer") && user.organizerStatus === "active" ? (
+              {saveSuccess ? (
+                <p className="text-sm text-success">Profile saved</p>
+              ) : null}
+              {user.roles.includes("organizer") &&
+              user.organizerStatus === "active" ? (
                 <Button variant="ghost" asChild>
                   <Link to="/organizer">Organizer mode</Link>
                 </Button>
@@ -144,7 +169,8 @@ function ProfilePage() {
                   onClick={() => setBecomeOrganizerOpen(true)}
                   className="border-primary/40 bg-primary/10 text-primary-glow hover:bg-primary/20"
                 >
-                  <Sparkles className="size-4 text-primary-glow" /> Become an Organizer
+                  <Sparkles className="size-4 text-primary-glow" /> Become an
+                  Organizer
                 </Button>
               )}
             </div>
@@ -154,13 +180,24 @@ function ProfilePage() {
                 value={user.attendedEventIds.length}
                 label="Attended"
               />
-              <Stat icon={<Ticket />} value={user.savedEventIds.length} label="Saved" />
-              <Stat icon={<Heart />} value={user.interests.length} label="Interests" />
+              <Stat
+                icon={<Ticket />}
+                value={user.savedEventIds.length}
+                label="Saved"
+              />
+              <Stat
+                icon={<Heart />}
+                value={user.interests.length}
+                label="Interests"
+              />
             </div>
           </div>
         </Container>
       </Section>
-      <BecomeOrganizerDialog open={becomeOrganizerOpen} onOpenChange={setBecomeOrganizerOpen} />
+      <BecomeOrganizerDialog
+        open={becomeOrganizerOpen}
+        onOpenChange={setBecomeOrganizerOpen}
+      />
       <Section spacing="sm">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">
@@ -170,7 +207,9 @@ function ProfilePage() {
                   <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
                     Personalization
                   </p>
-                  <h2 className="font-display mt-2 text-2xl font-semibold">Your interests</h2>
+                  <h2 className="font-display mt-2 text-2xl font-semibold">
+                    Your interests
+                  </h2>
                 </div>
                 <Button variant="ghost" size="sm" onClick={openEditor}>
                   <Plus /> Add interest
@@ -191,7 +230,9 @@ function ProfilePage() {
                     {interest} <span className="ml-2 opacity-60">x</span>
                   </button>
                 ))}
-                {CATEGORIES.filter((category) => !user.interests.includes(category))
+                {CATEGORIES.filter(
+                  (category) => !user.interests.includes(category),
+                )
                   .slice(0, 3)
                   .map((category) => (
                     <button
@@ -205,9 +246,13 @@ function ProfilePage() {
                     </button>
                   ))}
               </div>
-              {updateError ? <p className="mt-3 text-sm text-destructive">{updateError}</p> : null}
+              {updateError ? (
+                <p className="mt-3 text-sm text-destructive">{updateError}</p>
+              ) : null}
               {!user.interests.length ? (
-                <p className="mt-5 text-sm text-muted-foreground">No interests added yet</p>
+                <p className="mt-5 text-sm text-muted-foreground">
+                  No interests added yet
+                </p>
               ) : null}
             </div>
             <aside className="rounded-3xl border border-border bg-surface/60 p-5">
@@ -217,7 +262,9 @@ function ProfilePage() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {user.interests
                   .filter((interest) =>
-                    CATEGORIES.includes(interest as (typeof CATEGORIES)[number]),
+                    CATEGORIES.includes(
+                      interest as (typeof CATEGORIES)[number],
+                    ),
                   )
                   .map((category) => (
                     <Badge key={category} variant="neutral">
@@ -228,12 +275,15 @@ function ProfilePage() {
               {!user.interests.some((interest) =>
                 CATEGORIES.includes(interest as (typeof CATEGORIES)[number]),
               ) ? (
-                <p className="mt-4 text-sm text-muted-foreground">No favorite categories yet</p>
+                <p className="mt-4 text-sm text-muted-foreground">
+                  No favorite categories yet
+                </p>
               ) : null}
               <div className="mt-6 flex items-start gap-3 border-t border-border pt-5">
                 <Sparkles className="mt-0.5 size-4 shrink-0 text-primary-glow" />
                 <p className="text-xs leading-5 text-muted-foreground">
-                  Your profile helps TrendGo balance familiar favorites with something different.
+                  Your profile helps TrendGo balance familiar favorites with
+                  something different.
                 </p>
               </div>
 
@@ -250,7 +300,9 @@ function ProfilePage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {(user.discoveryLocations ?? []).length === 0 ? (
-                    <p className="text-xs text-muted-foreground">No locations added yet</p>
+                    <p className="text-xs text-muted-foreground">
+                      No locations added yet
+                    </p>
                   ) : (
                     (user.discoveryLocations ?? []).map((loc) => (
                       <span
@@ -279,7 +331,9 @@ function ProfilePage() {
                 required
                 minLength={2}
                 value={draft.name}
-                onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+                onChange={(event) =>
+                  setDraft({ ...draft, name: event.target.value })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -287,7 +341,9 @@ function ProfilePage() {
               Location
               <input
                 value={draft.location}
-                onChange={(event) => setDraft({ ...draft, location: event.target.value })}
+                onChange={(event) =>
+                  setDraft({ ...draft, location: event.target.value })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -296,7 +352,9 @@ function ProfilePage() {
               <input
                 type="url"
                 value={draft.avatar}
-                onChange={(event) => setDraft({ ...draft, avatar: event.target.value })}
+                onChange={(event) =>
+                  setDraft({ ...draft, avatar: event.target.value })
+                }
                 className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
               />
             </label>
@@ -314,7 +372,9 @@ function ProfilePage() {
                         setDraft({
                           ...draft,
                           interests: selected
-                            ? draft.interests.filter((interest) => interest !== category)
+                            ? draft.interests.filter(
+                                (interest) => interest !== category,
+                              )
                             : [...draft.interests, category],
                         })
                       }
@@ -336,11 +396,19 @@ function ProfilePage() {
               </p>
             ) : null}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={() => setEditOpen(false)}>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setEditOpen(false)}
+              >
                 <X /> Cancel
               </Button>
               <Button type="submit" disabled={savingProfile}>
-                {savingProfile ? <LoaderCircle className="animate-spin" /> : <Edit3 />}
+                {savingProfile ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  <Edit3 />
+                )}
                 {savingProfile ? "Saving..." : "Save changes"}
               </Button>
             </div>
@@ -358,7 +426,9 @@ function ProfilePage() {
               <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
                 Your taste trail
               </p>
-              <h2 className="font-display mt-2 text-2xl font-semibold">Saved experiences</h2>
+              <h2 className="font-display mt-2 text-2xl font-semibold">
+                Saved experiences
+              </h2>
             </div>
           </div>
           <div className="mt-6 grid gap-5 lg:grid-cols-3">
@@ -420,7 +490,15 @@ function EventCollectionState({
   );
 }
 
-function Stat({ icon, value, label }: { icon: React.ReactNode; value: number; label: string }) {
+function Stat({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+}) {
   return (
     <div className="flex items-center justify-center gap-2 border-r border-border last:border-0">
       <span className="text-primary-glow">{icon}</span>

@@ -8,7 +8,10 @@ import {
 import { requireAuth } from "../middleware/require-auth.js";
 import { validateRequest } from "../middleware/validate-request.js";
 import { asyncHandler } from "../utils/async-handler.js";
-import { updateInterestsValidator, updateProfileValidator } from "../validators/auth.validator.js";
+import {
+  updateInterestsValidator,
+  updateProfileValidator,
+} from "../validators/auth.validator.js";
 
 const userRouter = Router();
 

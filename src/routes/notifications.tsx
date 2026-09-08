@@ -16,10 +16,14 @@ import {
   type NotificationItem,
 } from "@/lib/auth-api";
 
-export const Route = createFileRoute("/notifications")({ component: NotificationsPage });
+export const Route = createFileRoute("/notifications")({
+  component: NotificationsPage,
+});
 
 function NotificationsPage() {
-  const [notifications, setNotifications] = React.useState<NotificationItem[]>([]);
+  const [notifications, setNotifications] = React.useState<NotificationItem[]>(
+    [],
+  );
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [saving, setSaving] = React.useState(false);
@@ -27,13 +31,18 @@ function NotificationsPage() {
 
   const load = React.useCallback(async () => {
     try {
-      const [result, invitationResult] = await Promise.all([getNotifications(), getInvitations()]);
+      const [result, invitationResult] = await Promise.all([
+        getNotifications(),
+        getInvitations(),
+      ]);
       setNotifications(result.notifications);
       setInvitations(invitationResult.invitations);
       setError(null);
     } catch (requestError) {
       setError(
-        requestError instanceof Error ? requestError.message : "Unable to load notifications",
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to load notifications",
       );
     } finally {
       setLoading(false);
@@ -48,7 +57,9 @@ function NotificationsPage() {
     if (notification.read) return;
     await markNotificationRead(notification.id);
     setNotifications((current) =>
-      current.map((item) => (item.id === notification.id ? { ...item, read: true } : item)),
+      current.map((item) =>
+        item.id === notification.id ? { ...item, read: true } : item,
+      ),
     );
   }
 
@@ -56,16 +67,23 @@ function NotificationsPage() {
     setSaving(true);
     try {
       await markAllNotificationsRead();
-      setNotifications((current) => current.map((item) => ({ ...item, read: true })));
+      setNotifications((current) =>
+        current.map((item) => ({ ...item, read: true })),
+      );
     } finally {
       setSaving(false);
     }
   }
 
-  async function respondToInvitation(invitationId: string, status: "accepted" | "declined") {
+  async function respondToInvitation(
+    invitationId: string,
+    status: "accepted" | "declined",
+  ) {
     const result = await updateInvitation(invitationId, status);
     setInvitations((current) =>
-      current.map((item) => (item.id === invitationId ? result.invitation : item)),
+      current.map((item) =>
+        item.id === invitationId ? result.invitation : item,
+      ),
     );
   }
 
@@ -119,7 +137,9 @@ function NotificationsPage() {
                     key={invitation.id}
                     className="rounded-2xl border border-border bg-card/60 p-4"
                   >
-                    <p className="font-medium">{invitation.sender.name} invited you</p>
+                    <p className="font-medium">
+                      {invitation.sender.name} invited you
+                    </p>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {invitation.event?.title ?? "An event"}
                       {invitation.message ? ` · ${invitation.message}` : ""}
@@ -128,14 +148,18 @@ function NotificationsPage() {
                       <div className="mt-3 flex gap-2">
                         <Button
                           size="sm"
-                          onClick={() => void respondToInvitation(invitation.id, "accepted")}
+                          onClick={() =>
+                            void respondToInvitation(invitation.id, "accepted")
+                          }
                         >
                           Accept
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => void respondToInvitation(invitation.id, "declined")}
+                          onClick={() =>
+                            void respondToInvitation(invitation.id, "declined")
+                          }
                         >
                           Decline
                         </Button>
@@ -163,10 +187,16 @@ function NotificationsPage() {
                     onClick={() => void markRead(notification)}
                   >
                     <p className="font-medium">{notification.title}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{notification.message}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {notification.message}
+                    </p>
                   </button>
                   {!notification.read ? (
-                    <Button variant="ghost" size="sm" onClick={() => void markRead(notification)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => void markRead(notification)}
+                    >
                       Mark read
                     </Button>
                   ) : null}

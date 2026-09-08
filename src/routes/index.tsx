@@ -14,7 +14,10 @@ export const Route = createFileRoute("/")({
         content:
           "TrendGo is a personalized discovery platform for events and experiences happening around you and your friends.",
       },
-      { property: "og:title", content: "TrendGo — Discover events worth showing up for" },
+      {
+        property: "og:title",
+        content: "TrendGo — Discover events worth showing up for",
+      },
       {
         property: "og:description",
         content:

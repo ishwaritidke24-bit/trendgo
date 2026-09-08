@@ -15,6 +15,9 @@ export async function updateMeController(req, res) {
 }
 
 export async function updateMyInterestsController(req, res) {
-  const user = await updateCurrentUserInterests(req.auth.userId, req.body.interests);
+  const user = await updateCurrentUserInterests(
+    req.auth.userId,
+    req.body.interests,
+  );
   res.status(200).json({ success: true, user });
 }

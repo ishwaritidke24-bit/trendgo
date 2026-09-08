@@ -10,7 +10,12 @@ export function LogoMark({ className }: { className?: string }) {
       )}
     >
       {/* Abstract spark / location pin */}
-      <svg viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        className="size-5"
+        aria-hidden="true"
+      >
         <path
           d="M12 3.2c.35 2.6 1.3 4.2 3 5.2-1.7 1-2.65 2.6-3 5.2-.35-2.6-1.3-4.2-3-5.2 1.7-1 2.65-2.6 3-5.2Z"
           fill="var(--primary-glow)"

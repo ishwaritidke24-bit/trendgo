@@ -5,10 +5,16 @@ import { ArrowLeft, Eye, Save, Users } from "lucide-react";
 import { OrganizerShell } from "@/components/organizer/organizer-shell";
 import { Container, Section } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import { getHostedEvents, updateHostedEvent, type HostedEvent } from "@/lib/organizer-api";
+import {
+  getHostedEvents,
+  updateHostedEvent,
+  type HostedEvent,
+} from "@/lib/organizer-api";
 
 export const Route = createFileRoute("/organizer-event-detail")({
-  validateSearch: (search: Record<string, unknown>) => ({ eventId: String(search.eventId ?? "") }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    eventId: String(search.eventId ?? ""),
+  }),
   component: OrganizerEventDetail,
 });
 function OrganizerEventDetail() {
@@ -29,7 +35,9 @@ function OrganizerEventDetail() {
       setEvent(result.event);
       setMessage("Event updated");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to update event");
+      setMessage(
+        error instanceof Error ? error.message : "Unable to update event",
+      );
     } finally {
       setSaving(false);
     }
@@ -46,7 +54,9 @@ function OrganizerEventDetail() {
           </Link>
           {event ? (
             <>
-              <h1 className="font-display mt-5 text-3xl font-semibold">{event.title}</h1>
+              <h1 className="font-display mt-5 text-3xl font-semibold">
+                {event.title}
+              </h1>
               <p className="mt-2 text-sm text-muted-foreground">
                 {event.date} · {event.area} · {event.status}
               </p>
@@ -55,7 +65,9 @@ function OrganizerEventDetail() {
                   Title
                   <input
                     value={event.title}
-                    onChange={(input) => setEvent({ ...event, title: input.target.value })}
+                    onChange={(input) =>
+                      setEvent({ ...event, title: input.target.value })
+                    }
                     className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2"
                   />
                 </label>
@@ -63,7 +75,9 @@ function OrganizerEventDetail() {
                   Description
                   <textarea
                     value={event.description}
-                    onChange={(input) => setEvent({ ...event, description: input.target.value })}
+                    onChange={(input) =>
+                      setEvent({ ...event, description: input.target.value })
+                    }
                     className="mt-1 min-h-32 w-full rounded-xl border border-border bg-surface px-3 py-2"
                   />
                 </label>
@@ -78,7 +92,10 @@ function OrganizerEventDetail() {
                     )}
                   </Button>
                   <Button variant="outline" asChild>
-                    <Link to="/organizer-attendees" search={{ eventId: event.id }}>
+                    <Link
+                      to="/organizer-attendees"
+                      search={{ eventId: event.id }}
+                    >
                       <Users /> View attendees
                     </Link>
                   </Button>
@@ -88,11 +105,15 @@ function OrganizerEventDetail() {
                     </Link>
                   </Button>
                 </div>
-                {message ? <p className="text-sm text-success">{message}</p> : null}
+                {message ? (
+                  <p className="text-sm text-success">{message}</p>
+                ) : null}
               </div>
             </>
           ) : (
-            <p className="mt-8 text-sm text-muted-foreground">Event not found.</p>
+            <p className="mt-8 text-sm text-muted-foreground">
+              Event not found.
+            </p>
           )}
         </Container>
       </Section>

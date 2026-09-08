@@ -30,12 +30,19 @@ export interface EventCardProps {
   className?: string;
 }
 
-export function EventCard({ event, size = "default", showWhy = true, className }: EventCardProps) {
+export function EventCard({
+  event,
+  size = "default",
+  showWhy = true,
+  className,
+}: EventCardProps) {
   const { user, refreshUser } = useAuth();
   const [interested, setInterested] = React.useState(
     () => user?.interestedEventIds.includes(event.id) ?? false,
   );
-  const [saved, setSaved] = React.useState(() => user?.savedEventIds.includes(event.id) ?? false);
+  const [saved, setSaved] = React.useState(
+    () => user?.savedEventIds.includes(event.id) ?? false,
+  );
   const [saving, setSaving] = React.useState(false);
   const [actionError, setActionError] = React.useState<string | null>(null);
   const [inviteOpen, setInviteOpen] = React.useState(false);
@@ -53,7 +60,9 @@ export function EventCard({ event, size = "default", showWhy = true, className }
       if (preference === "save") setSaved(enabled);
       else setInterested(enabled);
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Unable to update this event");
+      setActionError(
+        error instanceof Error ? error.message : "Unable to update this event",
+      );
     } finally {
       setSaving(false);
     }
@@ -73,7 +82,10 @@ export function EventCard({ event, size = "default", showWhy = true, className }
         aria-label={event.title}
       >
         <div
-          className={cn("relative overflow-hidden", compact ? "aspect-[16/10]" : "aspect-[16/9]")}
+          className={cn(
+            "relative overflow-hidden",
+            compact ? "aspect-[16/10]" : "aspect-[16/9]",
+          )}
         >
           <img
             src={event.image}
@@ -116,7 +128,9 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           <span className="inline-flex items-center gap-2">
             <MapPin className="size-3.5 shrink-0 text-primary-glow" />
             <span className="truncate">
-              {event.venue}{event.venue && (event.area || event.city) ? ", " : ""}{event.area || event.city}
+              {event.venue}
+              {event.venue && (event.area || event.city) ? ", " : ""}
+              {event.area || event.city}
             </span>
           </span>
           {event.city ? (
@@ -133,7 +147,8 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           ) : null}
           <span className="inline-flex items-center gap-2">
             <Navigation className="size-3.5 shrink-0 text-primary-glow" />
-            {event.distanceKm > 0 ? `${event.distanceKm} km away · ` : ""}{event.isFree || event.price === 0 ? "Free" : `₹${event.price}`}
+            {event.distanceKm > 0 ? `${event.distanceKm} km away · ` : ""}
+            {event.isFree || event.price === 0 ? "Free" : `₹${event.price}`}
           </span>
         </div>
 
@@ -141,12 +156,14 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           <div className="mt-4 flex items-center gap-2.5">
             <FriendAvatars ids={event.friendIds} />
             <span className="text-xs text-muted-foreground">
-              {event.friendIds.length} {event.friendIds.length === 1 ? "friend" : "friends"}{" "}
-              interested
+              {event.friendIds.length}{" "}
+              {event.friendIds.length === 1 ? "friend" : "friends"} interested
             </span>
           </div>
         ) : (
-          <p className="mt-4 text-xs text-muted-foreground">{event.interested} people interested</p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            {event.interested} people interested
+          </p>
         )}
 
         {showWhy ? (
@@ -168,7 +185,9 @@ export function EventCard({ event, size = "default", showWhy = true, className }
             <div
               className={cn(
                 "grid transition-all duration-300 ease-[var(--ease-out-soft)]",
-                whyOpen ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                whyOpen
+                  ? "mt-3 grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0",
               )}
             >
               <div className="overflow-hidden">
@@ -202,17 +221,18 @@ export function EventCard({ event, size = "default", showWhy = true, className }
             disabled={saving}
             aria-pressed={saved}
           >
-            <Bookmark className={cn(saved && "fill-primary-glow text-primary-glow")} />
+            <Bookmark
+              className={cn(saved && "fill-primary-glow text-primary-glow")}
+            />
             {saved ? "Saved" : "Save"}
           </Button>
           {event.ticketUrl ? (
-            <Button
-              size="sm"
-              variant="ghost"
-              asChild
-              aria-label="Get tickets"
-            >
-              <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
+            <Button size="sm" variant="ghost" asChild aria-label="Get tickets">
+              <a
+                href={event.ticketUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="size-3.5" />
               </a>
             </Button>
@@ -233,7 +253,11 @@ export function EventCard({ event, size = "default", showWhy = true, className }
           </p>
         ) : null}
       </div>
-      <InviteFriendsDialog eventId={event.id} open={inviteOpen} onOpenChange={setInviteOpen} />
+      <InviteFriendsDialog
+        eventId={event.id}
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+      />
     </article>
   );
 }

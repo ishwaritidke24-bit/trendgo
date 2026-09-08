@@ -1,6 +1,10 @@
 export function validateRequest(validator) {
   return (req, res, next) => {
-    const result = validator({ body: req.body, params: req.params, query: req.query });
+    const result = validator({
+      body: req.body,
+      params: req.params,
+      query: req.query,
+    });
 
     if (!result.valid) {
       const error = new Error("Request validation failed");

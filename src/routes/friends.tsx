@@ -1,6 +1,14 @@
 import * as React from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CalendarDays, Heart, UserPlus, Users, Share2, Check } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Heart,
+  UserPlus,
+  Users,
+  Share2,
+  Check,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/layout/app-shell";
@@ -9,7 +17,14 @@ import { EventCard } from "@/components/events/event-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ACTIVITY, EVENTS, FRIENDS, eventById, friendById, type EventItem } from "@/data/mock";
+import {
+  ACTIVITY,
+  EVENTS,
+  FRIENDS,
+  eventById,
+  friendById,
+  type EventItem,
+} from "@/data/mock";
 import { useAuth } from "@/lib/auth-context";
 import { searchEvents } from "@/lib/events-api";
 
@@ -40,7 +55,9 @@ function FriendsPage() {
       const inviteUrl = `${window.location.origin}/signup?ref=friends`;
       void navigator.clipboard.writeText(inviteUrl);
       setCopied(true);
-      toast.success("Invite link copied to clipboard! Share it with your friends.");
+      toast.success(
+        "Invite link copied to clipboard! Share it with your friends.",
+      );
       setTimeout(() => setCopied(false), 3000);
     }
   };
@@ -51,9 +68,10 @@ function FriendsPage() {
     event: eventById(item.eventId),
   })).filter((entry) => entry.friend && entry.event);
 
-  const displayGroupEvents = groupEvents.length > 0
-    ? groupEvents
-    : EVENTS.filter((event) => event.friendIds.length >= 2).slice(0, 3);
+  const displayGroupEvents =
+    groupEvents.length > 0
+      ? groupEvents
+      : EVENTS.filter((event) => event.friendIds.length >= 2).slice(0, 3);
 
   return (
     <AppShell>
@@ -68,13 +86,17 @@ function FriendsPage() {
                 Your people, your next plan
               </h1>
               <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-                See what your circle is excited about, then find the room you will all talk about
-                later.
+                See what your circle is excited about, then find the room you
+                will all talk about later.
               </p>
             </div>
             <div className="flex gap-2">
               <Button onClick={handleInvite} className="cursor-pointer">
-                {copied ? <Check className="size-4" /> : <Share2 className="size-4" />}
+                {copied ? (
+                  <Check className="size-4" />
+                ) : (
+                  <Share2 className="size-4" />
+                )}
                 {copied ? "Link copied" : "Invite friends"}
               </Button>
             </div>
@@ -83,9 +105,12 @@ function FriendsPage() {
           {!user && (
             <div className="mt-6 flex flex-col gap-3 rounded-3xl border border-primary/30 bg-primary/10 p-5 sm:flex-row sm:items-center sm:justify-between backdrop-blur-md">
               <div>
-                <h3 className="font-semibold text-foreground">Connect with your friends</h3>
+                <h3 className="font-semibold text-foreground">
+                  Connect with your friends
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  Sign in to see where people you know are going, coordinate plans, and get invited to private gigs.
+                  Sign in to see where people you know are going, coordinate
+                  plans, and get invited to private gigs.
                 </p>
               </div>
               <Button asChild className="shrink-0">
@@ -99,11 +124,16 @@ function FriendsPage() {
             <div>
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-xs text-muted-foreground">Live from your circle</p>
-                  <h2 className="font-display mt-1 text-2xl font-semibold">Friend activity</h2>
+                  <p className="text-xs text-muted-foreground">
+                    Live from your circle
+                  </p>
+                  <h2 className="font-display mt-1 text-2xl font-semibold">
+                    Friend activity
+                  </h2>
                 </div>
                 <Badge variant="success">
-                  <span className="size-1.5 rounded-full bg-success" /> 6 active now
+                  <span className="size-1.5 rounded-full bg-success" /> 6 active
+                  now
                 </Badge>
               </div>
               <div className="mt-5 flex flex-col gap-3">
@@ -120,9 +150,13 @@ function FriendsPage() {
                     </Avatar>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">{friend!.name}</span>{" "}
+                        <span className="font-medium text-foreground">
+                          {friend!.name}
+                        </span>{" "}
                         {item.action}{" "}
-                        <span className="font-medium text-primary-glow">{event!.title}</span>
+                        <span className="font-medium text-primary-glow">
+                          {event!.title}
+                        </span>
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {item.when} · {event!.area}
@@ -145,8 +179,12 @@ function FriendsPage() {
                       <AvatarFallback>{friend.initials}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{friend.name}</p>
-                      <p className="text-xs text-muted-foreground">{friend.mutual} mutuals</p>
+                      <p className="truncate text-sm font-medium">
+                        {friend.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {friend.mutual} mutuals
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -165,7 +203,9 @@ function FriendsPage() {
               <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
                 Because your friends are going
               </p>
-              <h2 className="font-display mt-2 text-2xl font-semibold">Make it a group plan</h2>
+              <h2 className="font-display mt-2 text-2xl font-semibold">
+                Make it a group plan
+              </h2>
             </div>
             <CalendarDays className="size-5 text-muted-foreground" />
           </div>
@@ -188,8 +228,8 @@ function FriendsPage() {
                   Discover through friend activity
                 </h2>
                 <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                  The best recommendations are one degree away. Follow a few more people to make
-                  your feed feel even more like yours.
+                  The best recommendations are one degree away. Follow a few
+                  more people to make your feed feel even more like yours.
                 </p>
               </div>
               <Button variant="outline" asChild>

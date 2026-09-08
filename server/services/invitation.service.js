@@ -12,7 +12,10 @@ async function publicInvitation(invitation) {
     ? {
         id: eventRecord._id.toString(),
         title: eventRecord.title,
-        date: new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" }).format(eventRecord.date),
+        date: new Intl.DateTimeFormat("en-IN", {
+          day: "numeric",
+          month: "short",
+        }).format(eventRecord.date),
         time: eventRecord.startTime,
         area: eventRecord.city,
       }
@@ -65,17 +68,31 @@ export async function listFriends(userId) {
   }));
 }
 
-export async function createEventInvitations(senderId, eventId, recipientIds, message = "") {
+export async function createEventInvitations(
+  senderId,
+  eventId,
+  recipientIds,
+  message = "",
+) {
   const recipients = [...new Set(recipientIds)].filter(Boolean);
-  if (!recipients.length) throw createHttpError(400, "Select at least one friend", "NO_RECIPIENTS");
-  if (recipients.some((recipientId) => recipientId.toString() === senderId.toString())) {
+  if (!recipients.length)
+    throw createHttpError(400, "Select at least one friend", "NO_RECIPIENTS");
+  if (
+    recipients.some(
+      (recipientId) => recipientId.toString() === senderId.toString(),
+    )
+  ) {
     throw createHttpError(400, "You cannot invite yourself", "SELF_INVITE");
   }
 
   const validFriends = [];
   for (const recipientId of recipients) {
     if (!(await areFriends(senderId, recipientId))) {
-      throw createHttpError(403, "You can only invite accepted friends", "NOT_FRIEND");
+      throw createHttpError(
+        403,
+        "You can only invite accepted friends",
+        "NOT_FRIEND",
+      );
     }
     validFriends.push(recipientId);
   }
@@ -132,10 +149,13 @@ export async function updateInvitation(userId, invitationId, status) {
     { $set: { status } },
     { returnDocument: "after" },
   ).lean();
-  if (!invitation) throw createHttpError(404, "Invitation not found", "INVITATION_NOT_FOUND");
+  if (!invitation)
+    throw createHttpError(404, "Invitation not found", "INVITATION_NOT_FOUND");
 
   if (status === "accepted") {
-    await User.findByIdAndUpdate(userId, { $addToSet: { interestedEventIds: invitation.eventId } });
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { interestedEventIds: invitation.eventId },
+    });
     await EventParticipant.bulkWrite([
       {
         updateOne: {
@@ -153,7 +173,13 @@ export async function updateInvitation(userId, invitationId, status) {
       {
         updateOne: {
           filter: { eventId: invitation.eventId, userId },
-          update: { $setOnInsert: { eventId: invitation.eventId, userId, source: "invitation" } },
+          update: {
+            $setOnInsert: {
+              eventId: invitation.eventId,
+              userId,
+              source: "invitation",
+            },
+          },
           upsert: true,
         },
       },

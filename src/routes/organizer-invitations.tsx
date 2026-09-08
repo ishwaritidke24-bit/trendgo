@@ -7,7 +7,9 @@ import { Container, Section } from "@/components/layout/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getInvitations, type EventInvitation } from "@/lib/auth-api";
 
-export const Route = createFileRoute("/organizer-invitations")({ component: OrganizerInvitations });
+export const Route = createFileRoute("/organizer-invitations")({
+  component: OrganizerInvitations,
+});
 function OrganizerInvitations() {
   const [invitations, setInvitations] = React.useState<EventInvitation[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -23,12 +25,16 @@ function OrganizerInvitations() {
           <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
             Social planning
           </p>
-          <h1 className="font-display mt-3 text-3xl font-semibold">Invitations</h1>
+          <h1 className="font-display mt-3 text-3xl font-semibold">
+            Invitations
+          </h1>
           <p className="mt-3 text-sm text-muted-foreground">
             Invitations connected to your TrendGo account.
           </p>
           {loading ? (
-            <p className="mt-8 text-sm text-muted-foreground">Loading invitations...</p>
+            <p className="mt-8 text-sm text-muted-foreground">
+              Loading invitations...
+            </p>
           ) : invitations.length ? (
             <div className="mt-8 flex flex-col gap-3">
               {invitations.map((invitation) => (

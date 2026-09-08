@@ -36,7 +36,10 @@ function MyEventsPage() {
     const ids = eventIdsKey ? eventIdsKey.split(",") : [];
     void Promise.all(ids.map((id) => getEvent(id).catch(() => null)))
       .then((loadedEvents) => {
-        if (active) setEvents(loadedEvents.filter((event): event is EventItem => Boolean(event)));
+        if (active)
+          setEvents(
+            loadedEvents.filter((event): event is EventItem => Boolean(event)),
+          );
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -52,9 +55,12 @@ function MyEventsPage() {
           <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
             Your plans
           </p>
-          <h1 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">My events</h1>
+          <h1 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">
+            My events
+          </h1>
           <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-            Keep the experiences you are considering close. Your next good night is already here.
+            Keep the experiences you are considering close. Your next good night
+            is already here.
           </p>
           <div className="mt-8 flex max-w-2xl gap-1 overflow-x-auto rounded-2xl border border-border bg-card/60 p-1">
             {TABS.map((item) => (
@@ -80,11 +86,17 @@ function MyEventsPage() {
             ))}
           </div>
           {loading ? (
-            <p className="mt-8 text-sm text-muted-foreground">Loading your events...</p>
+            <p className="mt-8 text-sm text-muted-foreground">
+              Loading your events...
+            </p>
           ) : events.length ? (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
-                <EventCard key={event.id} event={event} showWhy={tab !== "past"} />
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  showWhy={tab !== "past"}
+                />
               ))}
             </div>
           ) : (
@@ -93,7 +105,11 @@ function MyEventsPage() {
               icon={<CalendarDays />}
               title={`No ${tab} events yet`}
               description="When an experience catches your eye, it will show up here."
-              action={<Button onClick={() => setTab("interested")}>Find something to do</Button>}
+              action={
+                <Button onClick={() => setTab("interested")}>
+                  Find something to do
+                </Button>
+              }
             />
           )}
         </Container>

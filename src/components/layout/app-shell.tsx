@@ -27,7 +27,14 @@ export function AppShell({
         search: { redirect: `${location.pathname}${location.search}` },
       });
     }
-  }, [requireAuth, loading, user, navigate, location.pathname, location.search]);
+  }, [
+    requireAuth,
+    loading,
+    user,
+    navigate,
+    location.pathname,
+    location.search,
+  ]);
 
   React.useEffect(() => {
     if (!user) return;
@@ -57,7 +64,12 @@ export function AppShell({
         user={user ? { name: user.name } : null}
         location={user?.location || undefined}
         notificationCount={notificationCount}
-        organizerEnabled={user ? user.roles.includes("organizer") && user.organizerStatus === "active" : false}
+        organizerEnabled={
+          user
+            ? user.roles.includes("organizer") &&
+              user.organizerStatus === "active"
+            : false
+        }
         onNotifications={() => void navigate({ to: "/notifications" })}
         onSignOut={() => void signOut().then(() => navigate({ to: "/" }))}
       />

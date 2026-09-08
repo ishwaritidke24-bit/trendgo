@@ -93,9 +93,15 @@ export function Navbar({
     }
   };
 
-  const { location: ctxLocation, setIsModalOpen, isDetecting } = useUserLocation();
+  const {
+    location: ctxLocation,
+    setIsModalOpen,
+    isDetecting,
+  } = useUserLocation();
   const location =
-    propLocation || ctxLocation || (isDetecting ? "Detecting location..." : "Select location");
+    propLocation ||
+    ctxLocation ||
+    (isDetecting ? "Detecting location..." : "Select location");
   const [open, setOpen] = React.useState(false);
   const handleSignIn = onSignIn ?? (() => window.location.assign("/signup"));
 
@@ -138,7 +144,11 @@ export function Navbar({
                   <Link
                     to={link.to}
                     search={link.search}
-                    onClick={link.label === "Trending" ? handleTrendingClick : undefined}
+                    onClick={
+                      link.label === "Trending"
+                        ? handleTrendingClick
+                        : undefined
+                    }
                     className={cn(
                       "rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200",
                       active
@@ -183,7 +193,11 @@ export function Navbar({
           {user ? (
             <>
               <div className="relative hidden sm:block">
-                <IconButton label="Notifications" variant="default" onClick={onNotifications}>
+                <IconButton
+                  label="Notifications"
+                  variant="default"
+                  onClick={onNotifications}
+                >
                   <Bell />
                 </IconButton>
                 {notificationCount > 0 ? (
@@ -192,7 +206,11 @@ export function Navbar({
                   </span>
                 ) : null}
               </div>
-              <Link to="/profile" aria-label="Open profile" className="cursor-pointer">
+              <Link
+                to="/profile"
+                aria-label="Open profile"
+                className="cursor-pointer"
+              >
                 <Avatar ring="accent">
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>

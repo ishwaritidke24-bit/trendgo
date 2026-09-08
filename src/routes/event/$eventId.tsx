@@ -30,7 +30,9 @@ import { useAuth } from "@/lib/auth-context";
 import { getEvent as getEventRequest, searchEvents } from "@/lib/events-api";
 import { friendById, type EventItem } from "@/data/mock";
 
-export const Route = createFileRoute("/event/$eventId")({ component: EventDetailPage });
+export const Route = createFileRoute("/event/$eventId")({
+  component: EventDetailPage,
+});
 
 function EventDetailPage() {
   const { eventId } = Route.useParams();
@@ -42,7 +44,9 @@ function EventDetailPage() {
   const [interested, setInterested] = React.useState(
     () => user?.interestedEventIds.includes(eventId) ?? false,
   );
-  const [saved, setSaved] = React.useState(() => user?.savedEventIds.includes(eventId) ?? false);
+  const [saved, setSaved] = React.useState(
+    () => user?.savedEventIds.includes(eventId) ?? false,
+  );
   const [actionError, setActionError] = React.useState<string | null>(null);
   const [inviteOpen, setInviteOpen] = React.useState(false);
 
@@ -54,7 +58,12 @@ function EventDetailPage() {
           setEvent(loadedEvent);
           void searchEvents({ category: loadedEvent.category, limit: 5 })
             .then(({ events }) => {
-              if (active) setSimilar(events.filter((item) => item.id !== loadedEvent.id).slice(0, 4));
+              if (active)
+                setSimilar(
+                  events
+                    .filter((item) => item.id !== loadedEvent.id)
+                    .slice(0, 4),
+                );
             })
             .catch(() => {
               if (active) setSimilar([]);
@@ -62,7 +71,10 @@ function EventDetailPage() {
         }
       })
       .catch((error) => {
-        if (active) setLoadError(error instanceof Error ? error.message : "Unable to load event");
+        if (active)
+          setLoadError(
+            error instanceof Error ? error.message : "Unable to load event",
+          );
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -76,7 +88,11 @@ function EventDetailPage() {
     return (
       <AppShell>
         <Container className="py-24 text-center text-sm text-muted-foreground">
-          <div className="mx-auto max-w-5xl space-y-5"><Skeleton className="h-72 w-full rounded-[2rem]" /><Skeleton className="h-6 w-2/3" /><Skeleton className="h-4 w-1/2" /></div>
+          <div className="mx-auto max-w-5xl space-y-5">
+            <Skeleton className="h-72 w-full rounded-[2rem]" />
+            <Skeleton className="h-6 w-2/3" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
         </Container>
       </AppShell>
     );
@@ -86,7 +102,9 @@ function EventDetailPage() {
     return (
       <AppShell>
         <Container className="py-24 text-center">
-          <h1 className="font-display text-3xl font-semibold">That experience moved on</h1>
+          <h1 className="font-display text-3xl font-semibold">
+            That experience moved on
+          </h1>
           <p className="mt-3 text-muted-foreground">
             {loadError ?? "Try another pick from your feed."}
           </p>
@@ -106,17 +124,25 @@ function EventDetailPage() {
       if (preference === "save") setSaved(enabled);
       else setInterested(enabled);
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Unable to update this event");
+      setActionError(
+        error instanceof Error ? error.message : "Unable to update this event",
+      );
     }
   }
 
   async function shareEvent() {
     try {
-      const shareData = { title: event.title, text: event.description, url: window.location.href };
+      const shareData = {
+        title: event.title,
+        text: event.description,
+        url: window.location.href,
+      };
       if (navigator.share) await navigator.share(shareData);
       else await navigator.clipboard.writeText(window.location.href);
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Unable to share this event");
+      setActionError(
+        error instanceof Error ? error.message : "Unable to share this event",
+      );
     }
   }
 
@@ -132,10 +158,17 @@ function EventDetailPage() {
           </Link>
           <div className="mt-6 overflow-hidden rounded-[2rem] border border-border bg-card/70">
             <div className="relative aspect-[16/8] min-h-64">
-              <img src={event.image} alt={event.title} className="size-full object-cover" />
+              <img
+                src={event.image}
+                alt={event.title}
+                className="size-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
               <Badge className="absolute top-5 left-5">{event.category}</Badge>
-              <MatchBadge value={event.match} className="absolute top-5 right-5" />
+              <MatchBadge
+                value={event.match}
+                className="absolute top-5 right-5"
+              />
               <div className="absolute right-5 bottom-5 left-5 max-w-3xl">
                 <h1 className="font-display text-3xl font-semibold text-balance sm:text-5xl">
                   {event.title}
@@ -163,7 +196,11 @@ function EventDetailPage() {
                     label="When"
                     value={`${event.date} · ${event.time}`}
                   />
-                  <Info icon={<MapPin />} label="Where" value={`${event.venue}, ${event.area}`} />
+                  <Info
+                    icon={<MapPin />}
+                    label="Where"
+                    value={`${event.venue}, ${event.area}`}
+                  />
                   <Info
                     icon={<Navigation />}
                     label="Getting there"
@@ -180,8 +217,15 @@ function EventDetailPage() {
                     {interested ? <Check /> : <Heart />}{" "}
                     {interested ? "Interested" : "I'm interested"}
                   </Button>
-                  <Button variant="outline" onClick={() => void togglePreference("save")}>
-                    <Bookmark className={saved ? "fill-primary-glow text-primary-glow" : ""} />{" "}
+                  <Button
+                    variant="outline"
+                    onClick={() => void togglePreference("save")}
+                  >
+                    <Bookmark
+                      className={
+                        saved ? "fill-primary-glow text-primary-glow" : ""
+                      }
+                    />{" "}
                     {saved ? "Saved" : "Save"}
                   </Button>
                   <Button variant="outline" onClick={() => void shareEvent()}>
@@ -217,7 +261,11 @@ function EventDetailPage() {
           </div>
         </Container>
       </Section>
-      <InviteFriendsDialog eventId={event.id} open={inviteOpen} onOpenChange={setInviteOpen} />
+      <InviteFriendsDialog
+        eventId={event.id}
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+      />
 
       <Section spacing="sm">
         <Container>
@@ -228,7 +276,9 @@ function EventDetailPage() {
                   <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
                     Your people
                   </p>
-                  <h2 className="font-display mt-2 text-2xl font-semibold">Who&apos;s going</h2>
+                  <h2 className="font-display mt-2 text-2xl font-semibold">
+                    Who&apos;s going
+                  </h2>
                 </div>
                 <FriendAvatars ids={event.friendIds} size="lg" />
               </div>
@@ -264,7 +314,9 @@ function EventDetailPage() {
                 </Avatar>
                 <div>
                   <p className="font-medium">{event.organizer.name}</p>
-                  <p className="text-xs text-muted-foreground">{event.organizer.blurb}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {event.organizer.blurb}
+                  </p>
                 </div>
               </div>
               <Button variant="subtle" className="mt-5 w-full" asChild>
@@ -284,15 +336,23 @@ function EventDetailPage() {
               <p className="text-xs font-medium tracking-[0.16em] text-primary-glow uppercase">
                 Keep exploring
               </p>
-              <h2 className="font-display mt-2 text-2xl font-semibold">Similar experiences</h2>
+              <h2 className="font-display mt-2 text-2xl font-semibold">
+                Similar experiences
+              </h2>
             </div>
-            <Link to="/explore" className="text-sm text-primary-glow hover:underline">
+            <Link
+              to="/explore"
+              className="text-sm text-primary-glow hover:underline"
+            >
               See all
             </Link>
           </div>
           <div className="mt-6 flex snap-x gap-5 overflow-x-auto pb-4">
             {similar.map((item) => (
-              <div key={item.id} className="min-w-[17rem] snap-start sm:min-w-[20rem]">
+              <div
+                key={item.id}
+                className="min-w-[17rem] snap-start sm:min-w-[20rem]"
+              >
                 <EventCard event={item} size="compact" showWhy={false} />
               </div>
             ))}
@@ -303,7 +363,15 @@ function EventDetailPage() {
   );
 }
 
-function Info({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function Info({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="flex gap-3">
       <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-glow">

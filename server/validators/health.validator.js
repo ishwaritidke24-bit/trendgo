@@ -5,6 +5,9 @@ export function healthQueryValidator({ query }) {
 
   return {
     valid: errors.length === 0,
-    errors: errors.map((key) => ({ field: `query.${key}`, message: "Unknown query parameter" })),
+    errors: errors.map((key) => ({
+      field: `query.${key}`,
+      message: "Unknown query parameter",
+    })),
   };
 }

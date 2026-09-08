@@ -1,13 +1,21 @@
 import * as React from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Check, LoaderCircle, RefreshCw, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  LoaderCircle,
+  RefreshCw,
+  Sparkles,
+} from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { getInterestCategories } from "@/lib/auth-api";
 import { useAuth } from "@/lib/auth-context";
 
-export const Route = createFileRoute("/onboarding")({ component: OnboardingPage });
+export const Route = createFileRoute("/onboarding")({
+  component: OnboardingPage,
+});
 
 function OnboardingPage() {
   const navigate = useNavigate();
@@ -66,7 +74,11 @@ function OnboardingPage() {
       await updateInterests(selected);
       setSaved(true);
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "Unable to save your interests.");
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Unable to save your interests.",
+      );
     } finally {
       setSaving(false);
     }
@@ -104,14 +116,16 @@ function OnboardingPage() {
                 What are you into, {user.name.split(" ")[0]}?
               </h1>
               <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-                Pick the scenes you want more of. You can fine-tune this any time from your profile.
+                Pick the scenes you want more of. You can fine-tune this any
+                time from your profile.
               </p>
             </div>
           </div>
 
           {loadingCategories ? (
             <div className="mt-8 flex items-center gap-3 rounded-2xl border border-border bg-surface/60 px-4 py-5 text-sm text-muted-foreground">
-              <LoaderCircle className="size-4 animate-spin text-primary-glow" /> Loading interests…
+              <LoaderCircle className="size-4 animate-spin text-primary-glow" />{" "}
+              Loading interests…
             </div>
           ) : loadError ? (
             <div className="mt-8 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
@@ -127,7 +141,10 @@ function OnboardingPage() {
               </Button>
             </div>
           ) : (
-            <div className="mt-8 flex flex-wrap gap-3" aria-label="Interest categories">
+            <div
+              className="mt-8 flex flex-wrap gap-3"
+              aria-label="Interest categories"
+            >
               {categories.map((category) => {
                 const isSelected = selected.includes(category);
                 return (
@@ -157,14 +174,19 @@ function OnboardingPage() {
             </p>
           ) : null}
           {saved ? (
-            <p role="status" className="mt-5 flex items-center gap-2 text-sm text-success">
+            <p
+              role="status"
+              className="mt-5 flex items-center gap-2 text-sm text-success"
+            >
               <Check className="size-4" /> Your interests are saved.
             </p>
           ) : null}
 
           <div className="mt-8 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
-              {selected.length ? `${selected.length} selected` : "Select at least one interest"}
+              {selected.length
+                ? `${selected.length} selected`
+                : "Select at least one interest"}
             </p>
             {saved ? (
               <Button onClick={() => void navigate({ to: "/home" })}>
@@ -175,7 +197,11 @@ function OnboardingPage() {
                 onClick={() => void saveInterests()}
                 disabled={saving || loadingCategories || !!loadError}
               >
-                {saving ? <LoaderCircle className="animate-spin" /> : <ArrowRight />}
+                {saving ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  <ArrowRight />
+                )}
                 {saving ? "Saving…" : "Continue"}
               </Button>
             )}
@@ -186,7 +212,13 @@ function OnboardingPage() {
   );
 }
 
-function PageState({ title, children }: { title: string; children?: React.ReactNode }) {
+function PageState({
+  title,
+  children,
+}: {
+  title: string;
+  children?: React.ReactNode;
+}) {
   return (
     <main className="bg-aurora grid min-h-screen place-items-center px-6 text-center">
       <div>

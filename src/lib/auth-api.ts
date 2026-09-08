@@ -41,7 +41,13 @@ export interface FriendItem {
 export interface EventInvitation {
   id: string;
   eventId: string;
-  event: { id: string; title: string; date: string; time: string; area: string } | null;
+  event: {
+    id: string;
+    title: string;
+    date: string;
+    time: string;
+    area: string;
+  } | null;
   sender: { _id: string; name: string };
   recipient: { _id: string; name: string };
   message: string;
@@ -52,12 +58,18 @@ export interface EventInvitation {
 interface AuthResponse {
   success: boolean;
   user: AuthUser;
-  error?: { message?: string; details?: Array<{ field: string; message: string }> };
+  error?: {
+    message?: string;
+    details?: Array<{ field: string; message: string }>;
+  };
 }
 
 interface BasicResponse {
   success: boolean;
-  error?: { message?: string; details?: Array<{ field: string; message: string }> };
+  error?: {
+    message?: string;
+    details?: Array<{ field: string; message: string }>;
+  };
 }
 
 interface AuthResponse extends BasicResponse {
@@ -71,27 +83,40 @@ async function authRequest<T extends BasicResponse = AuthResponse>(
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...options,
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(options?.headers ?? {}),
+    },
   });
   const payload = (await response.json()) as T;
   if (!response.ok) {
-    const validationMessage = payload.error?.details?.map((item) => item.message).join(" ");
+    const validationMessage = payload.error?.details
+      ?.map((item) => item.message)
+      .join(" ");
     throw new Error(
-      validationMessage || payload.error?.message || "Something went wrong. Please try again.",
+      validationMessage ||
+        payload.error?.message ||
+        "Something went wrong. Please try again.",
     );
   }
   return payload;
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${getApiBaseUrl()}/users/me`, { credentials: "include" });
+  const response = await fetch(`${getApiBaseUrl()}/users/me`, {
+    credentials: "include",
+  });
   if (response.status === 401) return null;
   if (!response.ok) throw new Error("Unable to verify your session");
   const payload = (await response.json()) as AuthResponse;
   return payload.user;
 }
 
-export async function signUp(input: { name: string; email: string; password: string }) {
+export async function signUp(input: {
+  name: string;
+  email: string;
+  password: string;
+}) {
   const payload = await authRequest<AuthResponse>("/auth/signup", {
     method: "POST",
     body: JSON.stringify(input),
@@ -112,7 +137,17 @@ export async function signOut() {
 }
 
 export async function updateCurrentUser(
-  input: Partial<Pick<AuthUser, "name" | "email" | "location" | "avatar" | "interests" | "discoveryLocations">>,
+  input: Partial<
+    Pick<
+      AuthUser,
+      | "name"
+      | "email"
+      | "location"
+      | "avatar"
+      | "interests"
+      | "discoveryLocations"
+    >
+  >,
 ) {
   const payload = await authRequest<AuthResponse>("/users/me", {
     method: "PUT",
@@ -134,7 +169,9 @@ export async function updateCurrentUserInterests(interests: string[]) {
 }
 
 export async function getInterestCategories() {
-  const payload = await apiRequest<{ success: boolean; interests: string[] }>("/interests");
+  const payload = await apiRequest<{ success: boolean; interests: string[] }>(
+    "/interests",
+  );
   return payload.interests;
 }
 
@@ -142,10 +179,15 @@ async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...options,
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(options?.headers ?? {}),
+    },
   });
   if (response.status === 204) return undefined as T;
-  const payload = (await response.json()) as T & { error?: { message?: string } };
+  const payload = (await response.json()) as T & {
+    error?: { message?: string };
+  };
   if (!response.ok) throw new Error(payload.error?.message ?? "Request failed");
   return payload;
 }
@@ -155,16 +197,23 @@ export async function updateEventPreference(
   preference: "save" | "interest",
   enabled: boolean,
 ) {
-  return apiRequest<{ success: boolean; savedEventIds: string[]; interestedEventIds: string[] }>(
-    `/events/${eventId}/${preference}`,
-    { method: "PATCH", body: JSON.stringify({ enabled }) },
-  );
+  return apiRequest<{
+    success: boolean;
+    savedEventIds: string[];
+    interestedEventIds: string[];
+  }>(`/events/${eventId}/${preference}`, {
+    method: "PATCH",
+    body: JSON.stringify({ enabled }),
+  });
 }
 
 export async function inviteToEvent(eventId: string, friendId?: string) {
   return apiRequest(`/events/${eventId}/invite`, {
     method: "POST",
-    body: JSON.stringify({ recipientIds: friendId ? [friendId] : [], message: "" }),
+    body: JSON.stringify({
+      recipientIds: friendId ? [friendId] : [],
+      message: "",
+    }),
   });
 }
 
@@ -172,7 +221,11 @@ export async function getFriends() {
   return apiRequest<{ success: boolean; friends: FriendItem[] }>("/friends");
 }
 
-export async function inviteFriends(eventId: string, recipientIds: string[], message: string) {
+export async function inviteFriends(
+  eventId: string,
+  recipientIds: string[],
+  message: string,
+) {
   return apiRequest<{ success: boolean; invitations: EventInvitation[] }>(
     `/events/${eventId}/invite`,
     {
@@ -183,10 +236,15 @@ export async function inviteFriends(eventId: string, recipientIds: string[], mes
 }
 
 export async function getInvitations() {
-  return apiRequest<{ success: boolean; invitations: EventInvitation[] }>("/invitations");
+  return apiRequest<{ success: boolean; invitations: EventInvitation[] }>(
+    "/invitations",
+  );
 }
 
-export async function updateInvitation(invitationId: string, status: "accepted" | "declined") {
+export async function updateInvitation(
+  invitationId: string,
+  status: "accepted" | "declined",
+) {
   return apiRequest<{ success: boolean; invitation: EventInvitation }>(
     `/invitations/${invitationId}`,
     {
@@ -197,13 +255,17 @@ export async function updateInvitation(invitationId: string, status: "accepted" 
 }
 
 export async function getNotifications() {
-  return apiRequest<{ success: boolean; notifications: NotificationItem[]; unreadCount: number }>(
-    "/notifications",
-  );
+  return apiRequest<{
+    success: boolean;
+    notifications: NotificationItem[];
+    unreadCount: number;
+  }>("/notifications");
 }
 
 export async function markNotificationRead(notificationId: string) {
-  return apiRequest<void>(`/notifications/${notificationId}/read`, { method: "PATCH" });
+  return apiRequest<void>(`/notifications/${notificationId}/read`, {
+    method: "PATCH",
+  });
 }
 
 export async function markAllNotificationsRead() {

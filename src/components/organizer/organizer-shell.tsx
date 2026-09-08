@@ -68,7 +68,10 @@ export function OrganizerShell({ children }: { children: React.ReactNode }) {
       <div className="bg-aurora min-h-screen">
         <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
           <Container className="flex h-16 items-center justify-between gap-4">
-            <Link to="/home" className="font-display text-lg font-semibold text-foreground">
+            <Link
+              to="/home"
+              className="font-display text-lg font-semibold text-foreground"
+            >
               TrendGo <span className="text-primary-glow">Host</span>
             </Link>
             <Button variant="ghost" size="sm" asChild>
@@ -91,7 +94,8 @@ export function OrganizerShell({ children }: { children: React.ReactNode }) {
                   Become a TrendGo Organizer
                 </h1>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Start hosting experiences, manage guest lists, and connect with attendees across your city.
+                  Start hosting experiences, manage guest lists, and connect
+                  with attendees across your city.
                 </p>
                 <div className="mt-8 border-t border-border pt-6">
                   <BecomeOrganizerForm showCancel={false} />
@@ -113,7 +117,10 @@ export function OrganizerShell({ children }: { children: React.ReactNode }) {
     <div className="bg-aurora min-h-screen">
       <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
         <Container className="flex h-16 items-center gap-4">
-          <Link to="/home" className="font-display text-lg font-semibold text-foreground">
+          <Link
+            to="/home"
+            className="font-display text-lg font-semibold text-foreground"
+          >
             TrendGo <span className="text-primary-glow">Host</span>
           </Link>
           <nav

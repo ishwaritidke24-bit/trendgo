@@ -7,7 +7,13 @@ import { asyncHandler } from "../utils/async-handler.js";
 
 const eventRouter = Router();
 eventRouter.use(requireAuth);
-eventRouter.post("/:eventId/invite", asyncHandler(createEventInvitationsController));
-eventRouter.patch("/:eventId/:preference", asyncHandler(updateEventPreferenceController));
+eventRouter.post(
+  "/:eventId/invite",
+  asyncHandler(createEventInvitationsController),
+);
+eventRouter.patch(
+  "/:eventId/:preference",
+  asyncHandler(updateEventPreferenceController),
+);
 
 export { eventRouter };

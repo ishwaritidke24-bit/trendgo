@@ -35,7 +35,10 @@ export const seedEvents = [
     longitude: 73.7309,
     price: 499,
     capacity: 180,
-    organizer: host("Nashik Afterhours", "Small evenings with a good soundtrack"),
+    organizer: host(
+      "Nashik Afterhours",
+      "Small evenings with a good soundtrack",
+    ),
     status: "published",
   },
   {
@@ -119,7 +122,10 @@ export const seedEvents = [
     longitude: 73.7142,
     price: 799,
     capacity: 40,
-    organizer: host("Soma Experiences", "Wine trails along Gangapur backwaters"),
+    organizer: host(
+      "Soma Experiences",
+      "Wine trails along Gangapur backwaters",
+    ),
     status: "published",
   },
   {
@@ -140,7 +146,10 @@ export const seedEvents = [
     longitude: 73.7638,
     price: 199,
     capacity: 60,
-    organizer: host("Nashik Comedy Guild", "Local humor, fresh jokes, zero filter"),
+    organizer: host(
+      "Nashik Comedy Guild",
+      "Local humor, fresh jokes, zero filter",
+    ),
     status: "published",
   },
   {
@@ -161,7 +170,10 @@ export const seedEvents = [
     longitude: 73.7548,
     price: 0,
     capacity: 45,
-    organizer: host("Sahyadri Explorers", "Early morning mountain trails around Nashik"),
+    organizer: host(
+      "Sahyadri Explorers",
+      "Early morning mountain trails around Nashik",
+    ),
     status: "published",
   },
   {
@@ -182,7 +194,10 @@ export const seedEvents = [
     longitude: 73.7932,
     price: 349,
     capacity: 25,
-    organizer: host("The Hungry Nashikkar", "Stories of old Nashik through traditional flavours"),
+    organizer: host(
+      "The Hungry Nashikkar",
+      "Stories of old Nashik through traditional flavours",
+    ),
     status: "published",
   },
   {
@@ -203,7 +218,10 @@ export const seedEvents = [
     longitude: 73.7481,
     price: 699,
     capacity: 15,
-    organizer: host("Mitti Kala Nashik", "Mindful handbuilding with natural clays"),
+    organizer: host(
+      "Mitti Kala Nashik",
+      "Mindful handbuilding with natural clays",
+    ),
     status: "published",
   },
   {
@@ -291,4 +309,3 @@ export const seedEvents = [
     status: "published",
   },
 ];
-

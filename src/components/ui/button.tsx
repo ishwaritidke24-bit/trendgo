@@ -11,11 +11,13 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-[image:var(--gradient-brand)] text-primary-foreground shadow-[var(--shadow-glow)] hover:brightness-110 hover:-translate-y-px active:translate-y-0",
-        subtle: "bg-secondary text-secondary-foreground hover:bg-surface-elevated",
+        subtle:
+          "bg-secondary text-secondary-foreground hover:bg-surface-elevated",
         outline:
           "border border-border-strong bg-transparent text-foreground hover:border-primary/50 hover:bg-primary/10",
         ghost: "text-muted-foreground hover:text-foreground hover:bg-surface",
-        destructive: "bg-destructive text-destructive-foreground hover:brightness-110",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:brightness-110",
         link: "text-primary underline-offset-4 hover:underline rounded-md",
       },
       size: {
@@ -33,7 +35,8 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
@@ -42,7 +45,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
     );
   },
 );

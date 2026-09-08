@@ -22,9 +22,22 @@ organizerRouter.use(requireAuth);
 organizerRouter.get("/profile", asyncHandler(getOrganizerProfileController));
 organizerRouter.post("/profile", asyncHandler(activateOrganizerController));
 organizerRouter.post("/activate", asyncHandler(activateOrganizerController));
-organizerRouter.put("/profile", requireOrganizer, asyncHandler(updateOrganizerProfileController));
-organizerRouter.get("/events", requireOrganizer, asyncHandler(listHostedEventsController));
-organizerRouter.post("/events", requireOrganizer, validateRequest(createEventValidator), asyncHandler(createHostedEventController));
+organizerRouter.put(
+  "/profile",
+  requireOrganizer,
+  asyncHandler(updateOrganizerProfileController),
+);
+organizerRouter.get(
+  "/events",
+  requireOrganizer,
+  asyncHandler(listHostedEventsController),
+);
+organizerRouter.post(
+  "/events",
+  requireOrganizer,
+  validateRequest(createEventValidator),
+  asyncHandler(createHostedEventController),
+);
 organizerRouter.patch(
   "/events/:eventId",
   requireOrganizer,
@@ -40,6 +53,10 @@ organizerRouter.get(
   requireOrganizer,
   asyncHandler(getHostedEventAudienceController),
 );
-organizerRouter.delete("/events/:eventId", requireOrganizer, asyncHandler(deleteHostedEventController));
+organizerRouter.delete(
+  "/events/:eventId",
+  requireOrganizer,
+  asyncHandler(deleteHostedEventController),
+);
 
 export { organizerRouter };

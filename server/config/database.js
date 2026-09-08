@@ -6,7 +6,9 @@ let isConnecting = false;
 
 export async function connectDatabase() {
   if (!env.mongoUri) {
-    console.warn("MongoDB connection skipped: MONGODB_URI is missing or empty.");
+    console.warn(
+      "MongoDB connection skipped: MONGODB_URI is missing or empty.",
+    );
     return;
   }
 
@@ -21,12 +23,18 @@ export async function connectDatabase() {
     if (env.nodeEnv === "production") {
       process.exit(1);
     } else {
-      console.warn("⚠️  Server started in offline/in-memory mode (events are served from local catalog).");
+      console.warn(
+        "⚠️  Server started in offline/in-memory mode (events are served from local catalog).",
+      );
       console.warn("👉 To connect MongoDB Atlas:");
       console.warn("   1. Open: https://cloud.mongodb.com");
       console.warn("   2. Go to: Security -> Network Access -> Add IP Address");
-      console.warn("   3. Select: 'Allow Access from Anywhere' (0.0.0.0/0) or add your current IP (103.184.154.190)");
-      console.warn("   4. Save and wait ~30s. The server will auto-reconnect in the background.");
+      console.warn(
+        "   3. Select: 'Allow Access from Anywhere' (0.0.0.0/0) or add your current IP (103.184.154.190)",
+      );
+      console.warn(
+        "   4. Save and wait ~30s. The server will auto-reconnect in the background.",
+      );
       scheduleReconnect();
     }
   }
@@ -42,7 +50,9 @@ function scheduleReconnect() {
         dbName: "trendgo",
         serverSelectionTimeoutMS: 5000,
       });
-      console.log(`\n🎉 MongoDB Atlas connected successfully! (database: ${mongoose.connection.name})\n`);
+      console.log(
+        `\n🎉 MongoDB Atlas connected successfully! (database: ${mongoose.connection.name})\n`,
+      );
     } catch {
       scheduleReconnect();
     } finally {

@@ -54,7 +54,10 @@ function HomePage() {
         }
       })
       .catch((error) => {
-        if (active) setEventsError(error instanceof Error ? error.message : "Unable to load events");
+        if (active)
+          setEventsError(
+            error instanceof Error ? error.message : "Unable to load events",
+          );
       })
       .finally(() => {
         if (active) setLoadingEvents(false);
@@ -65,11 +68,19 @@ function HomePage() {
   }, []);
 
   const picked = [...events].sort((a, b) => b.match - a.match).slice(0, 3);
-  const becauseYouLiked = events.filter((e) => ["Music", "Nightlife"].includes(e.category));
-  const popular = [...events].sort((a, b) => b.interested - a.interested).slice(0, 5);
+  const becauseYouLiked = events.filter((e) =>
+    ["Music", "Nightlife"].includes(e.category),
+  );
+  const popular = [...events]
+    .sort((a, b) => b.interested - a.interested)
+    .slice(0, 5);
   const friendPicks = events.slice(0, 2);
-  const bubble = events.filter((e) => e.category === "Outdoor" || e.category === "Workshops");
-  const weekend = events.filter((e) => e.dayGroup === "This weekend").slice(0, 5);
+  const bubble = events.filter(
+    (e) => e.category === "Outdoor" || e.category === "Workshops",
+  );
+  const weekend = events
+    .filter((e) => e.dayGroup === "This weekend")
+    .slice(0, 5);
 
   const displayName = user?.name ? user.name.split(" ")[0] : "Friend";
 
@@ -102,7 +113,8 @@ function HomePage() {
               {!user && (
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/10 p-3.5 backdrop-blur-md">
                   <p className="text-xs text-muted-foreground">
-                    Sign in to personalize this feed to your exact taste and friends.
+                    Sign in to personalize this feed to your exact taste and
+                    friends.
                   </p>
                   <Button size="sm" asChild>
                     <Link to="/signin" search={{ redirect: "/home" }}>
@@ -124,160 +136,198 @@ function HomePage() {
       {loadingEvents ? (
         <Section spacing="sm">
           <Container>
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3" aria-label="Loading event feed">
+            <div
+              className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+              aria-label="Loading event feed"
+            >
               {[0, 1, 2].map((item) => (
-                <div key={item} className="overflow-hidden rounded-3xl border border-border bg-card/70">
+                <div
+                  key={item}
+                  className="overflow-hidden rounded-3xl border border-border bg-card/70"
+                >
                   <Skeleton className="aspect-[16/9] w-full rounded-none" />
-                  <div className="space-y-3 p-5"><Skeleton className="h-5 w-4/5" /><Skeleton className="h-4 w-3/5" /></div>
+                  <div className="space-y-3 p-5">
+                    <Skeleton className="h-5 w-4/5" />
+                    <Skeleton className="h-4 w-3/5" />
+                  </div>
                 </div>
               ))}
             </div>
           </Container>
         </Section>
       ) : eventsError ? (
-        <Section spacing="sm"><Container><EmptyState icon={<Compass />} title="The event feed is unavailable" description={eventsError} action={<Button onClick={() => window.location.reload()}>Try again</Button>} /></Container></Section>
+        <Section spacing="sm">
+          <Container>
+            <EmptyState
+              icon={<Compass />}
+              title="The event feed is unavailable"
+              description={eventsError}
+              action={
+                <Button onClick={() => window.location.reload()}>
+                  Try again
+                </Button>
+              }
+            />
+          </Container>
+        </Section>
       ) : events.length === 0 ? (
-        <Section spacing="sm"><Container><EmptyState icon={<Compass />} title="No events are published yet" description="Check back soon for new things to do around you." /></Container></Section>
+        <Section spacing="sm">
+          <Container>
+            <EmptyState
+              icon={<Compass />}
+              title="No events are published yet"
+              description="Check back soon for new things to do around you."
+            />
+          </Container>
+        </Section>
       ) : (
         <>
-
-      {/* Picked for you */}
-      <Section spacing="sm">
-        <Container>
-          <SectionHeading
-            eyebrow="For You"
-            title="Picked for you"
-            description="Ranked by your taste graph — music you play, places you save and people you go out with."
-          />
-          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {picked.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* Because you liked */}
-      <Section spacing="sm">
-        <Container>
-          <SectionHeading
-            eyebrow="Because you liked electronic music"
-            title="More rooms with good sound"
-            action={
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/explore">See all</Link>
-              </Button>
-            }
-          />
-          <div className="mt-6">
-            <EventRail events={becauseYouLiked} />
-          </div>
-        </Container>
-      </Section>
-
-      {/* Friends */}
-      <Section spacing="sm">
-        <Container>
-          <SectionHeading
-            eyebrow="Social"
-            title="Your friends are exploring"
-            description="What the people you actually go out with are saving this week."
-            action={
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/friends">Friend activity</Link>
-              </Button>
-            }
-          />
-          <div className="mt-6 grid gap-5 lg:grid-cols-[22rem_1fr]">
-            <ul className="flex flex-col gap-3 rounded-3xl border border-border bg-card/60 p-4">
-              {ACTIVITY.slice(0, 5).map((item) => {
-                const friend = friendById(item.friendId);
-                const event = eventById(item.eventId);
-                if (!friend || !event) return null;
-                return (
-                  <li key={item.id}>
-                    <Link
-                      to="/event/$eventId"
-                      params={{ eventId: event.id }}
-                      className="flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-surface"
-                    >
-                      <Avatar>
-                        <AvatarImage src={friend.avatar} alt={friend.name} />
-                        <AvatarFallback>{friend.initials}</AvatarFallback>
-                      </Avatar>
-                      <span className="min-w-0 flex-1 text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          {friend.name.split(" ")[0]}
-                        </span>{" "}
-                        {item.action}{" "}
-                        <span className="font-medium text-primary-glow">{event.title}</span>
-                      </span>
-                      <span className="shrink-0 text-[11px] text-muted-foreground">
-                        {item.when}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="grid gap-5 sm:grid-cols-2">
-              {friendPicks.slice(0, 2).map((event) => (
-                <EventCard key={event.id} event={event} showWhy={false} />
-              ))}
-            </div>
-          </div>
-        </Container>
-      </Section>
-
-      {/* Step outside your bubble */}
-      <Section spacing="sm">
-        <Container>
-          <div className="relative overflow-hidden rounded-[2rem] border border-primary/25 bg-[radial-gradient(120%_140%_at_0%_0%,oklch(0.66_0.25_305/0.22),transparent_60%)] p-6 sm:p-10">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div className="max-w-xl">
-                <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
-                  Something different
-                </p>
-                <h2 className="font-display mt-3 text-2xl font-semibold text-balance text-foreground sm:text-3xl">
-                  Step outside your bubble
-                </h2>
-                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                  Three picks just off your usual pattern. Same city, different crowd — people with
-                  your taste tried these and stayed.
-                </p>
+          {/* Picked for you */}
+          <Section spacing="sm">
+            <Container>
+              <SectionHeading
+                eyebrow="For You"
+                title="Picked for you"
+                description="Ranked by your taste graph — music you play, places you save and people you go out with."
+              />
+              <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                {picked.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
               </div>
-              <FriendAvatars ids={["dev", "mira", "kabir", "rahul"]} size="lg" />
-            </div>
-            <div className="mt-8">
-              <EventRail events={bubble} showWhy />
-            </div>
-          </div>
-        </Container>
-      </Section>
+            </Container>
+          </Section>
 
-      {/* Popular near you */}
-      <Section spacing="sm">
-        <Container>
-          <SectionHeading eyebrow="Trending" title="Popular near you" />
-          <div className="mt-6">
-            <EventRail events={popular} />
-          </div>
-        </Container>
-      </Section>
+          {/* Because you liked */}
+          <Section spacing="sm">
+            <Container>
+              <SectionHeading
+                eyebrow="Because you liked electronic music"
+                title="More rooms with good sound"
+                action={
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/explore">See all</Link>
+                  </Button>
+                }
+              />
+              <div className="mt-6">
+                <EventRail events={becauseYouLiked} />
+              </div>
+            </Container>
+          </Section>
 
-      {/* Weekend */}
-      <Section spacing="sm">
-        <Container>
-          <SectionHeading
-            eyebrow="Plan ahead"
-            title="Recommended for this weekend"
-            description="Friday to Sunday, sorted so you can build one good run of a night."
-          />
-          <div className="mt-6">
-            <EventRail events={weekend} />
-          </div>
-        </Container>
-      </Section>
+          {/* Friends */}
+          <Section spacing="sm">
+            <Container>
+              <SectionHeading
+                eyebrow="Social"
+                title="Your friends are exploring"
+                description="What the people you actually go out with are saving this week."
+                action={
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/friends">Friend activity</Link>
+                  </Button>
+                }
+              />
+              <div className="mt-6 grid gap-5 lg:grid-cols-[22rem_1fr]">
+                <ul className="flex flex-col gap-3 rounded-3xl border border-border bg-card/60 p-4">
+                  {ACTIVITY.slice(0, 5).map((item) => {
+                    const friend = friendById(item.friendId);
+                    const event = eventById(item.eventId);
+                    if (!friend || !event) return null;
+                    return (
+                      <li key={item.id}>
+                        <Link
+                          to="/event/$eventId"
+                          params={{ eventId: event.id }}
+                          className="flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-surface"
+                        >
+                          <Avatar>
+                            <AvatarImage
+                              src={friend.avatar}
+                              alt={friend.name}
+                            />
+                            <AvatarFallback>{friend.initials}</AvatarFallback>
+                          </Avatar>
+                          <span className="min-w-0 flex-1 text-sm text-muted-foreground">
+                            <span className="font-medium text-foreground">
+                              {friend.name.split(" ")[0]}
+                            </span>{" "}
+                            {item.action}{" "}
+                            <span className="font-medium text-primary-glow">
+                              {event.title}
+                            </span>
+                          </span>
+                          <span className="shrink-0 text-[11px] text-muted-foreground">
+                            {item.when}
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  {friendPicks.slice(0, 2).map((event) => (
+                    <EventCard key={event.id} event={event} showWhy={false} />
+                  ))}
+                </div>
+              </div>
+            </Container>
+          </Section>
+
+          {/* Step outside your bubble */}
+          <Section spacing="sm">
+            <Container>
+              <div className="relative overflow-hidden rounded-[2rem] border border-primary/25 bg-[radial-gradient(120%_140%_at_0%_0%,oklch(0.66_0.25_305/0.22),transparent_60%)] p-6 sm:p-10">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="max-w-xl">
+                    <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
+                      Something different
+                    </p>
+                    <h2 className="font-display mt-3 text-2xl font-semibold text-balance text-foreground sm:text-3xl">
+                      Step outside your bubble
+                    </h2>
+                    <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                      Three picks just off your usual pattern. Same city,
+                      different crowd — people with your taste tried these and
+                      stayed.
+                    </p>
+                  </div>
+                  <FriendAvatars
+                    ids={["dev", "mira", "kabir", "rahul"]}
+                    size="lg"
+                  />
+                </div>
+                <div className="mt-8">
+                  <EventRail events={bubble} showWhy />
+                </div>
+              </div>
+            </Container>
+          </Section>
+
+          {/* Popular near you */}
+          <Section spacing="sm">
+            <Container>
+              <SectionHeading eyebrow="Trending" title="Popular near you" />
+              <div className="mt-6">
+                <EventRail events={popular} />
+              </div>
+            </Container>
+          </Section>
+
+          {/* Weekend */}
+          <Section spacing="sm">
+            <Container>
+              <SectionHeading
+                eyebrow="Plan ahead"
+                title="Recommended for this weekend"
+                description="Friday to Sunday, sorted so you can build one good run of a night."
+              />
+              <div className="mt-6">
+                <EventRail events={weekend} />
+              </div>
+            </Container>
+          </Section>
         </>
       )}
     </AppShell>

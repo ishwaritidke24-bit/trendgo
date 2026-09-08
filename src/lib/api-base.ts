@@ -1,10 +1,15 @@
-const configuredApiBaseUrl = import.meta.env["VITE_API_BASE_URL"] ?? "http://localhost:5000/api";
+const configuredApiBaseUrl =
+  import.meta.env["VITE_API_BASE_URL"] ?? "http://localhost:5000/api";
 
 export function getApiBaseUrl() {
   if (typeof window === "undefined") return configuredApiBaseUrl;
 
   const browserHost = window.location.hostname;
-  if (browserHost === "localhost" || browserHost === "127.0.0.1" || browserHost === "[::1]") {
+  if (
+    browserHost === "localhost" ||
+    browserHost === "127.0.0.1" ||
+    browserHost === "[::1]"
+  ) {
     return configuredApiBaseUrl;
   }
 

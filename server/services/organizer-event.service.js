@@ -9,7 +9,10 @@ function publicEvent(event) {
     description: event.description,
     tags: event.tags ?? [],
     category: event.category,
-    date: event.date instanceof Date ? event.date.toISOString().slice(0, 10) : event.date,
+    date:
+      event.date instanceof Date
+        ? event.date.toISOString().slice(0, 10)
+        : event.date,
     time: event.startTime,
     endTime: event.endTime,
     venue: event.venue,
@@ -28,7 +31,9 @@ function publicEvent(event) {
 }
 
 export async function listHostedEvents(organizerId) {
-  const events = await Event.find({ organizerId }).sort({ createdAt: -1 }).lean();
+  const events = await Event.find({ organizerId })
+    .sort({ createdAt: -1 })
+    .lean();
   return events.map(publicEvent);
 }
 
@@ -70,7 +75,8 @@ export async function updateHostedEvent(organizerId, eventId, input) {
     { $set: updates },
     { returnDocument: "after", runValidators: true },
   ).lean();
-  if (!event) throw createHttpError(404, "Hosted event not found", "EVENT_NOT_FOUND");
+  if (!event)
+    throw createHttpError(404, "Hosted event not found", "EVENT_NOT_FOUND");
   return publicEvent(event);
 }
 
@@ -86,7 +92,8 @@ export async function getHostedEventAudience(organizerId, eventId) {
     .populate("attendeeIds", "name email")
     .populate("interestedIds", "name email")
     .lean();
-  if (!event) throw createHttpError(404, "Hosted event not found", "EVENT_NOT_FOUND");
+  if (!event)
+    throw createHttpError(404, "Hosted event not found", "EVENT_NOT_FOUND");
   return {
     attendees: event.attendeeIds.map((user) => ({
       id: user._id.toString(),
@@ -103,5 +110,6 @@ export async function getHostedEventAudience(organizerId, eventId) {
 
 export async function deleteHostedEvent(organizerId, eventId) {
   const result = await Event.deleteOne({ _id: eventId, organizerId });
-  if (!result.deletedCount) throw createHttpError(404, "Hosted event not found", "EVENT_NOT_FOUND");
+  if (!result.deletedCount)
+    throw createHttpError(404, "Hosted event not found", "EVENT_NOT_FOUND");
 }
