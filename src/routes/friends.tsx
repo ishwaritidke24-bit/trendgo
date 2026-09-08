@@ -1,5 +1,3 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CalendarDays, Heart, UserPlus, Users } from "lucide-react";
 import * as React from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, CalendarDays, Heart, UserPlus, Users, Share2, Check } from "lucide-react";
@@ -11,7 +9,6 @@ import { EventCard } from "@/components/events/event-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ACTIVITY, EVENTS, FRIENDS, eventById, friendById } from "@/data/mock";
 import { ACTIVITY, EVENTS, FRIENDS, eventById, friendById, type EventItem } from "@/data/mock";
 import { useAuth } from "@/lib/auth-context";
 import { searchEvents } from "@/lib/events-api";
@@ -75,11 +72,6 @@ function FriendsPage() {
                 later.
               </p>
             </div>
-            <Button asChild>
-              <Link to="/explore">
-                <UserPlus /> Find friends
-              </Link>
-            </Button>
             <div className="flex gap-2">
               <Button onClick={handleInvite} className="cursor-pointer">
                 {copied ? <Check className="size-4" /> : <Share2 className="size-4" />}
@@ -178,11 +170,6 @@ function FriendsPage() {
             <CalendarDays className="size-5 text-muted-foreground" />
           </div>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {EVENTS.filter((event) => event.friendIds.length >= 2)
-              .slice(0, 3)
-              .map((event) => (
-                <EventCard key={event.id} event={event} showWhy={false} />
-              ))}
             {displayGroupEvents.map((event) => (
               <EventCard key={event.id} event={event} showWhy={false} />
             ))}

@@ -21,14 +21,12 @@ export function AppShell({
   const location = useLocation();
 
   React.useEffect(() => {
-    if (!loading && !user) {
     if (requireAuth && !loading && !user) {
       void navigate({
         to: "/signin",
         search: { redirect: `${location.pathname}${location.search}` },
       });
     }
-  }, [loading, user, navigate, location.pathname, location.search]);
   }, [requireAuth, loading, user, navigate, location.pathname, location.search]);
 
   React.useEffect(() => {
@@ -38,7 +36,6 @@ export function AppShell({
       .catch(() => setNotificationCount(0));
   }, [user]);
 
-  if (loading || !user) {
   if (requireAuth && (loading || !user)) {
     if (error) {
       return (
@@ -57,12 +54,9 @@ export function AppShell({
   return (
     <div className={cn("bg-aurora min-h-screen", className)}>
       <Navbar
-        user={{ name: user.name }}
-        location={user.location || undefined}
         user={user ? { name: user.name } : null}
         location={user?.location || undefined}
         notificationCount={notificationCount}
-        organizerEnabled={user.roles.includes("organizer") && user.organizerStatus === "active"}
         organizerEnabled={user ? user.roles.includes("organizer") && user.organizerStatus === "active" : false}
         onNotifications={() => void navigate({ to: "/notifications" })}
         onSignOut={() => void signOut().then(() => navigate({ to: "/" }))}

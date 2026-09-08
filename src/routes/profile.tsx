@@ -97,7 +97,6 @@ function ProfilePage() {
   };
 
   return (
-    <AppShell>
     <AppShell requireAuth>
       <Section spacing="sm" className="pt-10">
         <Container>
