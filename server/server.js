@@ -7,6 +7,16 @@ import { env } from "./config/env.js";
 const app = createApp();
 const server = createServer(app);
 
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(`❌ Port ${env.port} is already in use by another running server process.`);
+    console.error(`   Tip: Close existing terminals or run: Stop-Process -Name node -Force`);
+  } else {
+    console.error("❌ Server error:", error);
+  }
+  process.exit(1);
+});
+
 async function start() {
   await connectDatabase();
 

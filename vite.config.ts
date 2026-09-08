@@ -6,7 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig as lovableConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default async function defineConfig(env: any) {
+export default async function configure(env: any) {
   const configFn = lovableConfig({
     tanstackStart: {
       // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
