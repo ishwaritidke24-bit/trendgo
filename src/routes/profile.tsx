@@ -71,6 +71,11 @@ function ProfilePage() {
   if (error || !user)
     return <ProfileState title={error?.message ?? "Your profile is unavailable"} />;
 
+  const initials = user.name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("");
   const initials =
     (user.name || "User")
       .trim()
