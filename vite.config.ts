@@ -7,6 +7,7 @@
 import { defineConfig as lovableConfig } from "@lovable.dev/vite-tanstack-config";
 import type { ConfigEnv, PluginOption } from "vite";
 
+export default async function configure(env: any) {
 export default async function configure(env: ConfigEnv) {
   const configFn = lovableConfig({
     tanstackStart: {
@@ -22,6 +23,7 @@ export default async function configure(env: ConfigEnv) {
     config.plugins = config.plugins
       .flat(Infinity)
       .filter(
+        (p: any) =>
         (p: PluginOption) =>
           p &&
           typeof p === "object" &&
