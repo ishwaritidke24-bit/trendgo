@@ -114,7 +114,7 @@ export function TrendingNearYou() {
   }, [activeCity]);
 
   return (
-    <Section>
+    <Section id="trending">
       <Container>
         <SectionHeading
           eyebrow={location ? `Near ${location}` : "Near you"}

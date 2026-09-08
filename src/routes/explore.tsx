@@ -50,7 +50,7 @@ const PRICES = [
   { label: "Under ₹500", value: 500 },
   { label: "Under ₹1000", value: 1000 },
 ] as const;
-const SORTS = ["Best match", "Soonest", "Price: low to high"] as const;
+const SORTS = ["Trending", "Best match", "Soonest", "Price: low to high"] as const;
 
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -129,6 +129,12 @@ function ExplorePage() {
   }, [search.category]);
 
   React.useEffect(() => {
+    if (search.sort && SORTS.includes(search.sort as (typeof SORTS)[number])) {
+      setSort(search.sort as (typeof SORTS)[number]);
+    }
+  }, [search.sort]);
+
+  React.useEffect(() => {
     let active = true;
     setLoading(true);
 
@@ -147,11 +153,13 @@ function ExplorePage() {
       date: date === "Any time" ? undefined : date,
       price: price === 99999 ? undefined : price,
       sort:
-        sort === "Price: low to high"
-          ? "price"
-          : sort === "Soonest"
-            ? "soonest"
-            : "match",
+        sort === "Trending"
+          ? "trending"
+          : sort === "Price: low to high"
+            ? "price"
+            : sort === "Soonest"
+              ? "soonest"
+              : "match",
       locations: locationsParam,
     })
       .then(({ events }) => {
@@ -182,15 +190,19 @@ function ExplorePage() {
       <Section spacing="sm" className="pt-10">
         <Container>
           <p className="text-xs font-medium tracking-[0.18em] text-primary-glow uppercase">
-            Explore
+            {sort === "Trending" ? "Trending Now" : "Explore"}
           </p>
           <h1 className="font-display mt-3 text-3xl font-semibold text-balance text-foreground sm:text-4xl">
-            Real events happening this month
+            {sort === "Trending"
+              ? "Trending experiences right now"
+              : "Real events happening this month"}
           </h1>
           <p className="mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            {hasLocations
-              ? `Showing events across ${userLocations.join(", ")}. Use the location selector in the nav to manage your cities.`
-              : "Add your preferred cities via the location pin in the navbar to see real upcoming events."}
+            {sort === "Trending"
+              ? "The hottest gigs, meetups, and live events with the most community interest and RSVPs."
+              : hasLocations
+                ? `Showing events across ${userLocations.join(", ")}. Use the location selector in the nav to manage your cities.`
+                : "Discover real upcoming events, live shows, workshops and meetups in your city."}
           </p>
 
           {/* Location tabs — shown only when user has locations */}

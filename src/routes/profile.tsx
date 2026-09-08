@@ -97,7 +97,7 @@ function ProfilePage() {
   };
 
   return (
-    <AppShell>
+    <AppShell requireAuth>
       <Section spacing="sm" className="pt-10">
         <Container>
           <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card/70 p-6 sm:p-9">

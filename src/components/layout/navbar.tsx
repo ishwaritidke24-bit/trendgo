@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Bell, ChevronDown, MapPin, Menu, X } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
@@ -10,10 +10,16 @@ import { IconButton } from "@/components/ui/icon-button";
 import { useUserLocation } from "@/lib/location-context";
 import { cn } from "@/lib/utils";
 
-const NAV_LINKS = [
+export interface NavLinkItem {
+  label: string;
+  to: string;
+  search?: Record<string, string>;
+}
+
+const NAV_LINKS: readonly NavLinkItem[] = [
   { label: "Discover", to: "/home" },
   { label: "Explore", to: "/explore" },
-  { label: "Trending", to: "/explore" },
+  { label: "Trending", to: "/explore", search: { sort: "Trending" } },
   { label: "Friends", to: "/friends" },
   { label: "My events", to: "/events" },
 ] as const;
@@ -54,6 +60,39 @@ export function Navbar({
 }: NavbarProps) {
   const scrolled = useScrolled();
   const navigate = useNavigate();
+  const routerLocation = useLocation();
+  const searchObj = (routerLocation.search ?? {}) as Record<string, unknown>;
+  const currentPath = routerLocation.pathname;
+
+  const isLinkActive = (link: NavLinkItem) => {
+    if (link.label === "Discover") {
+      return currentPath === "/home" || currentPath === "/";
+    }
+    if (link.label === "Trending") {
+      return currentPath === "/explore" && searchObj.sort === "Trending";
+    }
+    if (link.label === "Explore") {
+      return currentPath === "/explore" && searchObj.sort !== "Trending";
+    }
+    if (link.label === "Friends") {
+      return currentPath === "/friends";
+    }
+    if (link.label === "My events") {
+      return currentPath === "/events";
+    }
+    return currentPath === link.to;
+  };
+
+  const handleTrendingClick = (e: React.MouseEvent) => {
+    if (currentPath === "/") {
+      const el = document.getElementById("trending");
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   const { location: ctxLocation, setIsModalOpen, isDetecting } = useUserLocation();
   const location =
     propLocation || ctxLocation || (isDetecting ? "Detecting location..." : "Select location");
@@ -92,21 +131,36 @@ export function Navbar({
 
         <nav aria-label="Primary" className="hidden md:block">
           <ul className="flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <li key={link.label}>
-                <Link
-                  to={link.to}
-                  className="rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-surface hover:text-foreground"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const active = isLinkActive(link);
+              return (
+                <li key={link.label}>
+                  <Link
+                    to={link.to}
+                    search={link.search}
+                    onClick={link.label === "Trending" ? handleTrendingClick : undefined}
+                    className={cn(
+                      "rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200",
+                      active
+                        ? "bg-surface text-foreground font-semibold shadow-xs"
+                        : "text-muted-foreground hover:bg-surface hover:text-foreground",
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
             {organizerEnabled ? (
               <li>
                 <Link
                   to="/organizer"
-                  className="rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-surface hover:text-foreground"
+                  className={cn(
+                    "rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-200",
+                    currentPath.startsWith("/organizer")
+                      ? "bg-surface text-foreground font-semibold shadow-xs"
+                      : "text-muted-foreground hover:bg-surface hover:text-foreground",
+                  )}
                 >
                   Organizer
                 </Link>
@@ -173,16 +227,30 @@ export function Navbar({
         )}
       >
         <Container className="flex flex-col gap-1 py-4">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.label}
-              to={link.to}
-              onClick={() => setOpen(false)}
-              className="rounded-xl px-3 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const active = isLinkActive(link);
+            return (
+              <Link
+                key={link.label}
+                to={link.to}
+                search={link.search}
+                onClick={(e) => {
+                  setOpen(false);
+                  if (link.label === "Trending") {
+                    handleTrendingClick(e);
+                  }
+                }}
+                className={cn(
+                  "rounded-xl px-3 py-3 text-base font-medium transition-colors",
+                  active
+                    ? "bg-surface text-foreground font-semibold"
+                    : "text-muted-foreground hover:bg-surface hover:text-foreground",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           {organizerEnabled ? (
             <Link
               to="/organizer"

@@ -71,29 +71,46 @@ function HomePage() {
   const bubble = events.filter((e) => e.category === "Outdoor" || e.category === "Workshops");
   const weekend = events.filter((e) => e.dayGroup === "This weekend").slice(0, 5);
 
+  const displayName = user?.name ? user.name.split(" ")[0] : "Friend";
+
   return (
     <AppShell>
       {/* Greeting */}
       <Section spacing="sm" className="pt-10">
         <Container>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
+            <div className="max-w-xl">
               <p className="text-sm text-muted-foreground">Good evening 👋</p>
               <h1 className="font-display mt-2 text-3xl font-semibold text-balance text-foreground sm:text-4xl">
-                {user?.name.split(" ")[0]}, here&apos;s what&apos;s{" "}
+                {displayName}, here&apos;s what&apos;s{" "}
                 <span className="text-gradient-brand">worth doing</span> tonight
               </h1>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Badge variant="neutral">
-                  <Compass /> {user?.location || "Location not added"}
+                  <Compass /> {user?.location || "Discovering top events"}
                 </Badge>
                 <Badge>
-                  <Sparkles /> 9 new matches today
+                  <Sparkles /> Curated matches
                 </Badge>
-                <Badge variant="neutral">
-                  <Users /> 6 friends active
-                </Badge>
+                {user ? (
+                  <Badge variant="neutral">
+                    <Users /> 6 friends active
+                  </Badge>
+                ) : null}
               </div>
+
+              {!user && (
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/10 p-3.5 backdrop-blur-md">
+                  <p className="text-xs text-muted-foreground">
+                    Sign in to personalize this feed to your exact taste and friends.
+                  </p>
+                  <Button size="sm" asChild>
+                    <Link to="/signin" search={{ redirect: "/home" }}>
+                      Sign In
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
             <Button variant="outline" asChild>
               <Link to="/explore">

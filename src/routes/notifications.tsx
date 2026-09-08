@@ -70,7 +70,7 @@ function NotificationsPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell requireAuth>
       <Section spacing="sm" className="pt-10">
         <Container>
           <div className="flex items-end justify-between gap-4">

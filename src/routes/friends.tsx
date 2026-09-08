@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CalendarDays, Heart, UserPlus, Users } from "lucide-react";
+import * as React from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, CalendarDays, Heart, UserPlus, Users, Share2, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Container, Section } from "@/components/layout/container";
@@ -7,16 +9,52 @@ import { EventCard } from "@/components/events/event-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ACTIVITY, EVENTS, FRIENDS, eventById, friendById } from "@/data/mock";
+import { ACTIVITY, EVENTS, FRIENDS, eventById, friendById, type EventItem } from "@/data/mock";
+import { useAuth } from "@/lib/auth-context";
+import { searchEvents } from "@/lib/events-api";
 
 export const Route = createFileRoute("/friends")({ component: FriendsPage });
 
 function FriendsPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [copied, setCopied] = React.useState(false);
+  const [groupEvents, setGroupEvents] = React.useState<EventItem[]>([]);
+
+  React.useEffect(() => {
+    let active = true;
+    void searchEvents({ limit: 6 })
+      .then((res) => {
+        if (active && res.events && res.events.length > 0) {
+          setGroupEvents(res.events.slice(0, 3));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleInvite = () => {
+    if (typeof window !== "undefined") {
+      const inviteUrl = `${window.location.origin}/signup?ref=friends`;
+      void navigator.clipboard.writeText(inviteUrl);
+      setCopied(true);
+      toast.success("Invite link copied to clipboard! Share it with your friends.");
+      setTimeout(() => setCopied(false), 3000);
+    }
+  };
+
   const socialEvents = ACTIVITY.map((item) => ({
     item,
     friend: friendById(item.friendId),
     event: eventById(item.eventId),
   })).filter((entry) => entry.friend && entry.event);
+
+  const displayGroupEvents = groupEvents.length > 0
+    ? groupEvents
+    : EVENTS.filter((event) => event.friendIds.length >= 2).slice(0, 3);
+
   return (
     <AppShell>
       <Section spacing="sm" className="pt-10">
@@ -34,12 +72,29 @@ function FriendsPage() {
                 later.
               </p>
             </div>
-            <Button asChild>
-              <Link to="/explore">
-                <UserPlus /> Find friends
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleInvite} className="cursor-pointer">
+                {copied ? <Check className="size-4" /> : <Share2 className="size-4" />}
+                {copied ? "Link copied" : "Invite friends"}
+              </Button>
+            </div>
           </div>
+
+          {!user && (
+            <div className="mt-6 flex flex-col gap-3 rounded-3xl border border-primary/30 bg-primary/10 p-5 sm:flex-row sm:items-center sm:justify-between backdrop-blur-md">
+              <div>
+                <h3 className="font-semibold text-foreground">Connect with your friends</h3>
+                <p className="text-sm text-muted-foreground">
+                  Sign in to see where people you know are going, coordinate plans, and get invited to private gigs.
+                </p>
+              </div>
+              <Button asChild className="shrink-0">
+                <Link to="/signin" search={{ redirect: "/friends" }}>
+                  Sign in to connect
+                </Link>
+              </Button>
+            </div>
+          )}
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_22rem]">
             <div>
               <div className="flex items-end justify-between">
@@ -115,11 +170,9 @@ function FriendsPage() {
             <CalendarDays className="size-5 text-muted-foreground" />
           </div>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {EVENTS.filter((event) => event.friendIds.length >= 2)
-              .slice(0, 3)
-              .map((event) => (
-                <EventCard key={event.id} event={event} showWhy={false} />
-              ))}
+            {displayGroupEvents.map((event) => (
+              <EventCard key={event.id} event={event} showWhy={false} />
+            ))}
           </div>
         </Container>
       </Section>

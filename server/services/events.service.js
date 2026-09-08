@@ -239,6 +239,19 @@ export async function listPublicEvents(query) {
             distanceInKm(event.latitude, event.longitude, latitude, longitude) <= maximumDistance,
         )
       : events;
+
+  if (query.sort === "trending" || query.sort === "popular") {
+    filtered.sort(
+      (a, b) =>
+        (b.interestedIds?.length ?? b.interested ?? 0) -
+        (a.interestedIds?.length ?? a.interested ?? 0),
+    );
+  } else if (query.sort === "price") {
+    filtered.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+  } else if (query.sort === "soonest") {
+    filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
   const total = filtered.length;
   const paginated = filtered
     .slice((page - 1) * limit, page * limit)
