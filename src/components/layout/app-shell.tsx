@@ -53,6 +53,7 @@ export function AppShell({
     <div className={cn("bg-aurora min-h-screen", className)}>
       <Navbar
         user={{ name: user.name }}
+        location={user.location || "Bengaluru"}
         location={user.location || undefined}
         notificationCount={notificationCount}
         organizerEnabled={user.roles.includes("organizer") && user.organizerStatus === "active"}
