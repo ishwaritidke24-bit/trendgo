@@ -32,6 +32,8 @@ async function publicInvitation(invitation) {
   };
 }
 
+import { listFriends as getFriendsList } from "./friend.service.js";
+
 async function areFriends(userId, friendId) {
   return Friendship.exists({
     status: "accepted",
@@ -43,29 +45,7 @@ async function areFriends(userId, friendId) {
 }
 
 export async function listFriends(userId) {
-  const friendships = await Friendship.find({
-    status: "accepted",
-    $or: [{ requesterId: userId }, { addresseeId: userId }],
-  }).lean();
-  const ids = friendships.map((friendship) =>
-    friendship.requesterId.toString() === userId.toString()
-      ? friendship.addresseeId
-      : friendship.requesterId,
-  );
-  const friends = await User.find({ _id: { $in: ids } })
-    .select("name")
-    .lean();
-  return friends.map((friend) => ({
-    id: friend._id.toString(),
-    name: friend.name,
-    initials: friend.name
-      .split(" ")
-      .map((part) => part[0])
-      .slice(0, 2)
-      .join(""),
-    avatar: "",
-    online: false,
-  }));
+  return getFriendsList(userId);
 }
 
 export async function createEventInvitations(

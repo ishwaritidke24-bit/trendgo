@@ -55,16 +55,12 @@ async function organizerRequest<T>(
   };
   if (!response.ok) {
     // If there are field-level validation details, combine them into a readable message
-    const details = (payload as any).error?.details;
     const details = payload.error?.details;
     if (Array.isArray(details) && details.length > 0) {
       throw new Error(
         details.map((d: { message: string }) => d.message).join(". "),
       );
     }
-    throw new Error(
-      (payload as any).error?.message ?? "Organizer request failed",
-    );
     throw new Error(payload.error?.message ?? "Organizer request failed");
   }
   return payload;

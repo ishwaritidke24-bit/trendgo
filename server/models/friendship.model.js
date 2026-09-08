@@ -22,6 +22,8 @@ const friendshipSchema = new mongoose.Schema(
 );
 
 friendshipSchema.index({ requesterId: 1, addresseeId: 1 }, { unique: true });
+friendshipSchema.index({ requesterId: 1, status: 1 });
+friendshipSchema.index({ addresseeId: 1, status: 1 });
 
 export const Friendship =
   mongoose.models.Friendship ?? mongoose.model("Friendship", friendshipSchema);
